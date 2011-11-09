@@ -18,5 +18,19 @@ BEGIN { use_ok('Tkx'); }
 BEGIN { use_ok('Log::Log4perl'); }
 BEGIN { use_ok('parent'); }
 
+subtest 'Available reports' => sub {
+    use Controller;
+    
+    my $controller = Controller->new();
+    my @reports = @{$controller->getAvailableReports()};
+    for my $report (@reports) {
+        my $len;
+        eval {
+            my ($headings, $rows) = $controller->getReport({query => $report});
+            $len = scalar(@$headings);
+        } || ($len = 0);
+        ok($len > 0, "report <$report>");
+    }
+};
 
 done_testing();

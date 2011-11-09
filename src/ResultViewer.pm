@@ -19,7 +19,7 @@ sub new {
     my ($class, $parent) = @_;
     my $self = $class->SUPER::new($parent);
     my $frame = $self->{frame};
-    my $tree = $frame->new_ttk__treeview(-height => 35);
+    my $tree = $frame->new_ttk__treeview(-height => 25);
     $self->{tree} = $tree;
     $self->{itemids} = [];
     $self->{scrollbar} = $frame->new_ttk__scrollbar(-orient => 'vertical', 

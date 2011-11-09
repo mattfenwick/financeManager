@@ -1,0 +1,11 @@
+This is version 1.1 of the FinanceManager.  
+
+Changes in this release:
+    added a couple of new reports (implemented as database views)
+    removed one superfluous report
+    removed complicated SQL code from the Controller.pm class
+    makes reports more consistent
+        identical columns should now have identical names
+        columns appear in the same order (i.e. always month before year)
+        column names are more meaningful (`sum of transactions` vs `sum`)
+    added tests to ensure that all reports will run in database server

@@ -13,35 +13,16 @@ my $user        = "username";
 my $password    = "password";
 
 my %queries = (
-    'transactions'              => 'select * from p_transactions',
-    'comment counts'            => 'select * from p_commentcounts',
-    'transaction type counts'   => 'select * from p_typecounts',
-    'end of month balances'     => 'select * from p_endofmonthbalances',
-    'running totals--checking'  => '    
-        select 
-            sum(r.amount) as total, 
-            l.date as date 
-        from 
-            (select distinct(date) from p_transactions where account = \'Checking\') as l,
-            p_transactions as r
-        where 
-            r.account = \'Checking\' and 
-            r.date <= l.date
-        group by l.date;',
-    'totals per month'          => 'select * from p_monthlytotals',
-    'unconfirmed by bank'       => 'select * from p_transactions where not isBankConfirmed',
-    'unconfirmed by receipt'    => 'select * from p_transactions where not isReceiptConfirmed',
-    'possible duplicates'       => 'select * from p_potentialduplicates',
-    'transactions per month'    => '
-        select 
-            count(*) as number,
-            month(date) as month,
-            year(date) as year,
-            account
-        from 
-            p_transactions 
-        group by 
-            month(date), year(date), account'
+    'transactions'                  => 'select * from p_transactions',
+    'comment counts'                => 'select * from p_commentcounts',
+    'transaction type counts'       => 'select * from p_transactiontypecounts',
+    'end of month balances'         => 'select * from p_endofmonthbalances',
+    'declared vs calculated totals' => 'select * from p_comparison',
+    'totals per month'              => 'select * from p_monthlytotals',
+    'unconfirmed by bank'           => 'select * from p_transactions where not `bank-confirmed`',
+    'unconfirmed by receipt'        => 'select * from p_transactions where not `have receipt`',
+    'possible duplicates'           => 'select * from p_potentialduplicates',
+    'transactions per month'        => 'select * from p_transactionspermonth'
 );
 my @days = (0 .. 31);
 
@@ -70,10 +51,10 @@ sub addTransaction { # \%
     my %fields = %$fields;
     INFO("adding transaction:  values are " . Dumper(\%fields) );
     my $result = $self->{dbh}->do('insert into transactions 
-        (`date`, comment, amount, type, account, isReceiptConfirmed, isBankConfirmed)
-        values(?, ?, ?, ?, ?, ?, ?)', undef,
-        $fields{date}, $fields{comment}, $fields{amount}, $fields{type}, 
-            $fields{account}, $fields{receipt}, $fields{bank});
+                (`date`, comment, amount, type, account, isReceiptConfirmed, isBankConfirmed)
+                values(?, ?, ?, ?, ?, ?, ?)', undef,
+            $fields{date}, $fields{comment}, $fields{amount}, $fields{type}, 
+                $fields{account}, $fields{receipt}, $fields{bank});
     INFO("add transaction succeeded, result is:  $result");
     return $result;
 }
