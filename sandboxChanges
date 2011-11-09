@@ -1,0 +1,55 @@
+
+changes in:
+
+  Controller
+    changed name of table/view ?? (p_transactions to transactions)
+    changed message string (`update` to `delete`)
+    return statement handle instead of handle's result set
+
+  ComboBox 
+    setColor
+    ??
+
+  EditTransaction
+    displayTransaction after deletion??
+
+  FinanceGUI
+    added confirm frame
+
+  LabelEntry
+    setColor method
+    change color on KeyPress
+    
+  setupViews
+    changed implementation of v_potentialduplicates and p_potentialduplicates
+      interface is unchanged
+  
+  
+  
+----------------------------------------------------------------
+-- change to views:
+      
+-- look for duplicates based on identical comments and amounts
+-- (this is not a 'public' view)
+drop view if exists v_potentialduplicates;
+create view v_potentialduplicates as
+	select
+		amount,
+		comment,
+		count(*) as count,
+		group_concat(date) as dates
+	from
+		p_transactions
+	group by
+		amount,
+		comment;
+		
+		
+drop view if exists p_potentialduplicates;
+create view p_potentialduplicates as
+	select
+		*
+	from 
+		v_potentialduplicates
+	where
+		count > 1;

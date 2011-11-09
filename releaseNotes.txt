@@ -1,4 +1,4 @@
-This is version 1.1 of the FinanceManager.  
+This is version 1.0.1 of the FinanceManager.  
 
 Changes in this release:
     added a couple of new reports (implemented as database views)

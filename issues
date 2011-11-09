@@ -1,0 +1,15 @@
+
+code that seems not to be used:
+  Controller.getMonthOfTransactions
+
+unit tests
+
+
+---------
+
+user comments:
+
+1) worried about list of "comments" getting too long to be manageable
+
+2) would like recently added transactions to show up in the same tab as "add transactions" 
+    to make it easy to see what's been done
