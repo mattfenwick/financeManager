@@ -74,31 +74,26 @@ create view p_endofmonthbalances as
 -- (this is not a 'public' view)
 drop view if exists v_potentialduplicates;
 create view v_potentialduplicates as
-    select
-        l.id as `id1`,
-        `l`.`date` as `date1`,
-        l.amount as `amount`,
-        l.comment as `comment`,
-        r.id as `id2`,
-        `r`.`date` as `date2` 
-    from
-        p_transactions as l
-    inner join
-        p_transactions as r
-    on
-        l.id < r.id and
-        l.amount = r.amount and
-        l.comment = r.comment;
-
-
--- report all those combinations of comment, amount that are present more than once
+	select
+		amount,
+		comment,
+		count(*) as count,
+		group_concat(date) as dates
+	from
+		p_transactions
+	group by
+		amount,
+		comment;
+		
+		
 drop view if exists p_potentialduplicates;
 create view p_potentialduplicates as
-    select distinct
-        comment,
-        amount
-    from
-        v_potentialduplicates;
+	select
+		*
+	from 
+		v_potentialduplicates
+	where
+		count > 1;
 
 
 drop view if exists p_transactionspermonth;
