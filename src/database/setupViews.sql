@@ -107,3 +107,14 @@ create view p_transactionspermonth as
         p_transactions 
     group by 
         month(date), year(date), account;
+
+
+drop view if exists p_recenttransactions;
+create view p_recenttransactions as
+    select
+        *
+    from
+        p_transactions
+    order by
+        id DESC
+    limit 30;

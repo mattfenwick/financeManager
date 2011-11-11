@@ -22,7 +22,8 @@ my %queries = (
     'unconfirmed by bank'           => 'select * from p_transactions where not `bank-confirmed`',
     'unconfirmed by receipt'        => 'select * from p_transactions where not `have receipt`',
     'possible duplicates'           => 'select * from p_potentialduplicates',
-    'transactions per month'        => 'select * from p_transactionspermonth'
+    'transactions per month'        => 'select * from p_transactionspermonth',
+    'recent transactions'           => 'select * from p_recenttransactions'
 );
 my @days = (0 .. 31);
 
