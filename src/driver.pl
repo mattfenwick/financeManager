@@ -8,20 +8,33 @@ use Log::Log4perl qw(:easy);
 BEGIN {
     Log::Log4perl->easy_init( 
         { level   => $DEBUG,
-            file    => ">>financeLog.txt",
-            layout   => '%p  %F{1}-%L-%M: (%d) %m%n' 
+          file    => ">>financeLog.txt",
+          layout  => '%p  %F{1}-%L-%M: (%d) %m%n' 
         } 
     );
 }
 
-
 INFO("starting FinanceManager");
 
-my $controller = Controller->new();
+my $controller;
+eval{
+	$controller = Controller->new();
+} || do {
+	FATAL("failed to initialize controller: $@");
+    Tkx::tk___messageBox(-message => "fatal error: $@");
+    die $@;
+};
 
 INFO("initializing finance GUI");
 
-my $gui = FinanceGUI->new($controller);
+my $gui;
+eval {
+	$gui = FinanceGUI->new($controller);
+} || do {
+	FATAL("failed to initialize gui: $@");
+    Tkx::tk___messageBox(-message => "fatal error: $@");	
+	die $@;
+};
 
 INFO("starting Tkx::MainLoop");
 
@@ -30,3 +43,4 @@ INFO("starting Tkx::MainLoop");
 INFO("exiting FinanceManager -- cleaning up");
 
 $controller->cleanUp();
+
