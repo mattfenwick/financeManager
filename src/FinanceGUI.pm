@@ -24,7 +24,7 @@ sub new {
     my $gui = $self->{gui};
     $gui->g_wm_minsize(200, 2);
     $gui->g_wm_title("Account manager");
-#    $self->makeMenu();
+    $self->makeMenu();
     my $n = $gui->new_ttk__notebook;
     $self->makeNotebook($n);
     $gui->g_grid_columnconfigure(0, -weight => 1);
@@ -32,6 +32,35 @@ sub new {
     $n->g_grid(-sticky => 'nsew');
 #    $gui->g_grid_columnconfigure(0, -weight => 1);
     return $self;
+}
+
+
+sub makeMenu {
+    my ($self) = @_;
+    my $gui = $self->{gui};
+    my $menu = $gui->new_menu();
+
+    my $file = $menu->new_menu(-tearoff => 0);
+    $menu->add_cascade(
+        -label     => "File",
+        -underline => 0,
+        -menu      => $file,
+    );
+    
+    $file->add_command(
+        -label       => "View reports",
+        -accelerator => "Ctrl+R", # is this just a message, or does it do something?
+        -command     => [\&viewReports, $self],
+    );
+    $gui->g_bind("<Control-r>", [\&viewReports, $self]);
+    
+    $file->add_command(
+        -label     => "Exit",
+        -underline => 1,
+        -command   => sub {$gui->Tkx::destroy();},
+    );
+  
+    $gui->configure(-menu => $menu);
 }
 
 
@@ -45,15 +74,10 @@ sub makeNotebook {
     $self->makeBalanceFrame($balance);
 #    my $confirm = $n->new_ttk__frame;
 #    $self->makeConfirmFrame($confirm);
-    my $report = $n->new_ttk__frame;
-    $self->makeViewFrame($report);
-    my $f4 = $n->new_ttk__frame;
     $n->add($add, -text => "Add transactions");
     $n->add($edit, -text => "Edit transactions");
     $n->add($balance, -text => "Monthly balances");
 #    $n->add($confirm, -text => "Confirm transactions");
-    $n->add($report, -text => "View reports");
-    $n->add($f4, -text => "SQL interpreter");
     return $n;
 }
 
@@ -79,19 +103,17 @@ sub makeBalanceFrame {
 }
 
 
-sub makeViewFrame {
-    my ($self, $parent) = @_;
-    $parent->g_grid_columnconfigure(0, -weight => 1);
-    $parent->g_grid_rowconfigure(0, -weight => 1);
-    my $vf = Reports->new($parent, $self->{controller});
-    $vf->g_grid(-sticky => 'nsew');
+sub viewReports {
+    my ($self) = @_;
+    my $gui = $self->{gui};
+    my $top = $gui->new_toplevel();
+    $top->g_wm_minsize(500, 2);
+    $top->g_wm_title("View Reports");
+    $top->g_grid_columnconfigure(0, -weight => 1);
+    $top->g_grid_rowconfigure(0, -weight => 1);
+    my $reportWindow = Reports->new($top, $self->{controller});
+    $reportWindow->g_grid(-sticky => 'nsew');
 }
-
-#sub makeConfirmFrame {
-#    my ($self, $parent) = @_;
-#    my $confirmFrame = ConfirmTransactions->new($parent, $self->{controller});
-#    $confirmFrame->g_grid();
-#}
 
 
 1;
