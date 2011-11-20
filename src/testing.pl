@@ -17,6 +17,8 @@ BEGIN { use_ok('WidgetBase'); }
 BEGIN { use_ok('Tkx'); }
 BEGIN { use_ok('Log::Log4perl'); }
 BEGIN { use_ok('parent'); }
+BEGIN { use_ok('DBI'); }
+BEGIN { use_ok('DBD::mysql'); }
 
 subtest 'Available reports' => sub {
     use Controller;
