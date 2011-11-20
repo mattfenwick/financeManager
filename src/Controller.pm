@@ -34,8 +34,7 @@ sub new {
     bless($self, $class);
     INFO("attempting to connect to database");
     $self->{dbh} = DBI->connect("DBI:mysql:" . $database, 
-        $user, $password, {RaiseError => 1}) 
-        || die "couldn't connect to database: $DBI::errstr";
+        $user, $password, {RaiseError => 1});
     INFO("database connection succeeded -- $database $user");
     return $self;
 }
