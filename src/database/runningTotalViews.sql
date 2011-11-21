@@ -123,3 +123,71 @@ create view p_comparison as
         month = monthid and
         year = yearid and
         e.account = v.account;
+
+        
+-- ----------------------------------------------------
+-- views for running total per transaction
+-- ----------------------------------------------------
+
+-- for each transaction (that is confirmed by the bank)
+--   get amount, date of all transactions that preceded it
+drop view if exists v_groupedtrans;
+create view v_groupedtrans as
+    select
+        l.id,
+        l.account,
+        r.date,
+        r.amount
+    from
+        p_transactions as l
+    inner join
+        p_transactions as r
+    on
+        l.account = r.account and
+        (r.date < l.date or
+          (r.date = l.date and r.id <= l.id))
+    where
+        l.isbankconfirmed;
+        
+
+drop view if exists v_firstbalance;
+create view v_firstbalance as
+    select
+        account,
+        date,
+        balance
+    from 
+        v_earliestbalances
+    inner join
+        v_earliestdates
+    using
+        (account);
+        
+        
+drop view if exists v_idamounts;
+create view v_idamounts as
+    select 
+        l.id,
+        sum(l.amount) + r.balance
+    from
+        v_groupedtrans as l
+    inner join
+        v_firstbalance as r
+    using
+        (account)
+    where
+        l.date >= r.date
+    group by
+        l.id;
+        
+
+drop view if exists v_runningtrans;
+create view v_runningtrans as
+    select
+        *
+    from
+        v_idamounts
+    inner join
+        p_transactions
+    using
+        (id);
