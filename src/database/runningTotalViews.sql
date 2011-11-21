@@ -29,7 +29,8 @@ create view v_earliestbalances as
         e.account = e2.account;
 
 
--- get months of interest (all those that have a declared end-of-month balance)
+-- get month, year, account of months of interest 
+--   MOIs are all those months that have a declared end-of-month balance
 drop view if exists v_step1;
 create view v_step1 as
     select 
@@ -40,7 +41,7 @@ create view v_step1 as
         endofmonthbalances;
 
 
--- add in the earliest declared balance for the account, creating a range of dates
+-- add in the DATE of the earliest declared balance for the account
 -- change to:
 -- select `date`, `month`, `year`, `account` ... rest of query ...;
 --      (account can be from either table)
