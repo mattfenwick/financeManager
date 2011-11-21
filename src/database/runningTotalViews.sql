@@ -2,6 +2,7 @@ use finance;
 
 
 
+-- date, account of earliest end-of-month balances
 drop view if exists v_earliestdates;
 create view v_earliestdates as 
     select 
@@ -13,7 +14,7 @@ create view v_earliestdates as
         `account`;
 
 
--- amount, account of earliest end-of-month balance
+-- amount, account of earliest end-of-month balances
 drop view if exists v_earliestbalances;
 create view v_earliestbalances as 
     select 
@@ -40,6 +41,9 @@ create view v_step1 as
 
 
 -- add in the earliest declared balance for the account, creating a range of dates
+-- change to:
+-- select `date`, `month`, `year`, `account` ... rest of query ...;
+--      (account can be from either table)
 drop view if exists v_step2;
 create view v_step2 as
     select
@@ -63,11 +67,11 @@ create view v_step3 as
         p_transactions as p,
         v_step2 as v
     where
-        p.date >= v.date and
-        (year(p.date) < v.year or
-            (month(p.date) <= v.month and
-                year(p.date) = v.year)) and
-        p.account = v.account and
+        p.date >= v.date and                  -- transaction is on or after date of earliest declared balance
+        (year(p.date) < v.year or             -- and the transaction is before or during the month-of-interest
+            (month(p.date) <= v.month and     -- based on:
+                year(p.date) = v.year)) and   --     year of transaction before year of MOI
+        p.account = v.account and             --     or year is same, but month is same or earlier (than MOI)
         p.`bank-confirmed`;
 
 
