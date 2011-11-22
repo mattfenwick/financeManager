@@ -147,15 +147,15 @@ create view v_groupedtrans as
         (r.date < l.date or
           (r.date = l.date and r.id <= l.id))
     where
-        l.isbankconfirmed;
+        l.`bank-confirmed` and r.`bank-confirmed`;
         
 
 drop view if exists v_firstbalance;
 create view v_firstbalance as
     select
         account,
-        date,
-        balance
+        `date`,
+        amount as `balance`
     from 
         v_earliestbalances
     inner join
@@ -168,7 +168,7 @@ drop view if exists v_idamounts;
 create view v_idamounts as
     select 
         l.id,
-        sum(l.amount) + r.balance
+        sum(l.amount) + r.balance as `current balance`
     from
         v_groupedtrans as l
     inner join
@@ -181,8 +181,8 @@ create view v_idamounts as
         l.id;
         
 
-drop view if exists v_runningtrans;
-create view v_runningtrans as
+drop view if exists p_runningtrans;
+create view p_runningtrans as
     select
         *
     from
