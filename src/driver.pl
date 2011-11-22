@@ -18,9 +18,9 @@ INFO("starting FinanceManager");
 
 my $controller;
 eval{
-	$controller = Controller->new();
+    $controller = Controller->new();
 } || do {
-	FATAL("failed to initialize controller: $@");
+    FATAL("failed to initialize controller: $@");
     Tkx::tk___messageBox(-message => "fatal error: $@");
     die $@;
 };
@@ -29,11 +29,11 @@ INFO("initializing finance GUI");
 
 my $gui;
 eval {
-	$gui = FinanceGUI->new($controller);
+    $gui = FinanceGUI->new($controller);
 } || do {
-	FATAL("failed to initialize gui: $@");
-    Tkx::tk___messageBox(-message => "fatal error: $@");	
-	die $@;
+    FATAL("failed to initialize gui: $@");
+    Tkx::tk___messageBox(-message => "fatal error: $@");    
+    die $@;
 };
 
 INFO("starting Tkx::MainLoop");
