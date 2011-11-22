@@ -190,4 +190,6 @@ create view p_runningtotals as
     inner join
         p_transactions
     using
-        (id);
+        (id)
+    order by
+        date, id;
