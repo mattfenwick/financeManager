@@ -24,7 +24,7 @@ my %queries = (
     'possible duplicates'           => 'select * from p_potentialduplicates',
     'transactions per month'        => 'select * from p_transactionspermonth',
     'recent transactions'           => 'select * from p_recenttransactions',
-    'running totals'                => 'select * from p_runningtrans'
+    'running totals'                => 'select * from p_runningtotals'
 );
 my @days = (0 .. 31);
 

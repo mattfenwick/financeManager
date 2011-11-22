@@ -181,8 +181,8 @@ create view v_idamounts as
         l.id;
         
 
-drop view if exists p_runningtrans;
-create view p_runningtrans as
+drop view if exists p_runningtotals;
+create view p_runningtotals as
     select
         *
     from
