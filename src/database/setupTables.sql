@@ -1,9 +1,6 @@
-create user 'username'@'localhost' identified by 'password';
+create user 'financeclient'@'localhost' identified by 'financeclient';
 
 create database if not exists finance;
-
-GRANT SELECT,INSERT,UPDATE,DELETE on finance.* to 'username'@'localhost';
-
 
 
 use finance;
@@ -64,7 +61,7 @@ create table endofmonthbalances (
 );
 
 
-
+-- ----------------------------------------------------------------------------
 -- reference data
 
 INSERT INTO `transactiontypes` VALUES ('Check withdrawal',-1),('Check deposit',1),('Debit card charge',-1),('Credit card charge',-1),('Cash withdrawal',-1),('Cash deposit',1),('Direct deposit',1),('Direct withdrawal',-1),('General deposit', 1),('General withdrawal', -1);
@@ -74,4 +71,12 @@ INSERT INTO `years` VALUES (2000),(2001),(2002),(2003),(2004),(2005),(2006),(200
 INSERT INTO `myaccounts` VALUES ('Checking'),('Savings'),('Credit card');
 
 INSERT INTO `months` VALUES (1,'January'),(2,'February'),(3,'March'),(4,'April'),(5,'May'),(6,'June'),(7,'July'),(8,'August'),(9,'September'),(10,'October'),(11,'November'),(12,'December');
+
+
+-- ----------------------------------------------------------------------------
+-- permissions
+
+GRANT SELECT,INSERT,UPDATE,DELETE on finance.transactions to 'financeclient'@'localhost';
+GRANT SELECT,INSERT,UPDATE,DELETE on finance.endofmonthbalances to 'financeclient'@'localhost';
+GRANT SELECT on finance.* to 'financeclient'@'localhost';
 
