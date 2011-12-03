@@ -13,6 +13,9 @@ use Balances;
 #use ConfirmTransactions;
 
 
+my $address = "https://github.com/mattfenwick/financeManager";
+my $version = "1.0.2";
+
 
 sub new {
     my ($class, $controller) = @_;
@@ -41,6 +44,8 @@ sub makeMenu {
     my $menu = $gui->new_menu();
 
     my $file = $menu->new_menu(-tearoff => 0);
+    my $help = $menu->new_menu(-tearoff => 0);
+    
     $menu->add_cascade(
         -label     => "File",
         -underline => 0,
@@ -59,8 +64,35 @@ sub makeMenu {
         -underline => 1,
         -command   => sub {$gui->Tkx::destroy();},
     );
+    
+    $menu->add_cascade(
+        -label     => "Help",
+        -underline => 0,
+        -menu      => $help,
+    );
+    
+    $help->add_command(
+        -label      => "About",
+        -command    => \&displayVersion,
+    );
+    
+    $help->add_command(
+        -label      => "Visit website",
+        -command    => \&displayWebsite,
+    );
   
     $gui->configure(-menu => $menu);
+}
+
+
+sub displayVersion {
+    my $message = "This is version $version of FinanceManager, developed by Matt Fenwick";
+    Tkx::tk___messageBox(-message => $message);
+}
+
+
+sub displayWebsite {
+    Tkx::tk___messageBox(-message => "Please visit:  " . $address);
 }
 
 

@@ -9,8 +9,8 @@ use Log::Log4perl qw(:easy);
 
 
 my $database    = "finance";
-my $user        = "username";
-my $password    = "password";
+my $user        = "financeclient";
+my $password    = "financeclient";
 
 my %queries = (
     'transactions'                  => 'select * from p_transactions',
