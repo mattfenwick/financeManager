@@ -4,16 +4,21 @@ use warnings;
 use Tkx;
 
 package WidgetBase;
+use Log::Log4perl qw(:easy);
+
 
 sub new {
     my ( $class, $parent, @options ) = @_;
-    print "base: @_\n";
+    
+    DEBUG("initializing widget base with parameters: @_");
+    
     my $self = { 
         frame => $parent->new_frame(@options), 
     };
     bless( $self, $class );
     return $self;
 }
+
 
 sub g_grid {
     my ( $self, @options ) = @_;
@@ -23,15 +28,6 @@ sub g_grid {
     @options = %options;
     $self->{frame}->g_grid(@options);
 }
-
-#package Example;
-#use parent qw/WidgetBase/;
-
-#sub new {
-#    my ( $class, $parent ) = @_;
-#    print "derived: @_\n";
-#    my $self = $class->SUPER::new($parent);
-#}
 
 
 1;

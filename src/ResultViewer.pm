@@ -14,6 +14,8 @@ use parent qw/WidgetBase/;
 #    clearResults (self)
 #    sortResults (self)
 
+my $DEFAULT_COLOR = "green";
+
 
 sub new {
     my ($class, $parent) = @_;
@@ -25,7 +27,7 @@ sub new {
     $self->{scrollbar} = $frame->new_ttk__scrollbar(-orient => 'vertical', 
             -command => [$tree, 'yview']);
     $self->setupWidgets();
-    $self->setRowColor("green");
+    $self->setRowColor($DEFAULT_COLOR);
     return $self;
 }
 

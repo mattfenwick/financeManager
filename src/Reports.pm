@@ -7,6 +7,7 @@ package Reports;
 use ComboBox;
 use ResultViewer;
 use parent qw/WidgetBase/;
+use Log::Log4perl qw(:easy);
 
 ############### description
 #    a toplevel window with:
@@ -96,7 +97,8 @@ sub layoutWidgets {
 
 sub fetchAndDisplayReport {
     my ($self) = @_;
-    print "selected: " . $self->{cbox}->getSelected() . "\n";
+    INFO("selected report: " . $self->{cbox}->getSelected() . "\n");    
+    
     my ($headings, $rows) = $self->{controller}->getReport(
         {query => $self->{cbox}->getSelected()}
     );
@@ -112,6 +114,9 @@ sub saveReport {
     die "no report to save" unless $self->{haveReport};
     my $filename = Tkx::tk___getSaveFile();
     return unless $filename;
+    
+    INFO("writing report to file <$filename>");
+    
     open(my $file, ">$filename") || die "can't open file $filename for writing";
     my $headline = join("\t", @{$self->{headings}});
     print $file "$headline\n";
@@ -119,6 +124,7 @@ sub saveReport {
         my $line = join("\t", @$row);
         print $file "$line\n";
     }
+    
     close($file) || die "problem closing file $filename:  ";
     Tkx::tk___messageBox(-message => "Report saved");
 }
