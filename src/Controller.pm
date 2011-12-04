@@ -174,23 +174,6 @@ sub deleteTransaction {
 }
 
 
-sub getMonthOfTransactions { # for updating lots of transactions quickly
-    my ($self, $month, $year) = @_;
-    INFO("fetching month of transactions, month and year: $month  $year");
-    my $statement = '
-        select 
-            *,
-            year(`date`) as year, 
-            month(`date`) as month, 
-            day(`date`) as day 
-        from p_transactions where month(date) = ? and year(date) = ?';
-    my $sth = $self->{dbh}->prepare($statement);
-    $sth->execute($month, $year);
-    INFO("found transactions");
-    return $sth;
-}
-
-
 sub getAvailableReports {
     return [keys %queries];
 }
