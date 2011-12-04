@@ -9,7 +9,7 @@ use ResultViewer;
 use parent qw/WidgetBase/;
 
 ############### description
-#    a frame with:
+#    a toplevel window with:
 #        a ComboBox for selecting a report
 #        a button for grabbing the report from the database and displaying it
 #        a button for saving the current report to file
@@ -26,6 +26,8 @@ sub new {
     my $self = $class->SUPER::new($parent);
     $self->{controller} = $controller;
     my $frame = $self->{frame};
+
+    $self->{parent} = $parent; # save reference to parent to be able to add menu
     
     $self->{cbox} = ComboBox->new($frame, 'Select report', 1,
             $controller->getAvailableReports(), 0);
@@ -35,16 +37,47 @@ sub new {
     $self->{displayReport} = $frame->new_ttk__button(-text => 'Display report', 
         -command => sub { $self->fetchAndDisplayReport();} );
         
-    $self->{saveReport} = $frame->new_ttk__button(-text => 'Save report',
-        -command => sub {$self->saveReport();} );
-        
-    $self->{colorChooser} = $frame->new_ttk__button(-text => 'Select row color',
-        -command => sub {$self->chooseColor();} );
-        
     $self->{haveReport} = 0;
     
+    $self->makeMenu();
     $self->layoutWidgets();
     return $self;
+}
+
+
+sub makeMenu {
+    my ($self) = @_;
+    my $gui = $self->{parent};
+    my $menu = $gui->new_menu();
+    
+    my $options = $menu->new_menu(-tearoff => 0);    
+    
+    $menu->add_cascade(
+        -label     => "Options",
+        -underline => 0,
+        -menu      => $options,
+    );
+    
+    $options->add_command(
+        -label       => "Save report",
+        -accelerator => "Ctrl+S", # is this just a message, or does it do something?
+        -command     => sub {$self->saveReport();},
+    );
+    $gui->g_bind("<Control-s>", sub {$self->saveReport();});
+    
+    $options->add_command(
+        -label       => "Select row color",
+        -command     => sub {$self->chooseColor();},
+    );
+    
+    $options->add_command(
+        -label       => "Close window",
+        -accelerator => "Ctrl+W",
+        -command     => sub {$gui->Tkx::destroy();},
+    );
+    $gui->g_bind("<Control-w>", sub {$gui->Tkx::destroy();});
+    
+    $gui->configure(-menu => $menu);
 }
 
 
@@ -57,9 +90,7 @@ sub layoutWidgets {
 
     $self->{cbox}->g_grid(-row => 0, -column => 0);
     $self->{displayReport}->g_grid(-row => 1, -column => 0, -sticky => 'ew');
-    $self->{saveReport}->g_grid(-row => 2, -column => 0, -sticky => 'ew');
-    $self->{colorChooser}->g_grid(-row => 3, -column => 0, -sticky => 'ew');# new
-    $self->{viewer}->g_grid(-row => 2, -column => 1, -rowspan => 30, -sticky => 'nsew');
+    $self->{viewer}->g_grid(-row => 0, -column => 1, -rowspan => 30, -sticky => 'nsew');
 }
 
 
