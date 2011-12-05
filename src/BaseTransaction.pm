@@ -1,7 +1,8 @@
 use strict;
 use warnings;
 
-package AddTransaction;
+package BaseTransaction;
+use ComboBox;
 use parent qw/WidgetBase/;
 
 
@@ -56,21 +57,6 @@ sub new {
     $self->createButton();
     
     return $self;
-}
-
-
-sub createButton {
-    my ($self) = @_;
-        
-    my $saver = sub {
-        my $hashref = $self->getValues();
-        $self->{controller}->addTransaction($hashref);# return value should be 1
-        Tkx::tk___messageBox(-message => "Transaction successfully added!");
-        $self->{comment}->setValues($self->{controller}->getComments());
-    };
-    
-    $self->{frame}->new_ttk__button(-text => 'save transaction', 
-        -command => $saver)->g_grid(-row => 2, -column => 1);
 }
 
 

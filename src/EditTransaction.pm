@@ -2,7 +2,7 @@ use strict;
 use warnings;
 
 package EditTransaction;
-use parent qw/AddTransaction/;
+use parent qw/BaseTransaction/;
 use ComboBox;
 
 
@@ -16,7 +16,7 @@ sub new {
     $self->{selector}->setAction(
         sub { 
             my ($id) = @_;
-            $self->displayTransaction($id); 
+            $self->setValues($id); 
         }
     );
     
@@ -73,11 +73,10 @@ sub deleteButton {
 }
 
 
-sub displayTransaction {
+sub setValues {
     my ($self, $id) = @_;
-    use Data::Dumper;
     my $result = $self->{controller}->getTransaction($id);
-    print Dumper($result);
+
     $self->{comment}->setSelected($result->{comment});
     $self->{account}->setSelected($result->{account});
     $self->{year}->setSelected($result->{year});
