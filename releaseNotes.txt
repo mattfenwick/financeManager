@@ -1,3 +1,13 @@
+
+Changes in v1.0.3a:
+
+1.  "Reports" window now has menu
+      free-floating buttons ("Save Report" and "Choose row color")
+      moved into menu, along with "Close window" command
+2.  No more output written to STDOUT (written to logfile instead)
+
+------------------------------------------------------------------------------------------
+
 Changes in v1.0.2:
 
 1.  add two new reports:

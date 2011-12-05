@@ -14,7 +14,7 @@ use Balances;
 
 
 my $address = "https://github.com/mattfenwick/financeManager";
-my $version = "1.0.2";
+my $version = "1.0.3a";
 
 
 sub new {
@@ -92,7 +92,7 @@ sub displayVersion {
 
 
 sub displayWebsite {
-    Tkx::tk___messageBox(-message => "Please visit:  " . $address);
+    Tkx::tk___messageBox(-message => "Please go to:  " . $address);
 }
 
 
