@@ -169,7 +169,7 @@ sub deleteTransaction {
         return $result;
     } else {    
         INFO("delete transaction <$id> failed");
-        die "update transaction failed";
+        die "delete transaction <$id> failed";
     }
 }
 
