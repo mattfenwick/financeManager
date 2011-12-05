@@ -74,26 +74,26 @@ create view p_endofmonthbalances as
 -- (this is not a 'public' view)
 drop view if exists v_potentialduplicates;
 create view v_potentialduplicates as
-	select
-		amount,
-		comment,
-		count(*) as count,
-		group_concat(date) as dates
-	from
-		p_transactions
-	group by
-		amount,
-		comment;
-		
-		
+    select
+        amount,
+        comment,
+        count(*) as count,
+        group_concat(date) as dates
+    from
+        p_transactions
+    group by
+        amount,
+        comment;
+        
+        
 drop view if exists p_potentialduplicates;
 create view p_potentialduplicates as
-	select
-		*
-	from 
-		v_potentialduplicates
-	where
-		count > 1;
+    select
+        *
+    from 
+        v_potentialduplicates
+    where
+        count > 1;
 
 
 drop view if exists p_transactionspermonth;

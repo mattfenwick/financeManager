@@ -10,7 +10,6 @@ use Reports;
 use AddTransaction;
 use EditTransaction;
 use Balances;
-#use ConfirmTransactions;
 
 
 my $address = "https://github.com/mattfenwick/financeManager";
