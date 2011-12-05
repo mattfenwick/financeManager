@@ -32,7 +32,7 @@ sub new {
 }
 
 
-sub createButton { # overrides AddTransaction's method
+sub createButton {
     my ($self) = @_;
         
     my $saver = sub {

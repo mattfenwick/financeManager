@@ -5,6 +5,8 @@ package BaseTransaction;
 use ComboBox;
 use parent qw/WidgetBase/;
 
+my $currentYear = 2011;
+
 
 sub new {
     my ($class, $parent, $controller) = @_;
@@ -27,7 +29,6 @@ sub new {
     
     $self->{year} = ComboBox->new($frame, 'year', 0,
         $self->{controller}->getYears(), 0);
-    my $currentYear = 2011;
     $self->{year}->setSelected($currentYear);
     $self->{year}->g_grid();
     
