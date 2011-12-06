@@ -163,7 +163,7 @@ sub deleteTransaction {
     my ($self, $id) = @_;
     INFO("delete transaction of id:  <$id>");
     my $result = $self->{dbh}->do('
-        delete from transactions where id = ?', undef, $id);    
+        delete from transactions where id = ? limit 1', undef, $id);    
     if($result == 1) {
         INFO("delete transaction <$id> succeeded");
         return $result;

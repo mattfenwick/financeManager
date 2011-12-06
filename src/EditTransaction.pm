@@ -4,6 +4,7 @@ use warnings;
 package EditTransaction;
 use parent qw/BaseTransaction/;
 use ComboBox;
+use Log::Log4perl qw(:easy);
 
 
 sub new {
@@ -58,12 +59,13 @@ sub deleteButton {
         my $continue = Tkx::tk___messageBox(-type => "yesno",
             -message => "Are you sure you want to delete this transaction?",
             -icon => "question", -title => "Delete transaction");
-        warn "delete continue result: $continue";
         if ($continue eq "yes") {
+            WARN("deleting transaction <$id>");
             $self->{controller}->deleteTransaction($id); # should return 1
             Tkx::tk___messageBox(-message => "Transaction successfully deleted!");        
             $self->{selector}->setValues($self->{controller}->getIDs);
-            $self->{selector}->setSelectedIndex(0);
+            $self->{selector}->setSelectedIndex(0);             # make combobox selection valid
+            $self->setValues($self->{selector}->getSelected()); # and set widgets
         } else {
             # nothing to do
         }
