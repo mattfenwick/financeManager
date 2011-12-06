@@ -106,6 +106,14 @@ sub fetchAndDisplayReport {
     $self->{headings} = $headings;
     $self->{rows} = $rows;
     $self->{haveReport} = 1;
+    $self->resetColors();
+}
+
+
+sub resetColors {
+	my ($self) = @_;
+	# reset color of $self->{cbox}
+	warn "not unimplemented";
 }
 
 

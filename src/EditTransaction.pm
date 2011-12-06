@@ -42,6 +42,7 @@ sub createButton {
         $self->{controller}->updateTransaction($hashref); # should return 1
         Tkx::tk___messageBox(-message => "Transaction successfully updated!");
         $self->{comment}->setValues($self->{controller}->getComments());
+        $self->resetColors();
     };
     
     $self->{frame}->new_ttk__button(-text => 'update transaction', 
@@ -66,12 +67,20 @@ sub deleteButton {
             $self->{selector}->setValues($self->{controller}->getIDs);
             $self->{selector}->setSelectedIndex(0);             # make combobox selection valid
             $self->setValues($self->{selector}->getSelected()); # and set widgets
+            $self->resetColors();                               # reset widget colors
         } else {
             # nothing to do
         }
     };
     $self->{frame}->new_ttk__button(-text => 'delete transaction',
         -command => $command)->g_grid(-row => 4, -column => 1);
+}
+
+
+sub resetColors {
+	my ($self) = @_;
+	# reset colors
+	warn "not implemented";
 }
 
 

@@ -21,10 +21,17 @@ sub createButton {
         $self->{controller}->addTransaction($hashref);# return value should be 1
         Tkx::tk___messageBox(-message => "Transaction successfully added!");
         $self->{comment}->setValues($self->{controller}->getComments());
+        $self->resetColors();
     };
     
     $self->{frame}->new_ttk__button(-text => 'save transaction', 
         -command => $saver)->g_grid(-row => 2, -column => 1);
+}
+
+
+sub resetColors {
+	my ($self) = @_;
+	warn "not implemented";
 }
 
 1;

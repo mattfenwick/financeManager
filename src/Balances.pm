@@ -6,6 +6,7 @@ use warnings;
 package Balances;
 use ComboBox;
 use parent qw/WidgetBase/;
+use Log::Log4perl qw(:easy);
 
 
 sub new {
@@ -46,9 +47,9 @@ sub new {
         my $balance = $self->{controller}->getMonthBalance($values);
         if ($balance) {
             $self->{amount}->setText($balance);
-            print "balance set to $balance\n";
+            DEBUG("balance set to $balance");
         } else { # nothing to do
-            print "no balance found\n";
+            DEBUG("no balance found");
         }
     };
     
@@ -69,10 +70,17 @@ sub createButton {
         my $hashref = $self->getValues();
         $self->{controller}->replaceMonthBalance($hashref);#should return 1 or 2
         Tkx::tk___messageBox(-message => "Balance successfully added!");
+        $self->resetColors();
     };
     
     $self->{frame}->new_ttk__button(-text => 'add balance', 
         -command => $saver)->g_grid(-column => 1, -row => 2, -padx => 10);
+}
+
+
+sub resetColors {
+	my ($self) = @_;
+	warn "not implemented";
 }
 
 
