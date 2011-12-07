@@ -13,7 +13,7 @@ use Balances;
 
 
 my $address = "https://github.com/mattfenwick/financeManager";
-my $version = "1.0.3a";
+my $version = "1.1.0";
 
 
 sub new {

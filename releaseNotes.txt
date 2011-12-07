@@ -1,4 +1,11 @@
 
+Changes in v1.1.0:
+
+1.  comboboxes, checkboxes, and text entries now turn red when changed
+      the color is reset when the data is saved/processed
+
+------------------------------------------------------------------------------------------
+
 Changes in v1.0.3a:
 
 1.  "Reports" window now has menu
