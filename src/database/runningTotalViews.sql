@@ -31,14 +31,22 @@ create view v_earliestbalances as
 
 -- get month, year, account of months of interest 
 --   MOIs are all those months that have a declared end-of-month balance
+--   that are NOT the first month with a declared balance 
+--     (because that's the baseline that can't be confirmed)
 drop view if exists v_step1;
 create view v_step1 as
     select 
-        monthid as month,
-        yearid as year,
-        account
+        l.monthid as month,
+        l.yearid as year,
+        l.account
     from
-        endofmonthbalances;
+        endofmonthbalances as l
+    inner join
+        v_earliestdates as r
+    on
+        l.account = r.account and
+        (l.monthid != month(r.date) or
+          l.yearid != year(r.date));
 
 
 -- add in the DATE of the earliest declared balance for the account
@@ -48,11 +56,14 @@ create view v_step1 as
 drop view if exists v_step2;
 create view v_step2 as
     select
-        *
+        l.month,
+        l.year,
+        l.account,
+        r.date
     from
-        v_step1
+        v_step1 as l
     inner join
-        v_earliestdates
+        v_earliestdates as r
     using (account);
 
 
