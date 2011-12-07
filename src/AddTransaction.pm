@@ -30,8 +30,16 @@ sub createButton {
 
 
 sub resetColors {
-	my ($self) = @_;
-	warn "not implemented";
+    my ($self) = @_;
+    $self->{amount}->setDefaultColor();
+    $self->{comment}->setDefaultColor();
+    $self->{year}->setDefaultColor();
+    $self->{month}->setDefaultColor();
+    $self->{day}->setDefaultColor();
+    $self->{account}->setDefaultColor();
+    $self->{type}->setDefaultColor();
+    $self->{isReceipt}->setDefaultColor();
+    $self->{isBankConfirmed}->setDefaultColor();
 }
 
 1;

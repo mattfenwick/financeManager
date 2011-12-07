@@ -3,6 +3,7 @@ use warnings;
 
 package BaseTransaction;
 use ComboBox;
+use CheckBox;
 use parent qw/WidgetBase/;
 
 my $currentYear = 2011;
@@ -50,11 +51,12 @@ sub new {
     
     $self->{isReceipt} = 0;
     $self->{isBankConfirmed} = 0;
-    $frame->new_ttk__checkbutton(-text => 'have receipt for transaction',
-        -variable => \$self->{isReceipt})->g_grid(-pady => 5);
-    $frame->new_ttk__checkbutton(-text => 'bank confirms transaction',
-        -variable => \$self->{isBankConfirmed})->g_grid(-pady => 5);
-        
+    
+    $self->{isReceipt} = CheckBox->new($frame, 'have receipt for transaction');
+    $self->{isReceipt}->g_grid();
+    $self->{isBankConfirmed} = CheckBox->new($frame, 'back confirms transaction');
+    $self->{isBankConfirmed}->g_grid();
+    
     $self->createButton();
     
     return $self;
@@ -69,8 +71,8 @@ sub getValues {
         date    =>  join('-', $self->{year}->getSelected(), 
                         $self->{month}->getSelected(), $self->{day}->getSelected()), 
         comment =>  $self->{comment}->getSelected(),
-        bank    =>  $self->{isBankConfirmed},
-        receipt =>  $self->{isReceipt},
+        bank    =>  $self->{isBankConfirmed}->isChecked(),
+        receipt =>  $self->{isReceipt}->isChecked(),
         type    =>  $self->{type}->getSelected()
     );
     return \%hash;

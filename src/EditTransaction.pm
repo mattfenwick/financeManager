@@ -17,7 +17,8 @@ sub new {
     $self->{selector}->setAction(
         sub { 
             my ($id) = @_;
-            $self->setValues($id); 
+            $self->setValues($id);
+            $self->resetColors();
         }
     );
     
@@ -78,9 +79,16 @@ sub deleteButton {
 
 
 sub resetColors {
-	my ($self) = @_;
-	# reset colors
-	warn "not implemented";
+    my ($self) = @_;
+    $self->{amount}->setDefaultColor();
+    $self->{comment}->setDefaultColor();
+    $self->{year}->setDefaultColor();
+    $self->{month}->setDefaultColor();
+    $self->{day}->setDefaultColor();
+    $self->{account}->setDefaultColor();
+    $self->{type}->setDefaultColor();
+    $self->{isReceipt}->setDefaultColor();
+    $self->{isBankConfirmed}->setDefaultColor();
 }
 
 
@@ -94,8 +102,8 @@ sub setValues {
     $self->{month}->setSelected($result->{month});
     $self->{day}->setSelected($result->{day});
     $self->{amount}->setText($result->{amount});
-    $self->{isReceipt} = $result->{isreceiptconfirmed};
-    $self->{isBankConfirmed} = $result->{isbankconfirmed};
+    $self->{isReceipt}->setChecked($result->{isreceiptconfirmed});
+    $self->{isBankConfirmed}->setChecked($result->{isbankconfirmed});
     $self->{type}->setSelected($result->{type});
 }
 
