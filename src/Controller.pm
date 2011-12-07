@@ -136,7 +136,6 @@ sub updateTransaction { # \%
     my ($self, $fields) = @_;
     INFO("updating transaction:  " . Dumper($fields));
     my %fields = %$fields;
-    print "update transaction: " . Dumper(\%fields);
     my $result = $self->{dbh}->do('
         update transactions set
             `date` = ?, 
