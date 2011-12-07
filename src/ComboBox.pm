@@ -4,6 +4,7 @@ use warnings;
 
 package ComboBox;
 use parent qw/WidgetBase/;
+use Log::Log4perl qw(:easy);
 
 
 
@@ -23,6 +24,10 @@ sub new {
     }
     $self->{label}->g_grid(-row => 0, -column => 0);
     $self->{combobox}->g_grid(-row => 1, -column => 0);
+    # colors ########
+    $self->{frame}->configure(-borderwidth => 5);
+    $self->{combobox}->g_bind("<<ComboboxSelected>>", sub {$self->setColor("red")} );
+    # end colors ########
     return $self;
 }
 

@@ -30,4 +30,17 @@ sub g_grid {
 }
 
 
+sub setColor {
+    my ($self, $color) = @_;
+    DEBUG("changing color to <$color>");
+    $self->{frame}->configure(-background => $color);
+}
+
+
+sub setDefaultColor {
+    my ($self) = @_;
+    $self->{frame}->configure(-background => "SystemButtonFace");
+}
+
+
 1;

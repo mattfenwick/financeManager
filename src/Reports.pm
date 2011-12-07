@@ -111,9 +111,8 @@ sub fetchAndDisplayReport {
 
 
 sub resetColors {
-	my ($self) = @_;
-	# reset color of $self->{cbox}
-	warn "not unimplemented";
+    my ($self) = @_;
+    $self->{cbox}->setDefaultColor();
 }
 
 

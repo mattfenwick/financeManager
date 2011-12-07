@@ -19,13 +19,18 @@ sub new {
     my ($class, $parent, $text, $validator) = @_;
     my $self = $class->SUPER::new($parent);
     my $frame = $self->{frame};
+    
     $self->{label} = $frame->new_label(-text => $text);
     $self->{text} = "";
     $self->{entry} = $frame->new_entry(-textvariable => \$self->{text});
+    
+    $self->{entry}->configure(-validate => "key",
+            -vcmd => sub {$self->setColor("red"); return 1;} );
+    
     $self->{validator} = $validator;
     $self->{label}->g_grid(-row => 0);
     $self->{entry}->g_grid(-row => 1);
-#    $frame->configure(-relief => 'raised', -bd => 2, -background => 'blue');
+    $frame->configure(-borderwidth => 5); # -relief => 'raised', 
     return $self;
 }
 

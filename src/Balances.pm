@@ -9,6 +9,9 @@ use parent qw/WidgetBase/;
 use Log::Log4perl qw(:easy);
 
 
+my $currentYear = 2011;
+
+
 sub new {
     my ($class, $parent, $controller) = @_;
     my $self = $class->SUPER::new($parent);
@@ -31,31 +34,11 @@ sub new {
     $self->{year} = ComboBox->new($frame, 'year', 0,
         $self->{controller}->getYears(), 3);
     $self->{year}->g_grid();
-    my $currentYear = 2011;
     $self->{year}->setSelected($currentYear);
     
     $self->{account} = ComboBox->new($frame, 'account', 1,
         $self->{controller}->getAccounts(), 0);
     $self->{account}->g_grid();
-    
-    my $action = sub {
-        my $values = {
-            year =>     $self->{year}->getSelected(), 
-            month =>    $self->{month}->getSelected(),
-            account =>  $self->{account}->getSelected()
-        };
-        my $balance = $self->{controller}->getMonthBalance($values);
-        if ($balance) {
-            $self->{amount}->setText($balance);
-            DEBUG("balance set to $balance");
-        } else { # nothing to do
-            DEBUG("no balance found");
-        }
-    };
-    
-    $self->{month}->setAction($action);
-    $self->{year}->setAction($action);
-    $self->{account}->setAction($action);
     
     $self->createButton();
         
@@ -79,8 +62,11 @@ sub createButton {
 
 
 sub resetColors {
-	my ($self) = @_;
-	warn "not implemented";
+    my ($self) = @_;
+    $self->{amount}->setDefaultColor();
+    $self->{account}->setDefaultColor();
+    $self->{year}->setDefaultColor();
+    $self->{month}->setDefaultColor();
 }
 
 
