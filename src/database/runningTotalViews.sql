@@ -1,8 +1,13 @@
 use finance;
 
 
+-- EOMB: declared end of month balance
+-- EEOMB: earliest EOMB
+-- MOI: month of interest. An EOMB of an account, after the EEOMB of the account
+-- TOI: transaction of interest.  Must be bank-confirmed.  After the EEOMB of its account.
 
--- date, account of earliest end-of-month balances
+
+-- date (with 0 filled in for day), account of EEOMB
 drop view if exists v_earliestdates;
 create view v_earliestdates as 
     select 
@@ -12,27 +17,35 @@ create view v_earliestdates as
         endofmonthbalances 
     group by 
         `account`;
+        
+-- month, year, account of EEOMB
+drop view if exists v_eeomb_date;
+create view v_eeomb_date as
+    select
+        month(date) as `month`,
+        year(date)  as `year`,
+        account
+    from
+        v_earliestdates;
 
 
 -- amount, account of earliest end-of-month balances
 drop view if exists v_earliestbalances;
 create view v_earliestbalances as 
     select 
-        amount,
-        e2.`account`
+        r.amount,
+        r.`account`
     from 
-        v_earliestdates as e,
-        endofmonthbalances as e2
-    where 
-        month(`date`) = monthid and 
-        year(`date`) = yearid and 
-        e.account = e2.account;
+        v_eeomb_date as l
+    inner join
+        endofmonthbalances as r
+    on
+        l.month   = r.monthid and 
+        l.year    = r.yearid and 
+        l.account = r.account;
 
 
--- get month, year, account of months of interest 
---   MOIs are all those months that have a declared end-of-month balance
---   that are NOT the first month with a declared balance 
---     (because that's the baseline that can't be confirmed)
+-- get month, year, account of MOIs
 drop view if exists v_step1;
 create view v_step1 as
     select 
@@ -42,48 +55,54 @@ create view v_step1 as
     from
         endofmonthbalances as l
     inner join
-        v_earliestdates as r
+        v_eeomb_date as r
     on
         l.account = r.account and
-        (l.monthid != month(r.date) or
-          l.yearid != year(r.date));
+        (l.monthid != r.month or
+          l.yearid != r.year);
 
 
--- add in the DATE of the earliest declared balance for the account
--- change to:
--- select `date`, `month`, `year`, `account` ... rest of query ...;
---      (account can be from either table)
+-- add in the DATE of the EEOMB for the account
 drop view if exists v_step2;
 create view v_step2 as
     select
         l.month,
         l.year,
         l.account,
-        r.date
+        r.month as `month_eeomb`,
+        r.year as `year_eeomb`
     from
         v_step1 as l
     inner join
-        v_earliestdates as r
-    using (account);
+        v_eeomb_date as r
+    using 
+        (account);
 
 
--- get the amounts from all the transactions within the date range (only 'bank confirmed')
+-- get the amounts from all the TOIs
 drop view if exists v_step3;
 create view v_step3 as
     select
         p.amount,
         v.month,
         v.year,
-        v.account
+        v.account,
+        p.date as `TOI_date`,
+        v.`month_eeomb`,
+        v.`year_eeomb`
     from
-        p_transactions as p,
+        p_transactions as p
+    inner join
         v_step2 as v
+      on
+          p.account = v.account           
     where
-        p.date >= v.date and                  -- transaction is on or after date of earliest declared balance
-        (year(p.date) < v.year or             -- and the transaction is before or during the month-of-interest
-            (month(p.date) <= v.month and     -- based on:
-                year(p.date) = v.year)) and   --     year of transaction before year of MOI
-        p.account = v.account and             --     or year is same, but month is same or earlier (than MOI)
+        (year(p.date) > v.year_eeomb or           -- TOI is after EEOMB
+          (year(p.date) = v.year_eeomb and
+            month(p.date) > v.month_eeomb)) AND
+        (year(p.date) < v.year or                 -- and TOI is before or during associated MOI
+          (month(p.date) <= v.month and     
+            year(p.date) = v.year)) AND  
         p.`bank-confirmed`;
 
 
@@ -140,58 +159,60 @@ create view p_comparison as
 -- views for running total per transaction
 -- ----------------------------------------------------
 
--- for each transaction (that is confirmed by the bank)
---   get amount, date of all transactions that preceded it
-drop view if exists v_groupedtrans;
-create view v_groupedtrans as
+drop view if exists v_tois;
+create view v_tois as 
     select
-        l.id,
-        l.account,
-        r.date,
-        r.amount
+        l.*
     from
         p_transactions as l
     inner join
-        p_transactions as r
+        v_eeomb_date as r
+    using
+        (account)
+    where
+        l.`bank-confirmed` and
+        (year(l.date) > r.year or
+          (year(l.date) = r.year and
+            month(l.date) > r.month));
+            
+
+-- for each TOI
+--   get amount from each TOI that preceded it
+--   TOI x precedes TOI y if x and y have the same account,
+--     and x's date is before y's date, or they have the same date but x's id is smaller
+drop view if exists v_joined_tois;
+create view v_joined_tois as
+    select
+        l.id,
+        l.account,
+        r.amount
+    from
+        v_tois as l
+    inner join
+        v_tois as r
     on
         l.account = r.account and
         (r.date < l.date or
-          (r.date = l.date and r.id <= l.id))
-    where
-        l.`bank-confirmed` and r.`bank-confirmed`;
+          (r.date = l.date and r.id <= l.id));
         
 
-drop view if exists v_firstbalance;
-create view v_firstbalance as
-    select
-        account,
-        `date`,
-        amount as `balance`
-    from 
-        v_earliestbalances
-    inner join
-        v_earliestdates
-    using
-        (account);
-        
-        
+-- id of each TOI, vs. sum of all previous TOIs and EEOMB
 drop view if exists v_idamounts;
 create view v_idamounts as
     select 
         l.id,
-        sum(l.amount) + r.balance as `current balance`
+        sum(l.amount) + r.amount as `current balance`
     from
-        v_groupedtrans as l
+        v_joined_tois as l
     inner join
-        v_firstbalance as r
+        v_earliestbalances as r
     using
         (account)
-    where
-        l.date >= r.date
     group by
         l.id;
         
 
+-- add current balance in to p_transactions
 drop view if exists p_runningtotals;
 create view p_runningtotals as
     select
