@@ -27,6 +27,8 @@ sub new {
     # colors ########
     $self->{frame}->configure(-borderwidth => 5);
     $self->{combobox}->g_bind("<<ComboboxSelected>>", sub {$self->setColor("red")} );
+    $self->{combobox}->configure(-validate => "key",
+            -validatecommand => sub {$self->setColor("red"); return 1});
     # end colors ########
     return $self;
 }
