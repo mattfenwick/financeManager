@@ -4,13 +4,10 @@ use warnings;
 use Tkx;
 
 package WidgetBase;
-use Log::Log4perl qw(:easy);
 
 
 sub new {
     my ( $class, $parent, @options ) = @_;
-    
-    DEBUG("initializing widget base with parameters: @_");
     
     my $self = { 
         frame => $parent->new_frame(@options), 
@@ -32,7 +29,6 @@ sub g_grid {
 
 sub setColor {
     my ($self, $color) = @_;
-    DEBUG("changing color to <$color>");
     $self->{frame}->configure(-background => $color);
 }
 

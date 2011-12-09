@@ -1,8 +1,11 @@
 
 Changes in v1.1.0:
 
-1.  comboboxes, checkboxes, and text entries now turn red when changed
+1.  comboboxes, checkboxes, and text entries now turn red when contents are modified
       the color is reset when the data is saved/processed
+2.  end-of-month-balances is no longer "live": it does not fetch data from the database
+      (but it still saves it there)
+      be careful, though -- it's easy to inadvertantly overwrite values (no warning)
 
 ------------------------------------------------------------------------------------------
 
