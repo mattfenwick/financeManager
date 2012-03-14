@@ -2,15 +2,10 @@ use strict;
 use warnings;
 
 
-package Controller;
+package Model;
 use Data::Dumper;
-use DBI;
 use Log::Log4perl qw(:easy);
 
-
-my $database    = "finance";
-my $user        = "financeclient";
-my $password    = "financeclient";
 
 my %queries = (
     'transactions'                  => 'select * from p_transactions',
@@ -26,17 +21,30 @@ my %queries = (
     'recent transactions'           => 'select * from p_recenttransactions',
     'running totals'                => 'select * from p_runningtotals'
 );
+
 my @days = (0 .. 31);
 
 
+# events
+#   saveTrans
+#   editTrans
+#   saveBalance
+#   getReport
+#   newTransIds
+#   deleteTrans
+
 sub new {
-    my ($class) = @_;
+    my ($class, $dbh) = @_;
     my ($self) = {};
     bless($self, $class);
-    INFO("attempting to connect to database");
-    $self->{dbh} = DBI->connect("DBI:mysql:" . $database, 
-        $user, $password, {RaiseError => 1});
-    INFO("database connection succeeded -- $database $user");
+    $self->{dbh} = $dbh;
+    $self->{listeners} = {
+    	'saveTrans'   => [],
+        'editTrans'   => [],
+        'saveBalance' => [],
+        'getReport'   => [],
+        'newTransIds' => []
+    };
     return $self;
 }
 
@@ -243,6 +251,29 @@ sub getColumn {
     }
     INFO("column <$name> fetched");
     return @values;
+}
+
+##################################################################
+
+sub addListener {
+	my ($self, $event, $code) = @_;
+	if(!defined($self->{listeners}->{$event})) {
+		die "bad event type: <$event>";
+	}
+	if(ref($code) ne "CODE") {
+		die "need code reference (got " . ref($code) . " )";
+	}
+	push(@{$self->{listeners}->{$event}}, $code); # is this right ???
+}
+
+sub _notify {
+	my ($self, $event, @rest) = @_;
+	if(!defined($self->{listeners}->{$event})) {
+		die "bad event type: <$event>";
+	}
+	for my $l (@{$self->{listeners}->{$event}}) {
+		$l->(@rest); # is this dereferencing right?  is this argument-passing right?
+	}
 }
 
 

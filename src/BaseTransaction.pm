@@ -10,10 +10,10 @@ my $currentYear = 2011;
 
 
 sub new {
-    my ($class, $parent, $controller) = @_;
+    my ($class, $parent, $model) = @_;
     my $self = $class->SUPER::new($parent);
     my $frame = $self->{frame};
-    $self->{controller} = $controller;
+    $self->{model} = $model;
     
     my %info = (text => 'amount',         
         validator => sub { die "bad amount: $_[0]" 
@@ -25,28 +25,28 @@ sub new {
     $self->{amount}->g_grid();
 
     $self->{comment} = ComboBox->new($frame, 'comment', 0,
-        $self->{controller}->getComments(), 0);
+        $self->{model}->getComments(), 0);
     $self->{comment}->g_grid();
     
     $self->{year} = ComboBox->new($frame, 'year', 0,
-        $self->{controller}->getYears(), 0);
+        $self->{model}->getYears(), 0);
     $self->{year}->setSelected($currentYear);
     $self->{year}->g_grid();
     
     $self->{month} = ComboBox->new($frame, 'month', 1,
-        $self->{controller}->getMonths(), 0);
+        $self->{model}->getMonths(), 0);
     $self->{month}->g_grid();
     
     $self->{day} = ComboBox->new($frame, 'day', 1,
-        $self->{controller}->getDays(), 1);
+        $self->{model}->getDays(), 1);
     $self->{day}->g_grid();
     
     $self->{account} = ComboBox->new($frame, 'account', 1,
-        $self->{controller}->getAccounts(), 0);
+        $self->{model}->getAccounts(), 0);
     $self->{account}->g_grid();
     
     $self->{type} = ComboBox->new($frame, 'transaction type', 1,
-        $self->{controller}->getTransactionTypes(), 0);
+        $self->{model}->getTransactionTypes(), 0);
     $self->{type}->g_grid();
     
     $self->{isReceipt} = 0;
@@ -58,6 +58,8 @@ sub new {
     $self->{isBankConfirmed}->g_grid();
     
     $self->createButton();
+    
+    $self->addModelListeners();
     
     return $self;
 }

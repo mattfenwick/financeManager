@@ -8,11 +8,11 @@ use Log::Log4perl qw(:easy);
 
 
 sub new {
-    my ($class, $parent, $controller) = @_;
-    my $self = $class->SUPER::new($parent, $controller);
+    my ($class, $parent, $model) = @_;
+    my $self = $class->SUPER::new($parent, $model);
     
     $self->{selector} = ComboBox->new($self->{frame}, 'select id', 1,
-        $self->{controller}->getIDs);
+        $self->{model}->getIDs);
     $self->{selector}->g_grid(-row => 1, -column => 1);
     $self->{selector}->setAction(
         sub { 
@@ -22,15 +22,49 @@ sub new {
         }
     );
     
-    $self->{updateIDs} = $self->{frame}->new_ttk__button(-text => "Fetch new transactions",
-        -command => sub { 
-                $self->{selector}->setValues($self->{controller}->getIDs()); 
-                Tkx::tk___messageBox(-message => "Transactions fetched!");
-            }  
-        );
-    $self->{updateIDs}->g_grid(-row => 0, -column => 1);
-    
     return $self;
+}
+
+
+sub addModelListeners {
+    my ($self) = @_;
+    my $edit = sub {
+        my ($status) = @_;
+        if($status eq "success") {
+            Tkx::tk___messageBox(-message => "Transaction successfully updated!");
+            $self->{comment}->setValues($self->{model}->getComments());
+            $self->resetColors();
+        } elsif($status eq "failure") {
+            Tkx::tk___messageBox(-message => "Transaction could not be updated -- please try again." . 
+                "If the problem persists, please notify the maintainers.");
+        } else {
+            die "invalid status: <$status>";
+        }
+    };
+    $self->{model}->addListener("saveTrans", $edit);
+    
+    my $del = sub {
+        my ($status) = @_;
+        if($status eq "success") {
+            Tkx::tk___messageBox(-message => "Transaction successfully deleted!");      
+            $self->{selector}->setValues($self->{model}->getIDs);
+            $self->{selector}->setSelectedIndex(0);             # make combobox selection valid
+            $self->setValues($self->{selector}->getSelected()); # and set widgets
+            $self->resetColors();                               # reset widget colors
+        } elsif($status eq "failure") {
+            Tkx::tk___messageBox(-message => "Transaction could not be deleted -- please try again." . 
+                "If the problem persists, please notify the maintainers.");
+        } else {
+            die "invalid status: <$status>";
+        }
+    };
+    $self->{model}->addListener("deleteTrans", $del);
+    
+    my $newIds = sub {
+        $self->{selector}->setValues($self->{model}->getIDs());
+        INFO("ids updated");
+    };
+    $self->{model}->addListener("newTransIds", $newIds);
 }
 
 
@@ -40,10 +74,7 @@ sub createButton {
     my $saver = sub {
         my $hashref = $self->getValues();
         $hashref->{id} = $self->{selector}->getSelected();
-        $self->{controller}->updateTransaction($hashref); # should return 1
-        Tkx::tk___messageBox(-message => "Transaction successfully updated!");
-        $self->{comment}->setValues($self->{controller}->getComments());
-        $self->resetColors();
+        $self->{model}->updateTransaction($hashref);
     };
     
     $self->{frame}->new_ttk__button(-text => 'update transaction', 
@@ -63,12 +94,7 @@ sub deleteButton {
             -icon => "question", -title => "Delete transaction");
         if ($continue eq "yes") {
             WARN("deleting transaction <$id>");
-            $self->{controller}->deleteTransaction($id); # should return 1
-            Tkx::tk___messageBox(-message => "Transaction successfully deleted!");        
-            $self->{selector}->setValues($self->{controller}->getIDs);
-            $self->{selector}->setSelectedIndex(0);             # make combobox selection valid
-            $self->setValues($self->{selector}->getSelected()); # and set widgets
-            $self->resetColors();                               # reset widget colors
+            $self->{model}->deleteTransaction($id);
         } else {
             # nothing to do
         }
@@ -80,21 +106,22 @@ sub deleteButton {
 
 sub resetColors {
     my ($self) = @_;
-    $self->{amount}->setDefaultColor();
-    $self->{comment}->setDefaultColor();
-    $self->{year}->setDefaultColor();
-    $self->{month}->setDefaultColor();
-    $self->{day}->setDefaultColor();
-    $self->{account}->setDefaultColor();
-    $self->{type}->setDefaultColor();
-    $self->{isReceipt}->setDefaultColor();
-    $self->{isBankConfirmed}->setDefaultColor();
+    my @widgets = (
+        $self->{amount}, $self->{comment},
+        $self->{year}, $self->{month},
+        $self->{day}, $self->{account},
+        $self->{type}, $self->{isReceipt},
+        $self->{isBankConfirmed}
+    );
+    for my $w (@widgets) {
+        $w->setDefaultColor();
+    }
 }
 
 
 sub setValues {
     my ($self, $id) = @_;
-    my $result = $self->{controller}->getTransaction($id);
+    my $result = $self->{model}->getTransaction($id);
 
     $self->{comment}->setSelected($result->{comment});
     $self->{account}->setSelected($result->{account});

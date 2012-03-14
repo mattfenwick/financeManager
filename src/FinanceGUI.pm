@@ -17,10 +17,10 @@ my $version = "1.1.0";
 
 
 sub new {
-    my ($class, $controller) = @_;
+    my ($class, $model) = @_;
     my $self = {
         gui => Tkx::widget->new("."),
-        controller => $controller,
+        model => $model,
     };
     bless($self, $class);
     my $gui = $self->{gui};
@@ -115,21 +115,21 @@ sub makeNotebook {
 
 sub makeAddFrame {
     my ($self, $parent) = @_;
-    my $addFrame = AddTransaction->new($parent, $self->{controller});
+    my $addFrame = AddTransaction->new($parent, $self->{model});
     $addFrame->g_grid();
 }
 
 
 sub makeEditFrame {
     my ($self, $parent) = @_;
-    my $editFrame = EditTransaction->new($parent, $self->{controller});
+    my $editFrame = EditTransaction->new($parent, $self->{model});
     $editFrame->g_grid();
 }
 
 
 sub makeBalanceFrame {
     my ($self, $parent) = @_;
-    my $balFrame = Balances->new($parent, $self->{controller});
+    my $balFrame = Balances->new($parent, $self->{model});
     $balFrame->g_grid();
 }
 
@@ -142,7 +142,7 @@ sub viewReports {
     $top->g_wm_title("View Reports");
     $top->g_grid_columnconfigure(0, -weight => 1);
     $top->g_grid_rowconfigure(0, -weight => 1);
-    my $reportWindow = Reports->new($top, $self->{controller});
+    my $reportWindow = Reports->new($top, $self->{model});
     $reportWindow->g_grid(-sticky => 'nsew');
 }
 

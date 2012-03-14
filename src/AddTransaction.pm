@@ -6,10 +6,29 @@ use parent qw/BaseTransaction/;
 
 
 sub new {
-    my ($class, $parent, $controller) = @_;
-    my $self = $class->SUPER::new($parent, $controller);
+    my ($class, $parent, $model) = @_;
+    my $self = $class->SUPER::new($parent, $model);
     
     return $self;
+}
+
+
+sub addModelListeners {
+    my ($self) = @_;
+    my $callback = sub {
+        my ($status) = @_;
+        if($status eq "success") {        	
+            Tkx::tk___messageBox(-message => "Transaction successfully added!");
+            $self->{comment}->setValues($self->{model}->getComments());
+            $self->resetColors();
+        } elsif($status eq "failure") {
+            Tkx::tk___messageBox(-message => "Transaction could not be added -- please try again." . 
+                "If the problem persists, please notify the maintainers.");
+        } else {
+        	die "invalid status: <$status>";
+        }
+    };
+    $self->{model}->addListener("saveTrans", $callback);
 }
 
 
@@ -18,10 +37,7 @@ sub createButton {
         
     my $saver = sub {
         my $hashref = $self->getValues();
-        $self->{controller}->addTransaction($hashref);# return value should be 1
-        Tkx::tk___messageBox(-message => "Transaction successfully added!");
-        $self->{comment}->setValues($self->{controller}->getComments());
-        $self->resetColors();
+        $self->{model}->addTransaction($hashref);
     };
     
     $self->{frame}->new_ttk__button(-text => 'save transaction', 
@@ -31,15 +47,16 @@ sub createButton {
 
 sub resetColors {
     my ($self) = @_;
-    $self->{amount}->setDefaultColor();
-    $self->{comment}->setDefaultColor();
-    $self->{year}->setDefaultColor();
-    $self->{month}->setDefaultColor();
-    $self->{day}->setDefaultColor();
-    $self->{account}->setDefaultColor();
-    $self->{type}->setDefaultColor();
-    $self->{isReceipt}->setDefaultColor();
-    $self->{isBankConfirmed}->setDefaultColor();
+    my @widgets = (
+        $self->{amount}, $self->{comment},
+        $self->{year}, $self->{month},
+        $self->{day}, $self->{account},
+        $self->{type}, $self->{isReceipt},
+        $self->{isBankConfirmed}
+    );
+    for my $w (@widgets) {
+        $w->setDefaultColor();
+    }
 }
 
 1;
