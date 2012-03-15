@@ -23,7 +23,7 @@ use Log::Log4perl qw(:easy);
 
 
 sub new {
-    my ($class, $parent, $model) = @_; # $parent is a toplevel window
+    my ($class, $parent, $model) = @_;
     my $self = $class->SUPER::new($parent);
     $self->{model} = $model;
     my $frame = $self->{frame};
@@ -43,15 +43,8 @@ sub new {
     $self->makeMenu();
     $self->layoutWidgets();
     $self->addModelListeners();
-    $self->redefineDestroy();
     
     return $self;
-}
-
-
-sub redefineDestroy {
-	my ($self) = @_;
-	
 }
 
 
