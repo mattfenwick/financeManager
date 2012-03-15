@@ -2,7 +2,12 @@
 use strict;
 use warnings;
 use Test::More;
-
+use lib '../src';
+use lib '../src/gui';
+#BEGIN {
+#	push(@INC, '../src');
+#	push(@INC, '../src/gui');
+#}; # is there a better way to get this file to see the other files?
 
 BEGIN { use_ok('AddTransaction'); }
 BEGIN { use_ok('Balances'); }

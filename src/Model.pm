@@ -77,45 +77,6 @@ sub addTransaction { # \%
 }
 
 
-sub replaceMonthBalance { # follows the MySQL meaning of replace: 
-            # add if no match for primary key, otherwise update
-    my ($self, $fields) = @_;
-    my %fields = %$fields;
-    INFO("setting end of month balance: " . Dumper(\%fields) );
-    my $result = $self->{dbh}->do('replace into endofmonthbalances
-                (monthid, yearid, amount, account)
-                values(?, ?, ?, ?)', undef,
-                $fields{month}, $fields{year}, $fields{amount}, $fields{account});
-    if($result == 1) {
-        INFO("save balance succeeded, result:  <$result>");
-        $self->_notify("saveBalance", "success");
-    } else {
-        INFO("save balance failed, result: <$result>");
-        $self->_notify("saveBalance", "failure");
-    }
-}
-
-
-sub getMonthBalance { # returns hashref, or false if no match found
-    my ($self, $fields) = @_;
-    my %fields = %$fields;
-    INFO("fetching end of month balance: " . Dumper(\%fields) );
-    my $statement = '
-        select * from endofmonthbalances
-            where monthid = ? and yearid = ? and account = ?';
-    my $sth = $self->{dbh}->prepare($statement);
-    $sth->execute($fields{month}, $fields{year}, $fields{account});
-    my $result = $sth->fetchrow_hashref();
-    if ($result) {
-        INFO("end of month balance found: $result->{amount}");
-        return $result->{amount};    
-    } else {
-        INFO("no end of month balance found");
-        return undef;
-    }
-}
-
-
 sub getTransaction { # returns hashref, or die's if no transaction found -- should it return false instead?
     my ($self, $id) = @_;
     INFO("attempting to fetch transaction of id <$id>");
@@ -129,27 +90,9 @@ sub getTransaction { # returns hashref, or die's if no transaction found -- shou
     my $sth = $self->{dbh}->prepare($statement);
     $sth->execute($id);
     my $result = $sth->fetchrow_hashref();
-    if ($result) {
-        INFO("found transaction: " . Dumper($result) );
-        return $result;
-    } else {    
-        INFO("no transaction found (id <$id>)");
-        die "no transaction with id $id found";
-    }
-}
 
-
-sub getReport { # \% something like (query => 'viewComments', month => '11')
-    my ($self, $options) = @_;
-    INFO("report requesting with options: " . Dumper($options) );
-    my %options = %$options;
-    my $statement = $queries{$options{query}} || die "no query found";
-    my $sth = $self->{dbh}->prepare($statement);
-    $sth->execute();
-    my @headings = @{$sth->{NAME_lc}};
-    my $rows = $sth->fetchall_arrayref();
-    INFO("report fetched from database");
-    return ([@headings], $rows);
+    INFO("transaction result: " . Dumper($result) );
+    return $result;
 }
 
 
@@ -191,6 +134,60 @@ sub deleteTransaction {
         INFO("delete transaction <$id> failed");
         $self->_notify("deleteTrans", "failure");
     }
+}
+
+
+sub replaceMonthBalance { # follows the MySQL meaning of replace: 
+            # add if no match for primary key, otherwise update
+    my ($self, $fields) = @_;
+    my %fields = %$fields;
+    INFO("setting end of month balance: " . Dumper(\%fields) );
+    my $result = $self->{dbh}->do('replace into endofmonthbalances
+                (monthid, yearid, amount, account)
+                values(?, ?, ?, ?)', undef,
+                $fields{month}, $fields{year}, $fields{amount}, $fields{account});
+    # TODO what does this return?  3 modes: failure, new row, overwrite existing row with new values.   return codes ???
+    if($result == 1) {
+        INFO("save balance succeeded, result:  <$result>");
+        $self->_notify("saveBalance", "success");
+    } else {
+        INFO("save balance failed, result: <$result>");
+        $self->_notify("saveBalance", "failure");
+    }
+}
+
+
+sub getMonthBalance { # returns hashref, or false if no match found
+    my ($self, $fields) = @_;
+    my %fields = %$fields;
+    INFO("fetching end of month balance: " . Dumper(\%fields) );
+    my $statement = '
+        select * from endofmonthbalances
+            where monthid = ? and yearid = ? and account = ?';
+    my $sth = $self->{dbh}->prepare($statement);
+    $sth->execute($fields{month}, $fields{year}, $fields{account});
+    my $result = $sth->fetchrow_hashref();
+    if ($result) {
+        INFO("end of month balance found: $result->{amount}");
+        return $result->{amount};    
+    } else {
+        INFO("no end of month balance found");
+        return undef;
+    }
+}
+
+
+sub getReport { # originally had planned for something like (query => 'viewComments', month => '11') ... but it's not used
+    my ($self, $options) = @_;
+    INFO("report requesting with options: " . Dumper($options) );
+    my %options = %$options;
+    my $statement = $queries{$options{query}} || die "no query found";
+    my $sth = $self->{dbh}->prepare($statement);
+    $sth->execute();
+    my @headings = @{$sth->{NAME_lc}};
+    my $rows = $sth->fetchall_arrayref();
+    INFO("report fetched from database");
+    return ([@headings], $rows);
 }
 
 
@@ -282,6 +279,7 @@ sub getColumn {
 }
 
 ##################################################################
+#### listener/event framework
 
 sub addListener {
     my ($self, $event, $code) = @_;
@@ -293,20 +291,6 @@ sub addListener {
     }
     my $ls = $self->{listeners}->{$event}; # be very careful not to create a NEW copy
     push(@$ls, $code);
-    return ($event, scalar(@$ls) - 1); # the id is the array index where the new element was put
-                 #   and since we pushed the element, it's the index of the last element
-}
-
-sub removeListener {
-    my ($self, $event, $id) = @_;
-    if(!defined($self->{listeners}->{$event})) {
-        die "bad event type: <$event>";
-    }
-    my @ls = @{$self->{listeners}->{$event}};
-    if($id > $#ls) {
-        die "bad id: <$id>; max id was $#ls";
-    }
-    $ls[$id] = undef;
 }
 
 sub _notify {
@@ -317,11 +301,8 @@ sub _notify {
     my @ls = @{$self->{listeners}->{$event}};
     INFO("notifying " . scalar(@ls) . " listeners of event <$event> with args <@rest>");
     for my $l (@ls) {
-        if(defined $l) { # if it's defined, it MUST be a CODE ref
-            $l->(@rest);
-        } else {
-        	# it's undefined -- i.e. the listener was removed
-        }
+        $l->(@rest);
+        INFO("<$event> listener succeeded");
     }
 }
 

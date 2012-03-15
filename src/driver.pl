@@ -1,14 +1,15 @@
 use strict;
 use warnings;
 
-BEGIN {push(@INC, 'gui')}; # is there a better way to get this file to see the other files?
-
-use Tkx;
-use Model;
-use FinanceGUI;
 use Log::Log4perl qw(:easy);
-use Database;
+use Tkx;
 use Try::Tiny;
+
+use Model;
+use Database;
+
+use lib 'gui';
+use FinanceGUI;
 
 
 BEGIN {

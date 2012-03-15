@@ -1,17 +1,23 @@
 
-BEGIN {
-	push(@INC, '../src');
-	push(@INC, '../src/gui');
-}; # is there a better way to get this file to see the other files?
-
 use strict;
 use warnings;
 use Test::More;
 use Try::Tiny;
+use lib '../src';
+use lib '../src/gui';
+use Log::Log4perl qw(:easy);
 
 use Model;
 use Database;
 use FinanceGUI;
+
+BEGIN {
+    Log::Log4perl->easy_init({
+        level   => $DEBUG,
+        file    => ">>testLog.txt",
+        layout  => '%p  %F{1}-%L-%M: (%d) %m%n' 
+    });
+}
 
 
 subtest 'model listeners' => sub {
@@ -80,4 +86,5 @@ subtest 'database connection and simple query' => sub {
 #	ok(1, "no exception thrown when initializing gui")
 #};
 
-&done_testing();
+
+1;
