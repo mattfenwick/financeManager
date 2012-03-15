@@ -26,48 +26,6 @@ sub new {
 }
 
 
-sub addModelListeners {
-    my ($self) = @_;
-    my $edit = sub {
-        my ($status) = @_;
-        if($status eq "success") {
-            Tkx::tk___messageBox(-message => "Transaction successfully updated!");
-            $self->{comment}->setValues($self->{model}->getComments());
-            $self->resetColors();
-        } elsif($status eq "failure") {
-            Tkx::tk___messageBox(-message => "Transaction could not be updated -- please try again." . 
-                "If the problem persists, please notify the maintainers.");
-        } else {
-            die "invalid status: <$status>";
-        }
-    };
-    $self->{model}->addListener("saveTrans", $edit);
-    
-    my $del = sub {
-        my ($status) = @_;
-        if($status eq "success") {
-            Tkx::tk___messageBox(-message => "Transaction successfully deleted!");      
-            $self->{selector}->setValues($self->{model}->getIDs);
-            $self->{selector}->setSelectedIndex(0);             # make combobox selection valid
-            $self->setValues($self->{selector}->getSelected()); # and set widgets
-            $self->resetColors();                               # reset widget colors
-        } elsif($status eq "failure") {
-            Tkx::tk___messageBox(-message => "Transaction could not be deleted -- please try again." . 
-                "If the problem persists, please notify the maintainers.");
-        } else {
-            die "invalid status: <$status>";
-        }
-    };
-    $self->{model}->addListener("deleteTrans", $del);
-    
-    my $newIds = sub {
-        $self->{selector}->setValues($self->{model}->getIDs());
-        INFO("ids updated");
-    };
-    $self->{model}->addListener("newTransIds", $newIds);
-}
-
-
 sub createButton {
     my ($self) = @_;
         
@@ -100,22 +58,7 @@ sub deleteButton {
         }
     };
     $self->{frame}->new_ttk__button(-text => 'delete transaction',
-        -command => $command)->g_grid(-row => 4, -column => 1);
-}
-
-
-sub resetColors {
-    my ($self) = @_;
-    my @widgets = (
-        $self->{amount}, $self->{comment},
-        $self->{year}, $self->{month},
-        $self->{day}, $self->{account},
-        $self->{type}, $self->{isReceipt},
-        $self->{isBankConfirmed}
-    );
-    for my $w (@widgets) {
-        $w->setDefaultColor();
-    }
+        -command => $command)->g_grid(-row => 3, -column => 1);
 }
 
 
@@ -132,6 +75,73 @@ sub setValues {
     $self->{isReceipt}->setChecked($result->{isreceiptconfirmed});
     $self->{isBankConfirmed}->setChecked($result->{isbankconfirmed});
     $self->{type}->setSelected($result->{type});
+}
+
+
+######################################3
+#### subscribing to model events
+
+sub onDelete {
+    my ($self, $status) = @_;
+    if($status eq "success") {
+        Tkx::tk___messageBox(-message => "Transaction successfully deleted!");      
+        $self->{selector}->setValues($self->{model}->getIDs);
+        $self->{selector}->setSelectedIndex(0);             # make combobox selection valid
+        $self->setValues($self->{selector}->getSelected()); # and set widgets
+        $self->resetColors();                               # reset widget colors
+    } elsif($status eq "failure") {
+        Tkx::tk___messageBox(-message => "Transaction could not be deleted -- please try again." . 
+            "If the problem persists, please notify the maintainers.");
+    } else {
+        die "invalid status: <$status>";
+    }
+}
+
+
+sub onEdit {
+    my ($self, $status) = @_;
+    if($status eq "success") {
+        Tkx::tk___messageBox(-message => "Transaction successfully updated!");
+        $self->{comment}->setValues($self->{model}->getComments());
+        $self->resetColors();
+    } elsif($status eq "failure") {
+        Tkx::tk___messageBox(-message => "Transaction could not be updated -- please try again." . 
+            "If the problem persists, please notify the maintainers.");
+    } else {
+        die "invalid status: <$status>";
+    }
+}
+
+
+sub onNewIds {
+	my ($self, $status) = @_;
+    if($status eq "success") {
+        $self->{selector}->setValues($self->{model}->getIDs());
+        INFO("ids updated");
+    } elsif($status eq "failure") {
+        # no change in ids -> nothing to do
+    } else {
+        die "invalid status: <$status>";
+    }
+}
+
+
+sub addModelListeners {
+    my ($self) = @_;
+    my $edit = sub {
+        $self->onEdit(@_);
+    };
+    $self->{model}->addListener("editTrans", $edit);
+    
+    my $del = sub {
+        $self->onDelete(@_);
+    };
+    $self->{model}->addListener("deleteTrans", $del);
+    
+    my $newIds = sub {
+    	$self->onNewIds(@_);
+    };
+    $self->{model}->addListener("saveTrans", $newIds);
 }
 
 

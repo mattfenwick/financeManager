@@ -81,4 +81,19 @@ sub getValues {
 }
 
 
+sub resetColors {
+    my ($self) = @_;
+    my @widgets = (
+        $self->{amount}, $self->{comment},
+        $self->{year}, $self->{month},
+        $self->{day}, $self->{account},
+        $self->{type}, $self->{isReceipt},
+        $self->{isBankConfirmed}
+    );
+    for my $w (@widgets) {
+        $w->setDefaultColor();
+    }
+}
+
+
 1;

@@ -22,16 +22,17 @@ my %queries = (
     'running totals'                => 'select * from p_runningtotals'
 );
 
-my @days = (0 .. 31);
+my @days = (0 .. 31); # include 0 as an "unknown" value
+
+my $webAddress = "https://github.com/mattfenwick/financeManager";
+my $version = "1.1.0";
 
 
 # events
 #   saveTrans
 #   editTrans
-#   saveBalance
-#   getReport
-#   newTransIds
 #   deleteTrans
+#   saveBalance
 
 sub new {
     my ($class, $dbh) = @_;
@@ -39,11 +40,10 @@ sub new {
     bless($self, $class);
     $self->{dbh} = $dbh;
     $self->{listeners} = {
-    	'saveTrans'   => [],
+        'saveTrans'   => [],
         'editTrans'   => [],
         'saveBalance' => [],
-        'getReport'   => [],
-        'newTransIds' => []
+        'deleteTrans' => []
     };
     return $self;
 }
@@ -55,6 +55,9 @@ sub cleanUp {
 }
 
 
+########################################################
+#### methods for interacting with database
+
 sub addTransaction { # \%
     my ($self, $fields) = @_;
     my %fields = %$fields;
@@ -64,8 +67,13 @@ sub addTransaction { # \%
                 values(?, ?, ?, ?, ?, ?, ?)', undef,
             $fields{date}, $fields{comment}, $fields{amount}, $fields{type}, 
                 $fields{account}, $fields{receipt}, $fields{bank});
-    INFO("add transaction succeeded, result is:  $result");
-    return $result;
+    if($result == 1) {
+        INFO("save transaction succeeded, result:  <$result>");
+        $self->_notify("saveTrans", "success");
+    } else {
+        INFO("save transaction failed, result: <$result>");
+        $self->_notify("saveTrans", "failure");
+    }
 }
 
 
@@ -78,8 +86,13 @@ sub replaceMonthBalance { # follows the MySQL meaning of replace:
                 (monthid, yearid, amount, account)
                 values(?, ?, ?, ?)', undef,
                 $fields{month}, $fields{year}, $fields{amount}, $fields{account});
-    INFO("end of month balance successfully set, result is:  $result");
-    return $result;
+    if($result == 1) {
+        INFO("save balance succeeded, result:  <$result>");
+        $self->_notify("saveBalance", "success");
+    } else {
+        INFO("save balance failed, result: <$result>");
+        $self->_notify("saveBalance", "failure");
+    }
 }
 
 
@@ -103,7 +116,7 @@ sub getMonthBalance { # returns hashref, or false if no match found
 }
 
 
-sub getTransaction { # returns hashref, or die's if no transaction found
+sub getTransaction { # returns hashref, or die's if no transaction found -- should it return false instead?
     my ($self, $id) = @_;
     INFO("attempting to fetch transaction of id <$id>");
     my $statement = '
@@ -158,10 +171,10 @@ sub updateTransaction { # \%
                 $fields{receipt}, $fields{bank}, $fields{type}, $fields{id} );
     if($result == 1) {
         INFO("update transaction succeeded, result:  <$result>");
-        return $result;
+        $self->_notify("editTrans", "success");
     } else {
         INFO("update transaction failed, result: <$result>");
-        die "update transaction failed";
+        $self->_notify("editTrans", "failure");
     }
 }
 
@@ -173,11 +186,26 @@ sub deleteTransaction {
         delete from transactions where id = ? limit 1', undef, $id);    
     if($result == 1) {
         INFO("delete transaction <$id> succeeded");
-        return $result;
+        $self->_notify("deleteTrans", "success");
     } else {    
         INFO("delete transaction <$id> failed");
-        die "delete transaction <$id> failed";
+        $self->_notify("deleteTrans", "failure");
     }
+}
+
+
+#######################################################
+#### static-ish methods
+
+sub getWebAddress {
+    my ($self) = @_;
+    return $webAddress;
+}
+
+
+sub getVersion {
+    my ($self) = @_;
+    return $version;
 }
 
 
@@ -256,24 +284,45 @@ sub getColumn {
 ##################################################################
 
 sub addListener {
-	my ($self, $event, $code) = @_;
-	if(!defined($self->{listeners}->{$event})) {
-		die "bad event type: <$event>";
-	}
-	if(ref($code) ne "CODE") {
-		die "need code reference (got " . ref($code) . " )";
-	}
-	push(@{$self->{listeners}->{$event}}, $code); # is this right ???
+    my ($self, $event, $code) = @_;
+    if(!defined($self->{listeners}->{$event})) {
+        die "bad event type: <$event>";
+    }
+    if(ref($code) ne "CODE") {
+        die "need code reference (got " . ref($code) . " )";
+    }
+    my $ls = $self->{listeners}->{$event}; # be very careful not to create a NEW copy
+    push(@$ls, $code);
+    return ($event, scalar(@$ls) - 1); # the id is the array index where the new element was put
+                 #   and since we pushed the element, it's the index of the last element
+}
+
+sub removeListener {
+    my ($self, $event, $id) = @_;
+    if(!defined($self->{listeners}->{$event})) {
+        die "bad event type: <$event>";
+    }
+    my @ls = @{$self->{listeners}->{$event}};
+    if($id > $#ls) {
+        die "bad id: <$id>; max id was $#ls";
+    }
+    $ls[$id] = undef;
 }
 
 sub _notify {
-	my ($self, $event, @rest) = @_;
-	if(!defined($self->{listeners}->{$event})) {
-		die "bad event type: <$event>";
-	}
-	for my $l (@{$self->{listeners}->{$event}}) {
-		$l->(@rest); # is this dereferencing right?  is this argument-passing right?
-	}
+    my ($self, $event, @rest) = @_;
+    if(!defined($self->{listeners}->{$event})) {
+        die "bad event type: <$event>";
+    }
+    my @ls = @{$self->{listeners}->{$event}};
+    INFO("notifying " . scalar(@ls) . " listeners of event <$event> with args <@rest>");
+    for my $l (@ls) {
+        if(defined $l) { # if it's defined, it MUST be a CODE ref
+            $l->(@rest);
+        } else {
+        	# it's undefined -- i.e. the listener was removed
+        }
+    }
 }
 
 

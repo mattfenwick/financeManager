@@ -12,7 +12,7 @@ my $password    = "financeclient";
 
 
 
-sub getMySQLDBConnection {
+sub getDBConnection {
     INFO("attempting to connect to database");
     my $dbh = DBI->connect("DBI:mysql:" . $database, 
         $user, $password, {RaiseError => 1});

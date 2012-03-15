@@ -12,10 +12,6 @@ use EditTransaction;
 use Balances;
 
 
-my $address = "https://github.com/mattfenwick/financeManager";
-my $version = "1.1.0";
-
-
 sub new {
     my ($class, $model) = @_;
     my $self = {
@@ -72,12 +68,12 @@ sub makeMenu {
     
     $help->add_command(
         -label      => "About",
-        -command    => \&displayVersion,
+        -command    => sub { $self->displayVersion();},
     );
     
     $help->add_command(
         -label      => "Visit website",
-        -command    => \&displayWebsite,
+        -command    => sub {$self->displayWebsite();},
     );
   
     $gui->configure(-menu => $menu);
@@ -85,13 +81,17 @@ sub makeMenu {
 
 
 sub displayVersion {
+    my ($self) = @_;
+    my $version = $self->{model}->getVersion();
     my $message = "This is version $version of FinanceManager, developed by Matt Fenwick";
     Tkx::tk___messageBox(-message => $message);
 }
 
 
 sub displayWebsite {
-    Tkx::tk___messageBox(-message => "Please go to:  " . $address);
+    my ($self) = @_;
+    my $add = $self->{model}->getWebAddress();
+    Tkx::tk___messageBox(-message => "Please visit us at:  " . $add);
 }
 
 

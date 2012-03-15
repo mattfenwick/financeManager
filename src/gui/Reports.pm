@@ -23,15 +23,15 @@ use Log::Log4perl qw(:easy);
 
 
 sub new {
-    my ($class, $parent, $controller) = @_;
+    my ($class, $parent, $model) = @_; # $parent is a toplevel window
     my $self = $class->SUPER::new($parent);
-    $self->{controller} = $controller;
+    $self->{model} = $model;
     my $frame = $self->{frame};
 
     $self->{parent} = $parent; # save reference to parent to be able to add menu
     
     $self->{cbox} = ComboBox->new($frame, 'Select report', 1,
-            $controller->getAvailableReports(), 0);
+            $model->getAvailableReports(), 0);
             
     $self->{viewer} = ResultViewer->new($frame);
 
@@ -42,7 +42,16 @@ sub new {
     
     $self->makeMenu();
     $self->layoutWidgets();
+    $self->addModelListeners();
+    $self->redefineDestroy();
+    
     return $self;
+}
+
+
+sub redefineDestroy {
+	my ($self) = @_;
+	
 }
 
 
@@ -74,11 +83,23 @@ sub makeMenu {
     $options->add_command(
         -label       => "Close window",
         -accelerator => "Ctrl+W",
-        -command     => sub {$gui->Tkx::destroy();},
+        -command     => sub {$self->cleanUp();},
     );
-    $gui->g_bind("<Control-w>", sub {$gui->Tkx::destroy();});
+    $gui->g_bind("<Control-w>", sub {$self->cleanUp();});
     
     $gui->configure(-menu => $menu);
+}
+
+
+sub cleanUp {
+    my ($self) = @_;
+    my $gui = $self->{parent};
+    my @ids = @{$self->{listenerIds}};
+    INFO("cleaning up reports window -- removing " . scalar(@ids) . " listeners");
+    for my $id (@ids) {
+        $self->{model}->removeListener(@$id); # deref as array b/c model needs 2 args
+    }
+    $gui->Tkx::destroy();
 }
 
 
@@ -99,7 +120,7 @@ sub fetchAndDisplayReport {
     my ($self) = @_;
     INFO("selected report: " . $self->{cbox}->getSelected() . "\n");    
     
-    my ($headings, $rows) = $self->{controller}->getReport(
+    my ($headings, $rows) = $self->{model}->getReport(
         {query => $self->{cbox}->getSelected()}
     );
     $self->{viewer}->displayResults($headings, $rows);
@@ -143,6 +164,37 @@ sub chooseColor {
     if ($color) {
         $self->{viewer}->setRowColor($color);
     }
+}
+
+######################################################
+#### subscribe to model events
+
+sub onModelChange {
+    my ($self, $status) = @_;
+    if($status eq "success") {
+        $self->fetchAndDisplayReport();
+    } elsif($status eq "failure") {
+        # nothing to do
+    } else {
+        die "invalid status: <$status>";
+    }
+}
+
+
+sub addModelListeners {
+    my ($self) = @_;
+    my $trans = sub {
+        INFO("change in model reported ... updating report");
+        $self->onModelChange(@_);
+    };
+    my @pairs = ();
+    my @events = ("saveTrans", "editTrans", "deleteTrans", "saveBalance");
+    for my $event (@events) {
+        # return value is a pair of (event type, listener id)
+        my @pair = $self->{model}->addListener($event, $trans);
+        push(@pairs, \@pair);
+    }
+    $self->{listenerIds} = \@pairs;
 }
 
 

@@ -13,10 +13,10 @@ my $currentYear = 2011;
 
 
 sub new {
-    my ($class, $parent, $controller) = @_;
+    my ($class, $parent, $model) = @_;
     my $self = $class->SUPER::new($parent);
     my $frame = $self->{frame};
-    $self->{controller} = $controller;
+    $self->{model} = $model;
     
     my %info = (text => 'amount',         
         validator => sub { die "bad amount: $_[0]" 
@@ -28,19 +28,21 @@ sub new {
     $self->{amount}->g_grid();
     
     $self->{month} = ComboBox->new($frame, 'month', 1,
-        $self->{controller}->getMonths(), 0);
+        $self->{model}->getMonths(), 0);
     $self->{month}->g_grid();
     
     $self->{year} = ComboBox->new($frame, 'year', 0,
-        $self->{controller}->getYears(), 3);
+        $self->{model}->getYears(), 3);
     $self->{year}->g_grid();
     $self->{year}->setSelected($currentYear);
     
     $self->{account} = ComboBox->new($frame, 'account', 1,
-        $self->{controller}->getAccounts(), 0);
+        $self->{model}->getAccounts(), 0);
     $self->{account}->g_grid();
     
     $self->createButton();
+    
+    $self->addModelListeners();
         
     return $self;
 }
@@ -51,9 +53,7 @@ sub createButton {
         
     my $saver = sub {
         my $hashref = $self->getValues();
-        $self->{controller}->replaceMonthBalance($hashref);#should return 1 or 2
-        Tkx::tk___messageBox(-message => "Balance successfully added!");
-        $self->resetColors();
+        $self->{model}->replaceMonthBalance($hashref);
     };
     
     $self->{frame}->new_ttk__button(-text => 'add balance', 
@@ -79,6 +79,32 @@ sub getValues {
         account =>  $self->{account}->getSelected()
     );
     return \%hash;
+}
+
+
+#############################################################
+#### subscribe to model events
+
+sub onSave {
+    my ($self, $status) = @_;
+    if($status eq "success") {
+        Tkx::tk___messageBox(-message => "Balance updated!");
+        $self->resetColors();
+    } elsif ($status eq "failure") {
+        Tkx::tk___messageBox(-message => "Balance could not be updated -- please try again." . 
+            "If the problem persists, please notify the maintainers.");
+    } else {
+        die "bad status: <$status>";
+    }
+}
+
+
+sub addModelListeners {
+    my ($self) = @_;
+    my $c = sub {
+        $self->onSave(@_);
+    };
+    $self->{model}->addListener("saveBalance", $c);
 }
 
 

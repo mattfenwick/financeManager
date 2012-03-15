@@ -1,5 +1,8 @@
 use strict;
 use warnings;
+
+BEGIN {push(@INC, 'gui')}; # is there a better way to get this file to see the other files?
+
 use Tkx;
 use Model;
 use FinanceGUI;
@@ -9,22 +12,21 @@ use Try::Tiny;
 
 
 BEGIN {
-    Log::Log4perl->easy_init( 
-        { level   => $DEBUG,
-          file    => ">>financeLog.txt",
-          layout  => '%p  %F{1}-%L-%M: (%d) %m%n' 
-        } 
-    );
+    Log::Log4perl->easy_init({
+        level   => $DEBUG,
+        file    => ">>financeLog.txt",
+        layout  => '%p  %F{1}-%L-%M: (%d) %m%n' 
+    });
 }
 
 
-INFO("initializing MySQL database connection");
+INFO("initializing database connection");
 
 my $dbh;
 try {
-	$dbh = Database::getDBConnection();
+    $dbh = Database::getDBConnection();
 } catch {
-	FATAL("failed to connect to database: $_");
+    FATAL("failed to connect to database: $_");
     Tkx::tk___messageBox(-message => "fatal error: $_");
     die $_;
 };
@@ -34,7 +36,7 @@ INFO("initializing model");
 
 my $model;
 try {
-    $model = Model->new();
+    $model = Model->new($dbh);
 } catch {
     FATAL("failed to initialize model: $_");
     Tkx::tk___messageBox(-message => "fatal error: $_");

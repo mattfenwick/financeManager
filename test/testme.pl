@@ -1,5 +1,8 @@
 
-BEGIN {push(@INC, '../src')}; # is there a better way to get this file to see the other files?
+BEGIN {
+	push(@INC, '../src');
+	push(@INC, '../src/gui');
+}; # is there a better way to get this file to see the other files?
 
 use strict;
 use warnings;
@@ -7,15 +10,19 @@ use Test::More;
 use Try::Tiny;
 
 use Model;
+use Database;
+use FinanceGUI;
+
 
 subtest 'model listeners' => sub {
     my $model = Model->new();
     $model->addListener("saveTrans",   sub {});
     $model->addListener("saveBalance", sub {});
     $model->addListener("saveBalance", sub {});
-    is(scalar(@{$model->{listeners}->{saveTrans}}),   1, "number of saveTrans listeners");
-    is(scalar(@{$model->{listeners}->{saveBalance}}), 2, "number of saveBalance listeners");
-    is(scalar(@{$model->{listeners}->{getReport}}),   0, "number of getReport listeners");
+    is(scalar(@{$model->{listeners}->{saveTrans}}),    1, "number of saveTrans listeners");
+    is(scalar(@{$model->{listeners}->{saveBalance}}),  2, "number of saveBalance listeners");
+    is(scalar(@{$model->{listeners}->{editTrans}}),    0, "number of editTrans listeners");
+    is(scalar(@{$model->{listeners}->{deleteTrans}}),  0, "number of deleteTrans listeners");
 };
 
 
@@ -41,7 +48,7 @@ subtest 'listeners: code refs' => sub {
         $i++;
         $model->addListener("saveTrans");
     } catch {
-    	is($i, 1, "bad code ref caused exception");
+    	is($i, 1, "bad code ref caused expected exception");
     }
     
     my $j = 0;
@@ -52,10 +59,25 @@ subtest 'listeners: code refs' => sub {
     
     my ($q, $r) = (0, 0);
     my $d = sub {$q += $_[0]; $r += $_[1];};
-    $model->addListener("newTransIds", $d);
-    $model->_notify("newTransIds", 75, 82);
-    is($q, 75, "newIds listener called and first argument passed");
-    is($r, 82, "newIds listener called and second argument passed");
+    $model->addListener("editTrans", $d);
+    $model->_notify("editTrans", 75, 82);
+    is($q, 75, "editTrans listener called and first argument passed");
+    is($r, 82, "editTrans listener called and second argument passed");
 };
+
+subtest 'database connection and simple query' => sub {
+	my $dbh = Database::getDBConnection();
+	my $sth = $dbh->prepare("select * from transactions");
+	$sth->execute();
+	my $result = $sth->fetchall_arrayref();
+	is(ref($result), "ARRAY", "query result type");
+	ok(scalar(@$result) > 50, "number of rows");
+};
+
+#subtest 'initialize gui' => sub { # fails because Model has to hit up the database ... need to mock the Model
+#	my $model = Model->new();
+#	my $gui = FinanceGUI->new($model);
+#	ok(1, "no exception thrown when initializing gui")
+#};
 
 &done_testing();
