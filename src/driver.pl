@@ -5,6 +5,7 @@ use Log::Log4perl qw(:easy);
 use Tkx;
 use Try::Tiny;
 
+use lib 'model';
 use Model;
 use Database;
 

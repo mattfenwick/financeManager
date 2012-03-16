@@ -5,6 +5,7 @@ use Test::More;
 use Try::Tiny;
 use lib '../src';
 use lib '../src/gui';
+use lib '../src/model';
 use Log::Log4perl qw(:easy);
 
 use Model;
