@@ -54,7 +54,7 @@ sub new {
     
     $self->{isReceipt} = CheckBox->new($frame, 'have receipt for transaction');
     $self->{isReceipt}->g_grid();
-    $self->{isBankConfirmed} = CheckBox->new($frame, 'back confirms transaction');
+    $self->{isBankConfirmed} = CheckBox->new($frame, 'bank confirms transaction');
     $self->{isBankConfirmed}->g_grid();
     
     $self->createButton();
