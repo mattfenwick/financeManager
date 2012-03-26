@@ -6,10 +6,11 @@ use Log::Log4perl qw(:easy);
 
 
 my %listeners = (
-    'saveTrans'   => [],
-    'editTrans'   => [],
-    'saveBalance' => [],
-    'deleteTrans' => []
+    'saveTrans'     =>  [],
+    'editTrans'     =>  [],
+    'deleteTrans'   =>  [],
+    'saveBalance'   =>  [],
+    'updateBalance' =>  []
 );
 
 
@@ -23,7 +24,7 @@ sub addListener {
     if(ref($code) ne "CODE") {
         die "need code reference (got " . ref($code) . " )";
     }
-    my $ls = $listeners{$event}; # be very careful not to create a NEW copy
+    my $ls = $listeners{$event}; # be very careful not to create a NEW copy -- want to modify the existing
     push(@$ls, $code);
 }
 
@@ -31,7 +32,7 @@ sub addListener {
 # issues
 #   1. not implemented
 sub removeListener {
-	my ($id) = @_;
+	my ($lid) = @_;
 	die;
 }
 
