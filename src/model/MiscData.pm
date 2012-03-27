@@ -10,39 +10,37 @@ my @days = (0 .. 31); # include 0 as an "unknown" value
 my $webAddress = "https://github.com/mattfenwick/financeManager";
 my $version = "1.1.0";
 
+###################################################
 
+my $dbh;
 
-sub new {
-	my ($class, $dbh) = @_;
-	my $self = {
-		dbh => $dbh
-	};
-	bless($self, $class);
-	return $self;
+sub setDbh {
+    my ($newDbh) = @_;
+    if($dbh) {
+        die "dbh already set: <$dbh>";
+    }
+    $dbh = $newDbh;
 }
 
+###################################################
 
 sub getWebAddress {
-    my ($self) = @_;
     return $webAddress;
 }
 
 
 sub getVersion {
-    my ($self) = @_;
     return $version;
 }
 
 
 sub getMonths {
-    my ($self) = @_;
-    return [$self->getColumn('months')];
+    return [&getColumn('months')];
 }
 
 
 sub getYears {
-    my ($self) = @_;
-    return [$self->getColumn('years')];
+    return [&getColumn('years')];
 }
 
 
@@ -52,33 +50,29 @@ sub getDays {
 
 
 sub getAccounts {
-    my ($self) = @_;
-    return [$self->getColumn('accounts')];
+    return [&getColumn('accounts')];
 }
 
 
 sub getTransactionTypes {
-    my ($self) = @_;
-    return [$self->getColumn('types')];
+    return [&getColumn('types')];
 }
 
 
 sub getComments {
-    my ($self) = @_;
-    my @comments = $self->getColumn('comments');
+    my @comments = &getColumn('comments');
     return [sort {lc $a cmp lc $b} @comments];
 }
 
 
 sub getIDs {
-    my ($self) = @_;
-    my @ids = $self->getColumn('ids');
+    my @ids = &getColumn('ids');
     return [sort {$a <=> $b} @ids];
 }
 
 
 sub getColumn {
-    my ($self, $name) = @_;
+    my ($name) = @_;
     INFO("fetching column <$name>");
     my %tableFinder = (
         'ids'         =>     ['id',          'transactions'],
@@ -90,7 +84,7 @@ sub getColumn {
     );
     my $entry = $tableFinder{$name} || die "no table found for column $name";
     my ($column, $table) = @$entry;
-    my $sth = $self->{dbh}->prepare("select $column from $table");
+    my $sth = $dbh->prepare("select $column from $table");
     $sth->execute();
     my $result = $sth->fetchall_arrayref();
     my @values = ();

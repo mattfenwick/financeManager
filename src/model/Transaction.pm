@@ -7,8 +7,9 @@ use Log::Log4perl qw(:easy);
 use Messages;
 
 
-my $dbh;
+###############################################################
 
+my $dbh;
 
 sub setDbh {
 	my ($newDbh) = @_;
@@ -18,13 +19,12 @@ sub setDbh {
 	$dbh = $newDbh;
 }
 
+###############################################################
+
 
 sub new {
-	my ($class, $fields) = @_;
-	&validate($fields);
-	my $self = {
-		fields => $fields
-	};
+	my ($class, $self) = @_;
+	&validate($self);
 	bless($self, $class);
 	return $self;
 }
@@ -39,7 +39,7 @@ sub new {
 #   4. where are the messages passed to?
 sub save {
 	my ($trans) = @_;
-    my %fields = %{$trans->{fields}};
+    my %fields = %$trans;
     INFO("saving transaction:  values are " . Dumper(\%fields) );
     my $result = $dbh->do('insert into transactions 
                 (`date`, comment, amount, type, account, isReceiptConfirmed, isBankConfirmed)
@@ -73,13 +73,13 @@ sub get { # returns hashref, or die's if no transaction found -- should it retur
     my $result = $sth->fetchrow_hashref();
 
     INFO("transaction result: " . Dumper($result) );
-    return $result;
+    return Transaction->new($result);
 }
 
 
 sub update { # \%
     my ($trans) = @_;
-    my %fields = %{$trans->{fields}};
+    my %fields = %$trans;
     INFO("updating transaction:  " . Dumper(%fields));
     my $result = $dbh->do('
         update transactions set

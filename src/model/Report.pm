@@ -20,12 +20,40 @@ my %queries = (
     'running totals'                => 'select * from p_runningtotals'
 );
 
+#####################################################
+
+my $dbh;
+
+sub setDbh {
+    my ($newDbh) = @_;
+    if($dbh) {
+        die "dbh already set: <$dbh>";
+    }
+    $dbh = $newDbh;
+}
+
+#####################################################
 
 sub new {
-	my ($class) = @_;
-	my ($self) = {};
+	my ($class, $headings, $rows) = @_;
+	my ($self) = {
+		headings => $headings,
+		rows => $rows
+	};
 	bless($self, $class);
 	return $self;
+}
+
+
+sub getRows {
+	my ($self) = @_;
+	return $self->{rows};
+}
+
+
+sub getHeadings {
+	my ($self) = @_;
+	return $self->{headings};
 }
 
 
@@ -38,16 +66,16 @@ sub getAvailableReports {
 
 
 sub getReport { # originally had planned for something like (query => 'viewComments', month => '11') ... but it's not used
-    my ($self, $options) = @_;
+    my ($options) = @_;
     INFO("report requesting with options: " . Dumper($options) );
     my %options = %$options;
     my $statement = $queries{$options{query}} || die "no query found";
-    my $sth = $self->{dbh}->prepare($statement);
+    my $sth = $dbh->prepare($statement);
     $sth->execute();
     my @headings = @{$sth->{NAME_lc}};
     my $rows = $sth->fetchall_arrayref();
     INFO("report fetched from database");
-    return ([@headings], $rows);
+    return Report->new([@headings], $rows);
 }
 
 1;

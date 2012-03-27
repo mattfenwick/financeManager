@@ -7,8 +7,9 @@ use Log::Log4perl qw(:easy);
 use Messages;
 
 
-my $dbh;
+#####################################################
 
+my $dbh;
 
 sub setDbh {
 	my ($newDbh) = @_;
@@ -18,14 +19,13 @@ sub setDbh {
 	$dbh = $newDbh;
 }
 
+######################################################
+
 
 sub new {
-    my ($class, $fields) = @_;
-    my ($self) = {
-    	fields => $fields
-    };
+    my ($class, $self) = @_;
+    $self->validate();
     bless($self, $class);
-#    $self->validate();
     return $self;
 }
 
@@ -36,7 +36,7 @@ sub new {
 sub replace { # follows the MySQL meaning of replace: 
             # add if no match for primary key, otherwise update
     my ($bal) = @_;
-    my %fields = %{$bal->{fields}};
+    my %fields = %$bal;
     INFO("setting end of month balance: " . Dumper(\%fields) );
     my $result = $dbh->do('replace into endofmonthbalances
                 (monthid, yearid, amount, account)
@@ -48,12 +48,12 @@ sub replace { # follows the MySQL meaning of replace:
         &Messages::notify("saveBalance", "success");
     } else {
         INFO("save balance failed, result: <$result>");
-        $Messages::notify("saveBalance", "failure");
+        &Messages::notify("saveBalance", "failure");
     }
 }
 
 
-sub get { # returns hashref, or false if no match found
+sub get { # returns Balance, or false if no match found
     my ($month, $year, $account) = @_;
     INFO("fetching end of month balance: " . Dumper(\@_) );
     my $statement = '
@@ -64,7 +64,7 @@ sub get { # returns hashref, or false if no match found
     my $result = $sth->fetchrow_hashref();
     if ($result) {
         INFO("end of month balance found: $result->{amount}");
-        return $result->{amount};    
+        return Balance->new($result);    
     } else {
         INFO("no end of month balance found");
         return undef;

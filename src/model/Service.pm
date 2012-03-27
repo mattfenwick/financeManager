@@ -10,49 +10,49 @@ use MiscData;
 
 sub saveTransaction {
 	my $trans = Transaction->new(@_);
-	Transaction->save($trans);
+	&Transaction::save($trans);
 }
 
 
 sub getTransaction {
 	my ($id) = @_;
-	my $trans = Transaction->get($id);
+	my $trans = &Transaction::get($id);
 	return $trans;
 }
 
 
 sub deleteTransaction {
 	my ($id) = @_;
-	Transaction->delete($id);
+	&Transaction::delete($id);
 }
 
 
 sub updateTransaction {
 	my $trans = Transaction->new(@_);
-	Transaction->update($trans);
+	&Transaction::update($trans);
 }
 
 
 sub saveBalance {
     my $bal = Balance->new(@_);
-    Balance->replace($bal);
+    &Balance::replace($bal);
 }
 
 
 sub updateBalance {
     my $bal = Balance->new(@_);
-    Balance->replace($bal);
+    &Balance::replace($bal);
 }
 
 
 sub getBalance {
-	Balance->get(@_);
+	&Balance::get(@_);
 }
 
 
 sub getColumn {
 	my ($columnName) = @_;
-	if($columnName == "availableReports") {
+	if($columnName eq "availableReports") {
 		return &Report::getAvailableReports();
 	} else {
 		return &MiscData::getColumn($columnName);
@@ -61,9 +61,7 @@ sub getColumn {
 
 
 sub getReport {
-	my ($reportName) = @_;
-	my $report = Report->new($reportName);
-	return $report;
+	return &Report::getReport(@_);
 }
 
 
