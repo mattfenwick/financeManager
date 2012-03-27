@@ -1,13 +1,16 @@
-
 use strict;
 use warnings;
 
-
 package Reports;
+use parent qw/WidgetBase/;
 use ComboBox;
 use ResultViewer;
-use parent qw/WidgetBase/;
 use Log::Log4perl qw(:easy);
+
+use lib '../model';
+use Service;
+use Messages;
+
 
 ############### description
 #    a toplevel window with:
@@ -23,22 +26,21 @@ use Log::Log4perl qw(:easy);
 
 
 sub new {
-    my ($class, $parent, $model) = @_;
+    my ($class, $parent) = @_;
     my $self = $class->SUPER::new($parent);
-    $self->{model} = $model;
     my $frame = $self->{frame};
 
     $self->{parent} = $parent; # save reference to parent to be able to add menu
     
     $self->{cbox} = ComboBox->new($frame, 'Select report', 1,
-            $model->getAvailableReports(), 0);
+            &Service::getAvailableReports(), 0);
             
     $self->{viewer} = ResultViewer->new($frame);
 
     $self->{displayReport} = $frame->new_ttk__button(-text => 'Display report', 
         -command => sub { $self->fetchAndDisplayReport();} );
         
-    $self->{haveReport} = 0;
+    $self->{report} = 0;
     
     $self->makeMenu();
     $self->layoutWidgets();
@@ -90,7 +92,7 @@ sub cleanUp {
     my @ids = @{$self->{listenerIds}};
     INFO("cleaning up reports window -- removing " . scalar(@ids) . " listeners");
     for my $id (@ids) {
-        $self->{model}->removeListener(@$id); # deref as array b/c model needs 2 args
+        &Messages::removeListener(@$id); # deref as array b/c model needs 2 args
     }
     $gui->Tkx::destroy();
 }
@@ -111,15 +113,12 @@ sub layoutWidgets {
 
 sub fetchAndDisplayReport {
     my ($self) = @_;
-    INFO("selected report: " . $self->{cbox}->getSelected() . "\n");    
+    my $reportName = $self->{cbox}->getSelected();
+    INFO("selected report: $reportName");    
     
-    my ($headings, $rows) = $self->{model}->getReport(
-        {query => $self->{cbox}->getSelected()}
-    );
-    $self->{viewer}->displayResults($headings, $rows);
-    $self->{headings} = $headings;
-    $self->{rows} = $rows;
-    $self->{haveReport} = 1;
+    my ($report) = &Service::getReport($reportName);
+    $self->{viewer}->displayResults($report->getHeadings(), $report->getRows());
+    $self->{report} = $report;
     $self->resetColors();
 }
 
@@ -132,16 +131,20 @@ sub resetColors {
 
 sub saveReport {
     my ($self) = @_;
-    die "no report to save" unless $self->{haveReport};
+    die "no report to save" unless $self->{report};
     my $filename = Tkx::tk___getSaveFile();
     return unless $filename;
     
     INFO("writing report to file <$filename>");
     
     open(my $file, ">$filename") || die "can't open file $filename for writing";
-    my $headline = join("\t", @{$self->{headings}});
+    
+    my @headings = @{$self->{report}->getHeadings()};
+    my @rows = @{$self->{report}->getRows()};
+    
+    my $headline = join("\t", @headings);
     print $file "$headline\n";
-    for my $row (@{$self->{rows}}) {
+    for my $row (@rows) {
         my $line = join("\t", @$row);
         print $file "$line\n";
     }
@@ -184,7 +187,8 @@ sub addModelListeners {
     my @events = ("saveTrans", "editTrans", "deleteTrans", "saveBalance");
     for my $event (@events) {
         # return value is a pair of (event type, listener id)
-        my @pair = $self->{model}->addListener($event, $trans);
+        my @pair = &Messages::addListener($event, $trans);
+        die "haven't implemented capturing listener ids yet (for later removal)";
         push(@pairs, \@pair);
     }
     $self->{listenerIds} = \@pairs;

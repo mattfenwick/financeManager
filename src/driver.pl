@@ -6,7 +6,12 @@ use Tkx;
 use Try::Tiny;
 
 use lib 'model';
-use Model;
+use Transaction;
+use Balance;
+use MiscData;
+use Report;
+
+use lib 'database';
 use Database;
 
 use lib 'gui';
@@ -38,7 +43,10 @@ INFO("initializing model");
 
 my $model;
 try {
-    $model = Model->new($dbh);
+    &Transaction->setDbh($dbh);
+    &Balance->setDbh($dbh);
+    &MiscData->setDbh($dbh);
+    &Report->setDbh($dbh);
 } catch {
     FATAL("failed to initialize model: $_");
     Tkx::tk___messageBox(-message => "fatal error: $_");
@@ -50,7 +58,7 @@ INFO("initializing GUI");
 
 my $gui;
 try {
-    $gui = FinanceGUI->new($model);
+    $gui = FinanceGUI->new();
 } catch {
     FATAL("failed to initialize gui: $_");
     Tkx::tk___messageBox(-message => "fatal error: $_");    
@@ -62,6 +70,8 @@ INFO("starting Tkx::MainLoop");
 
 &Tkx::MainLoop();
 
-INFO("exiting FinanceManager -- cleaning up");
+INFO("disconnecting from database server");
 
-$model->cleanUp();
+$dbh->disconnect();
+
+INFO("exiting FinanceManager");

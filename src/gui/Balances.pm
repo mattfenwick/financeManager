@@ -1,22 +1,21 @@
-
 use strict;
 use warnings;
 
-
 package Balances;
-use ComboBox;
 use parent qw/WidgetBase/;
+use ComboBox;
 use Log::Log4perl qw(:easy);
 
+use lib '../model';
+use Service;
+use Messages;
 
-my $currentYear = 2011;
 
 
 sub new {
-    my ($class, $parent, $model) = @_;
+    my ($class, $parent) = @_;
     my $self = $class->SUPER::new($parent);
     my $frame = $self->{frame};
-    $self->{model} = $model;
     
     my %info = (text => 'amount',         
         validator => sub { die "bad amount: $_[0]" 
@@ -28,16 +27,16 @@ sub new {
     $self->{amount}->g_grid();
     
     $self->{month} = ComboBox->new($frame, 'month', 1,
-        $self->{model}->getMonths(), 0);
+        &Service::getMonths(), 0);
     $self->{month}->g_grid();
     
     $self->{year} = ComboBox->new($frame, 'year', 0,
-        $self->{model}->getYears(), 3);
+        &Service::getYears(), 3);
     $self->{year}->g_grid();
-    $self->{year}->setSelected($currentYear);
+    $self->{year}->setSelected(&Service::getCurrentYear());
     
     $self->{account} = ComboBox->new($frame, 'account', 1,
-        $self->{model}->getAccounts(), 0);
+        &Service::getAccounts(), 0);
     $self->{account}->g_grid();
     
     $self->createButton();
@@ -53,7 +52,7 @@ sub createButton {
         
     my $saver = sub {
         my $hashref = $self->getValues();
-        $self->{model}->replaceMonthBalance($hashref);
+        &Service::replaceBalance($hashref);
     };
     
     $self->{frame}->new_ttk__button(-text => 'add balance', 
@@ -104,7 +103,7 @@ sub addModelListeners {
     my $c = sub {
         $self->onSave(@_);
     };
-    $self->{model}->addListener("saveBalance", $c);
+    &Messages::addListener("saveBalance", $c);
 }
 
 

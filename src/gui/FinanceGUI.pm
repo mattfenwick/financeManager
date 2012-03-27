@@ -1,7 +1,6 @@
 use strict;
 use warnings;
 
-
 package FinanceGUI;
 use LabelEntry;    
 use Data::Dumper;
@@ -11,12 +10,15 @@ use AddTransaction;
 use EditTransaction;
 use Balances;
 
+use lib '../model';
+use Service;
+
+
 
 sub new {
-    my ($class, $model) = @_;
+    my ($class) = @_;
     my $self = {
-        gui => Tkx::widget->new("."),
-        model => $model,
+        gui => Tkx::widget->new(".")
     };
     bless($self, $class);
     my $gui = $self->{gui};
@@ -82,7 +84,7 @@ sub makeMenu {
 
 sub displayVersion {
     my ($self) = @_;
-    my $version = $self->{model}->getVersion();
+    my $version = &Service::getVersion();
     my $message = "This is version $version of FinanceManager, developed by Matt Fenwick";
     Tkx::tk___messageBox(-message => $message);
 }
@@ -90,7 +92,7 @@ sub displayVersion {
 
 sub displayWebsite {
     my ($self) = @_;
-    my $add = $self->{model}->getWebAddress();
+    my $add = &Service::getWebAddress();
     Tkx::tk___messageBox(-message => "Please visit us at:  " . $add);
 }
 
@@ -115,21 +117,21 @@ sub makeNotebook {
 
 sub makeAddFrame {
     my ($self, $parent) = @_;
-    my $addFrame = AddTransaction->new($parent, $self->{model});
+    my $addFrame = AddTransaction->new($parent);
     $addFrame->g_grid();
 }
 
 
 sub makeEditFrame {
     my ($self, $parent) = @_;
-    my $editFrame = EditTransaction->new($parent, $self->{model});
+    my $editFrame = EditTransaction->new($parent);
     $editFrame->g_grid();
 }
 
 
 sub makeBalanceFrame {
     my ($self, $parent) = @_;
-    my $balFrame = Balances->new($parent, $self->{model});
+    my $balFrame = Balances->new($parent);
     $balFrame->g_grid();
 }
 
@@ -142,7 +144,7 @@ sub viewReports {
     $top->g_wm_title("View Reports");
     $top->g_grid_columnconfigure(0, -weight => 1);
     $top->g_grid_rowconfigure(0, -weight => 1);
-    my $reportWindow = Reports->new($top, $self->{model});
+    my $reportWindow = Reports->new($top);
     $reportWindow->g_grid(-sticky => 'nsew');
 }
 

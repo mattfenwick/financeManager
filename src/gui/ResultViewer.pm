@@ -13,6 +13,7 @@ use parent qw/WidgetBase/;
 #    addScrollBar (self)
 #    clearResults (self)
 #    sortResults (self)
+#    addRows (self, @rows)
 
 my $DEFAULT_COLOR = "green";
 
@@ -105,8 +106,10 @@ sub setupWidgets {
     $self->{frame}->g_grid_columnconfigure(1, -weight => 1);
     $self->{frame}->g_grid_rowconfigure(0, -weight => 1);
     
-    my $xscroll = $self->{frame}->new_ttk__scrollbar(-orient => 'horizontal', 
-            -command => [$tree, 'xview']);
+    my $xscroll = $self->{frame}->new_ttk__scrollbar(
+        -orient => 'horizontal', 
+        -command => [$tree, 'xview']
+    );
     $tree->configure(-xscrollcommand => [$xscroll, 'set']);
     $xscroll->g_grid(-row => 1, -column => 1, -sticky => 'ew');
     
@@ -124,10 +127,9 @@ sub sortResults {
     my ($self, $column) = @_;
 #    my @headings = @{$self->{headings}};
     my @rows = @{$self->{rows}};
-    my @sorted = sort 
-        {
-            abs($b->[$column]) <=> abs($a->[$column])
-            || uc($b->[$column]) cmp uc($a->[$column])
+    my @sorted = sort {
+            abs($b->[$column]) <=> abs($a->[$column]) ||
+            uc($b->[$column]) cmp uc($a->[$column])
         } 
         @rows;
 #    $self->displayResults([@headings], [@sorted]);
