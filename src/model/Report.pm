@@ -41,7 +41,33 @@ sub new {
 		rows => $rows
 	};
 	bless($self, $class);
+	# throw an exception if it's ill-formed
+	$self->_validate();
 	return $self;
+}
+
+
+sub _validate {
+	# check for two things:
+	#   1. each row has a value for each of the columns
+	#   2. there are no "extra" keys in any of the rows
+	my ($self) = @_;
+	my @headings = @{$self->{headings}};
+	my @rows = @{$self->{rows}};
+	my $numCols = scalar(@headings);
+	my $i = 0;
+	for my $row (@rows) {
+		my $rowLen = scalar(keys %$row);
+		if($rowLen != $numCols) {
+			die "row has invalid number of columns.  wanted <$numCols>, got <$rowLen>";
+		}
+		for my $head (@headings) {
+			if(!exists($row->{$head})) { # it's okay to have NULLs -- as long as they're explicitly null
+				die "row <$i> missing column <$head>";
+			}
+		}
+		$i++;
+	}
 }
 
 
@@ -65,11 +91,10 @@ sub getAvailableReports {
 }
 
 
-sub getReport { # originally had planned for something like (query => 'viewComments', month => '11') ... but it's not used
-    my ($options) = @_;
-    INFO("report requesting with options: " . Dumper($options) );
-    my %options = %$options;
-    my $statement = $queries{$options{query}} || die "no query found";
+sub getReport {
+    my ($reportName) = @_;
+    INFO("report <$reportName> requested");
+    my $statement = $queries{$reportName} || die "no query found";
     my $sth = $dbh->prepare($statement);
     $sth->execute();
     my @headings = @{$sth->{NAME_lc}};

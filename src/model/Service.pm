@@ -36,13 +36,7 @@ sub updateTransaction {
 }
 
 
-sub saveBalance {
-    my $bal = Balance->new(@_);
-    &Balance::replace($bal);
-}
-
-
-sub updateBalance {
+sub replaceBalance {
     my $bal = Balance->new(@_);
     &Balance::replace($bal);
 }
