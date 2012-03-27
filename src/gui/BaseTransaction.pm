@@ -2,18 +2,18 @@ use strict;
 use warnings;
 
 package BaseTransaction;
+use parent qw/WidgetBase/;
 use ComboBox;
 use CheckBox;
-use parent qw/WidgetBase/;
 
-my $currentYear = 2011;
+use lib '../model';
+use Service;
 
 
 sub new {
-    my ($class, $parent, $model) = @_;
+    my ($class, $parent) = @_;
     my $self = $class->SUPER::new($parent);
     my $frame = $self->{frame};
-    $self->{model} = $model;
     
     my %info = (text => 'amount',         
         validator => sub { die "bad amount: $_[0]" 
@@ -25,28 +25,28 @@ sub new {
     $self->{amount}->g_grid();
 
     $self->{comment} = ComboBox->new($frame, 'comment', 0,
-        $self->{model}->getComments(), 0);
+        &Service::getComments(), 0);
     $self->{comment}->g_grid();
     
     $self->{year} = ComboBox->new($frame, 'year', 0,
-        $self->{model}->getYears(), 0);
-    $self->{year}->setSelected($currentYear);
+        &Service::getYears(), 0);
+    $self->{year}->setSelected(&Service::getCurrentYear());
     $self->{year}->g_grid();
     
     $self->{month} = ComboBox->new($frame, 'month', 1,
-        $self->{model}->getMonths(), 0);
+        &Service::getMonths(), 0);
     $self->{month}->g_grid();
     
     $self->{day} = ComboBox->new($frame, 'day', 1,
-        $self->{model}->getDays(), 1);
+        &Service::getDays(), 1);
     $self->{day}->g_grid();
     
     $self->{account} = ComboBox->new($frame, 'account', 1,
-        $self->{model}->getAccounts(), 0);
+        &Service::getAccounts(), 0);
     $self->{account}->g_grid();
     
     $self->{type} = ComboBox->new($frame, 'transaction type', 1,
-        $self->{model}->getTransactionTypes(), 0);
+        &Service::getTransactionTypes(), 0);
     $self->{type}->g_grid();
     
     $self->{isReceipt} = 0;

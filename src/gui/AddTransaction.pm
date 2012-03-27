@@ -4,10 +4,14 @@ use warnings;
 package AddTransaction;
 use parent qw/BaseTransaction/;
 
+use lib '../model';
+use Service;
+use Messages;
+
 
 sub new {
-    my ($class, $parent, $model) = @_;
-    my $self = $class->SUPER::new($parent, $model);
+    my ($class, $parent) = @_;
+    my $self = $class->SUPER::new($parent);
     
     return $self;
 }
@@ -18,7 +22,7 @@ sub createButton {
         
     my $saver = sub {
         my $hashref = $self->getValues();
-        $self->{model}->addTransaction($hashref);
+        &Service::saveTransaction($hashref);
     };
     
     $self->{frame}->new_ttk__button(-text => 'save transaction', 
@@ -33,7 +37,7 @@ sub onSave {
     my ($self, $status) = @_;
     if($status eq "success") {          
         Tkx::tk___messageBox(-message => "Transaction successfully added!");
-        $self->{comment}->setValues($self->{model}->getComments());
+        $self->{comment}->setValues(&Service::getComments());
         $self->resetColors();
     } elsif($status eq "failure") {
         Tkx::tk___messageBox(-message => "Transaction could not be added -- please try again." . 
@@ -49,7 +53,7 @@ sub addModelListeners {
     my $callback = sub {
     	$self->onSave(@_);
     };
-    $self->{model}->addListener("saveTrans", $callback);
+    &Messages::addListener("saveTrans", $callback);
 }
 
 1;
