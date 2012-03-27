@@ -1,10 +1,12 @@
-
 use strict;
 use warnings;
-use lib '.';
 
-use testModelDb;
-use testme;
+use Test::More;
+
+use TestIntegration;
+
+use TestMessages;
+use TestReport;
 
 
 &done_testing();
