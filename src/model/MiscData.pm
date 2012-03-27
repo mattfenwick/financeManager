@@ -7,8 +7,11 @@ use Log::Log4perl qw(:easy);
 
 my @days = (0 .. 31); # include 0 as an "unknown" value
 
-my $webAddress = "https://github.com/mattfenwick/financeManager";
-my $version = "1.1.0";
+my %scalars = (
+    webAddress   => "https://github.com/mattfenwick/financeManager",
+    version      => "1.1.0",
+    currentYear  => 2012
+);
 
 ###################################################
 
@@ -24,56 +27,22 @@ sub setDbh {
 
 ###################################################
 
-sub getWebAddress {
-    return $webAddress;
-}
-
-
-sub getVersion {
-    return $version;
-}
-
-
-sub getMonths {
-    return [&getColumn('months')];
-}
-
-
-sub getYears {
-    return [&getColumn('years')];
-}
-
-
-sub getDays {
-    return [@days];
-}
-
-
-sub getAccounts {
-    return [&getColumn('accounts')];
-}
-
-
-sub getTransactionTypes {
-    return [&getColumn('types')];
-}
-
-
-sub getComments {
-    my @comments = &getColumn('comments');
-    return [sort {lc $a cmp lc $b} @comments];
-}
-
-
-sub getIDs {
-    my @ids = &getColumn('ids');
-    return [sort {$a <=> $b} @ids];
+sub getScalar {
+	my ($key) = @_;
+	if(!defined($scalars{$key})) {
+		die "unrecognized key: <$key>";
+	} else {
+		return $scalars{$key};
+	}
 }
 
 
 sub getColumn {
     my ($name) = @_;
     INFO("fetching column <$name>");
+    if($name eq "days") {
+    	return [@days]; # TODO get rid of special case
+    }
     my %tableFinder = (
         'ids'         =>     ['id',          'transactions'],
         'comments'    =>     ['comment',     'p_commentcounts'],

@@ -2,11 +2,14 @@ use strict;
 use warnings;
 
 package Service;
-use Balance;
-use Report;
 use Transaction;
+use Balance;
 use MiscData;
+use Report;
 
+
+####################################################
+# domain objects
 
 sub saveTransaction {
 	my $trans = Transaction->new(@_);
@@ -50,18 +53,70 @@ sub getBalance {
 }
 
 
-sub getColumn {
-	my ($columnName) = @_;
-	if($columnName eq "availableReports") {
-		return &Report::getAvailableReports();
-	} else {
-		return &MiscData::getColumn($columnName);
-	}
+sub getReport {
+	return &Report::getReport(@_);
 }
 
 
-sub getReport {
-	return &Report::getReport(@_);
+###########################################################
+# "columns"
+
+sub getMonths {
+    return [&MiscData::getColumn('months')];
+}
+
+
+sub getYears {
+    return [&MiscData::getColumn('years')];
+}
+
+
+sub getDays {
+    return [&MiscData::getColumns('days')];
+}
+
+
+sub getAccounts {
+    return [&MiscData::getColumn('accounts')];
+}
+
+
+sub getTransactionTypes {
+    return [&MiscData::getColumn('types')];
+}
+
+
+sub getComments {
+    my @comments = &MiscData::getColumn('comments');
+    return [sort {lc $a cmp lc $b} @comments];
+}
+
+
+sub getIDs {
+    my @ids = &MiscData::getColumn('ids');
+    return [sort {$a <=> $b} @ids];
+}
+
+
+sub getAvailableReports {
+	return &Report::getAvailableReports();
+}
+
+######################################################
+# scalars
+
+sub getWebAddress {
+    return &MiscData::getScalar('webAddress');
+}
+
+
+sub getVersion {
+    return &MiscData::getScalar('version');
+}
+
+
+sub getCurrentYear {
+    return &MiscData::getScalar('currentYear');
 }
 
 
