@@ -1,12 +1,14 @@
 use strict;
 use warnings;
 
+package TestIntegration;
+
 use Test::More;
 use lib '../src/gui';
 use lib '../src/model';
 
 
-subtest 'Module imports' => sub {
+sub runTests {
 
     BEGIN { use_ok('AddTransaction'); }
     BEGIN { use_ok('Balances'); }
