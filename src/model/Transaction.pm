@@ -24,9 +24,27 @@ sub setDbh {
 
 sub new {
 	my ($class, $self) = @_;
-	&validate($self);
 	bless($self, $class);
+	$self->_validate();
 	return $self;
+}
+
+
+sub _validate {
+    my ($self) = @_;
+    my $date = $self->{date};
+    die "bad date: <$date>" unless $date =~ /^\d+-\d+-\d+$/;
+    die "missing comment" unless defined($self->{comment}); # TODO does this work if the user enters nothing?
+    my $amount = $self->{amount};
+      # a $ amount is at least 1 digit,
+      #    followed by an optional decimal and up to 0-2 digits 
+    die "bad amount: $amount" unless $amount =~ /^\d+(?:\.\d{0,2})?$/;
+    
+    # TODO actually check these are valid
+    die "missing type"               unless defined($self->{type});
+    die "missing account"            unless defined($self->{account});
+    die "missing isReceiptConfirmed" unless defined($self->{isReceiptConfirmed});
+    die "missing isBankConfirmed"    unless defined($self->{isBankConfirmed});
 }
 
 ###############################################################

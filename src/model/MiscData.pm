@@ -8,9 +8,18 @@ use Log::Log4perl qw(:easy);
 my @days = (0 .. 31); # include 0 as an "unknown" value
 
 my %scalars = (
-    webAddress   => "https://github.com/mattfenwick/financeManager",
-    version      => "1.1.0",
-    currentYear  => 2012
+    webAddress   =>   "https://github.com/mattfenwick/financeManager",
+    version      =>   "1.1.0",
+    currentYear  =>   2012
+);
+
+my %tableFinder = (
+    'ids'         =>     ['id',          'transactions'     ],
+    'comments'    =>     ['comment',     'p_commentcounts'  ],
+    'types'       =>     ['description', 'transactiontypes' ],
+    'accounts'    =>     ['name',        'myaccounts'       ],
+    'years'       =>     ['id',          'years'            ],
+    'months'      =>     ['id',          'months'           ]
 );
 
 ###################################################
@@ -23,6 +32,18 @@ sub setDbh {
         die "dbh already set: <$dbh>";
     }
     $dbh = $newDbh;
+}
+
+
+###################################################
+
+sub getColumnNames {
+    return (keys %tableFinder);
+}
+
+
+sub getScalarNames {
+    return (keys %scalars);
 }
 
 ###################################################
@@ -43,14 +64,6 @@ sub getColumn {
     if($name eq "days") {
     	return [@days]; # TODO get rid of special case
     }
-    my %tableFinder = (
-        'ids'         =>     ['id',          'transactions'],
-        'comments'    =>     ['comment',     'p_commentcounts'],
-        'types'       =>     ['description', 'transactiontypes'],
-        'accounts'    =>     ['name',        'myaccounts'],
-        'years'       =>     ['id',          'years'],
-        'months'      =>     ['id',          'months']
-    );
     my $entry = $tableFinder{$name} || die "no table found for column $name";
     my ($column, $table) = @$entry;
     my $sth = $dbh->prepare("select $column from $table");
