@@ -48,26 +48,22 @@ sub new {
 
 
 sub _validate {
-	# check for two things:
-	#   1. each row has a value for each of the columns
-	#   2. there are no "extra" keys in any of the rows
+	# check for:
+	#   1. each row has same length as number of columns -- no extras!
 	my ($self) = @_;
 	my @headings = @{$self->{headings}};
 	my @rows = @{$self->{rows}};
 	my $numCols = scalar(@headings);
 	my $i = 0;
 	for my $row (@rows) {
-		my $rowLen = scalar(keys %$row);
+		my $rowLen = scalar(@$row);
 		if($rowLen != $numCols) {
-			die "row has invalid number of columns.  wanted <$numCols>, got <$rowLen>";
-		}
-		for my $head (@headings) {
-			if(!exists($row->{$head})) { # it's okay to have NULLs -- as long as they're explicitly null
-				die "row <$i> missing column <$head>";
-			}
+			ERROR("found report row with invalid length (<$numCols>, <$rowLen>");
+			die "row <$i> has invalid number of columns.  wanted <$numCols>, got <$rowLen>";
 		}
 		$i++;
 	}
+	INFO("validated report with <$i> rows");
 }
 
 

@@ -12,11 +12,11 @@ use Messages;
 my $dbh;
 
 sub setDbh {
-	my ($newDbh) = @_;
-	if($dbh) {
-		die "dbh already set: <$dbh>";
-	}
-	$dbh = $newDbh;
+    my ($newDbh) = @_;
+    if($dbh) {
+        die "dbh already set: <$dbh>";
+    }
+    $dbh = $newDbh;
 }
 
 ######################################################
@@ -24,9 +24,26 @@ sub setDbh {
 
 sub new {
     my ($class, $self) = @_;
-    $self->validate();
     bless($self, $class);
+    $self->_validate();
     return $self;
+}
+
+
+sub _validate {
+    my ($self) = @_;
+    my $year = $self->{year};
+    die "bad year <$year>" unless $year =~ /^\d{4}$/;
+    my $day = $self->{day};
+    die "bad day <$day>" unless $day =~ /^\d{1,2}$/;
+    die "bad day <$day>" unless ($day < 32 && $day >= 0);
+    my $month = $self->{month};
+    die "bad month <$month>" unless $month =~ /^\d{1,2}$/;
+    die "bad month <$month>" unless ($month < 13 && $month > 0);
+        # a $ amount is an optional '-' sign followed by at least 1 digit,
+        #        followed by an optional decimal and up to 0-2 digits 
+    my $amount = $self->{amount};
+    die "bad amount <$amount>" unless $amount =~ /^-?\d+(?:\.\d{0,2})?$/;
 }
 
 
