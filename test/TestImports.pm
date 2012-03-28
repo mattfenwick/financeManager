@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-package TestIntegration;
+package TestImports;
 
 use Test::More;
 use lib '../src/gui';

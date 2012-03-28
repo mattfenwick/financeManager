@@ -13,20 +13,31 @@ BEGIN {
     });
 }
 
-#use TestIntegration; # runs at compile time ???
+#use TestImports; # runs at compile time ???
 use TestMessages;
+use TestDatabase;
 use TestReport;
 use TestBalance;
+use TestTransaction;
+use TestMiscData;
+use TestService;
+use TestModelListeners;
 
 
 try {
-#    &TestMessages::runTests();
+    &TestDatabase::runTests();
+} catch {
+    ERROR("uncaught error from TestDatabase suite: $_");
+};
+
+try {
+    &TestMessages::runTests();
 } catch {
 	ERROR("uncaught error from TestMessages suite: $_");
 };
 
 try {
-#    &TestReport::runTests();
+    &TestReport::runTests();
 } catch {
     ERROR("uncaught error from TestReport suite: $_");
 };
@@ -35,6 +46,30 @@ try {
     &TestBalance::runTests();
 } catch {
     ERROR("uncaught error from TestBalance suite: $_");
+};
+
+try {
+    &TestTransaction::runTests();
+} catch {
+    ERROR("uncaught error from TestTransaction suite: $_");
+};
+
+try {
+    &TestMiscData::runTests();
+} catch {
+    ERROR("uncaught error from TestMiscData suite: $_");
+};
+
+try {
+    &TestService::runTests();
+} catch {
+    ERROR("uncaught error from TestService suite: $_");
+};
+
+try {
+    &TestModelListeners::runTests();
+} catch {
+    ERROR("uncaught error from TestModelListeners suite: $_");
 };
 
 &done_testing();

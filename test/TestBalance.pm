@@ -10,6 +10,9 @@ use Try::Tiny;
 use lib '../src/model';
 use Balance;
 
+use lib '../src/database';
+use Database;
+
 
 sub runTests {
 
@@ -79,17 +82,17 @@ sub runTests {
         };
     };
     
-    subtest 'database methods' => sub {
-        my $success = 0;
+    subtest 'database methods' => sub {    
         try {
+            &Balance::setDbh(&Database::getDBConnection());
 	        my $bal = Balance->new({
 	            year   => 2007,
 	            month  => 8,
-	            account => "checking",
+	            account => "Checking",
 	            amount => -18.11
 	        });
-	        &Balance->replace($bal);
-	        my $loadedBal = &Balance->get(8, 2007, "checking");
+	        &Balance::replace($bal);
+	        my $loadedBal = &Balance::get(8, 2007, "Checking");
 	        is($bal->{amount},  $loadedBal->{amount},  "correct amount");
             is($bal->{year},    $loadedBal->{year},    "correct year");
             is($bal->{month},   $loadedBal->{month},   "correct month");
