@@ -31,7 +31,7 @@ INFO("initializing database connection");
 
 my $dbh;
 try {
-    $dbh = Database::getDBConnection();
+    $dbh = &Database::getDBConnection();
 } catch {
     FATAL("failed to connect to database: $_");
     Tkx::tk___messageBox(-message => "fatal error: $_");
@@ -43,10 +43,10 @@ INFO("initializing model");
 
 my $model;
 try {
-    &Transaction->setDbh($dbh);
-    &Balance->setDbh($dbh);
-    &MiscData->setDbh($dbh);
-    &Report->setDbh($dbh);
+    &Transaction::setDbh($dbh);
+    &Balance::setDbh($dbh);
+    &MiscData::setDbh($dbh);
+    &Report::setDbh($dbh);
 } catch {
     FATAL("failed to initialize model: $_");
     Tkx::tk___messageBox(-message => "fatal error: $_");

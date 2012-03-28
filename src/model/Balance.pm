@@ -34,9 +34,8 @@ sub _validate {
     my ($self) = @_;
     my $year = $self->{year};
     die "bad year <$year>" unless $year =~ /^\d{4}$/;
-    my $day = $self->{day};
-    die "bad day <$day>" unless $day =~ /^\d{1,2}$/;
-    die "bad day <$day>" unless ($day < 32 && $day >= 0);
+    # TODO just assume account is okay, or actually check it?
+    die "bad account" unless $self->{account};
     my $month = $self->{month};
     die "bad month <$month>" unless $month =~ /^\d{1,2}$/;
     die "bad month <$month>" unless ($month < 13 && $month > 0);
@@ -59,7 +58,12 @@ sub replace { # follows the MySQL meaning of replace:
                 (monthid, yearid, amount, account)
                 values(?, ?, ?, ?)', undef,
                 $fields{month}, $fields{year}, $fields{amount}, $fields{account});
-    # TODO what does this return?  3 modes: failure, new row, overwrite existing row with new values.   return codes ???
+    # TODO what does $dbh->do return?  
+    #   3 modes: 
+    #     failure, 
+    #     new row, 
+    #     overwrite existing row with new values.   
+    #   return codes ???
     if($result == 1) {
         INFO("save balance succeeded, result:  <$result>");
         &Messages::notify("saveBalance", "success");
