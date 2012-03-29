@@ -78,6 +78,27 @@ sub runTests {
             ok(0, "invalid event: $_");
         };
     };
+    
+    subtest 'transaction listeners' => sub {
+        my %del = (success => 0, failure => 0);
+        my $del = sub {
+            my ($status, @args) = @_;
+            if($status eq "failure") {
+                $del{success}++;
+            } elsif ($status eq "success") {
+                $del{failure}++;
+            } else {
+                fail("invalid status: <$status>");
+            }
+        };
+        &Messages::addListener("deleteTransaction", $del);
+        &Messages::notify("deleteTransaction", "failure");
+        is(0, $del{success});
+        is(1, $del{failure});
+        &Messages::notify("deleteTransaction", "success");
+        is(1, $del{success});
+        is(1, $del{failure});
+    };
 }
 
 1;
