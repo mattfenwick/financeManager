@@ -5,6 +5,7 @@ package Balance;
 use Data::Dumper;
 use Log::Log4perl qw(:easy);
 use Messages;
+use MiscData;
 
 
 #####################################################
@@ -34,8 +35,11 @@ sub _validate {
     my ($self) = @_;
     my $year = $self->{year};
     die "bad year <$year>" unless $year =~ /^\d{4}$/;
-    # TODO just assume account is okay, or actually check it?
-    die "bad account" unless $self->{account};
+    
+    my $account = $self->{account};
+    die "bad account: <$account>" unless 
+        &_inArray($account, &MiscData::getColumn('accounts'));
+    
     my $month = $self->{month};
     die "bad month <$month>" unless $month =~ /^\d{1,2}$/;
     die "bad month <$month>" unless ($month < 13 && $month > 0);
@@ -43,6 +47,16 @@ sub _validate {
         #        followed by an optional decimal and up to 0-2 digits 
     my $amount = $self->{amount};
     die "bad amount <$amount>" unless $amount =~ /^-?\d+(?:\.\d{0,2})?$/;
+}
+
+sub _inArray {
+    my ($elem, @arr) = @_;
+    for my $e (@arr) {
+        if($e eq $elem) {
+            return 1;
+        }
+    }
+    return 0;
 }
 
 
@@ -78,14 +92,19 @@ sub get { # returns Balance, or false if no match found
     my ($month, $year, $account) = @_;
     INFO("fetching end of month balance: " . Dumper(\@_) );
     my $statement = '
-        select * from endofmonthbalances
+        select amount from endofmonthbalances
             where monthid = ? and yearid = ? and account = ?';
     my $sth = $dbh->prepare($statement);
     $sth->execute($month, $year, $account);
     my $result = $sth->fetchrow_hashref();
     if ($result) {
         INFO("end of month balance found: $result->{amount}");
-        return Balance->new($result);    
+        return Balance->new({
+            month => $month,
+            year => $year,
+            account => $account,
+            amount => $result->{amount}
+        });    
     } else {
         INFO("no end of month balance found");
         return undef;

@@ -9,7 +9,7 @@ my @days = (0 .. 31); # include 0 as an "unknown" value
 
 my %scalars = (
     webAddress   =>   "https://github.com/mattfenwick/financeManager",
-    version      =>   "1.1.0",
+    version      =>   "1.2.0",
     currentYear  =>   2012
 );
 

@@ -6,70 +6,71 @@ use Log::Log4perl qw(:easy);
 use Data::Dumper;
 
 
-my %listeners = ();
+my %listenerIds = ();
 
-my %categories = (
-    'transaction' => 1,
-    'balance' => 1
+my %listeners = (
+    'saveTransaction'   => {},
+    'updateTransaction' => {},
+    'deleteTransaction' => {},
+    'saveBalance'       => {}
 );
 
-my %subcategories = (
-    'save' => 1,
-    'update' => 1,
-    'delete' => 1
-);
-
-my %statuses = (
-    'success' => 1,
-    'failure' => 1
-);
+my $currentId = 1;
 
 
 sub addListener {
-    my ($code) = @_;
+    my ($event, $code) = @_;
     if(ref($code) ne "CODE") {
         my $message = "need code reference (got <" . ref($code) . ">)";
         ERROR($message);
         die $message;
     }
-    # generate and return listener identifier
-    my $listenerid = scalar(keys %listeners) + 1;
-    $listeners{$listenerid} = $code; 
-    return $listenerid;
+    if(!exists($listeners{$event})) {
+        ERROR("bad event type <$event>");
+        die "bad event type <$event>";
+    }
+    # generate listener id
+    my $id = $currentId;
+    $currentId++;
+    # save coderef under appropriate event
+    $listeners{$event}->{$id} = $code; 
+    # save id
+    $listenerIds{$id} = $event;
+    return $id;
 }
 
 
 sub removeListener {
-    my ($listenerid) = @_;
-    my $l = $listeners{$listenerid};
-    if(ref($l) eq "CODE") {
-        delete $listeners{$listenerid};
-    } else {
-        die "listener <$listenerid> is not registered";
+    my ($id) = @_;
+    my $event = $listenerIds{$id};
+    if(!defined($event)) {
+        die "bad id <$id>";
     }
+    # get the right hash
+    my $ls = $listeners{$event};
+    # sanity check -- this should never happen
+    if(!defined($ls->{$id})) {
+        die "can't find id in listeners";
+    }
+    # remove the listener
+    delete $ls->{$id};
+    # remove the id, too (is this necessary???)
+    delete $listenerIds{$id};
 }
 
 
 # parameters:
-#   1. hashref of event info.  required keys: 'category', 'subcategory', 'status'
+#   1. event type
 #   2. rest args -- these will be passed in order to each listener
 sub notify {
     my ($event, @rest) = @_;
-    my $category = $event->{category};
-    my $subcategory = $event->{subcategory};
-    my $status = $event->{status};
-    if(!defined($categories{$category})) {
-        die "bad event category: <$category>";
+    if(!defined($listeners{$event})) {
+        die "bad event <$event>";
     }
-    if(!defined($subcategories{$subcategory})) {
-        die "bad event subcategory: <$subcategory>";
-    }
-    if(!defined($statuses{$status})) {
-        die "bad event status: <$status>";
-    }
-    INFO("notifying " . scalar(keys %listeners) . " listeners of event " . 
-        Dumper($event) . " with args <@rest>");
-    for my $l (values %listeners) {
+    my $ls = $listeners{$event};
+    INFO("notifying " . scalar(keys %$ls) . " listeners of event <$event>" . 
+        " with args <@rest>");
+    for my $l (values %$ls) {
         $l->(@rest);
         INFO("listener succeeded");
     }

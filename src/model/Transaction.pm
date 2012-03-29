@@ -5,6 +5,7 @@ package Transaction;
 use Data::Dumper;
 use Log::Log4perl qw(:easy);
 use Messages;
+use MiscData;
 
 
 ###############################################################
@@ -41,10 +42,22 @@ sub _validate {
     die "bad amount: $amount" unless $amount =~ /^\d+(?:\.\d{0,2})?$/;
     
     # TODO actually check these are valid
-    die "missing type"               unless defined($self->{type});
-    die "missing account"            unless defined($self->{account});
-    die "missing isReceiptConfirmed" unless defined($self->{isReceiptConfirmed});
-    die "missing isBankConfirmed"    unless defined($self->{isBankConfirmed});
+    die "missing type"               unless  
+        &_inArray($self->{type}, &MiscData::getColumn('types'));
+    die "missing account"            unless  
+        &_inArray($self->{account}, &MiscData::getColumn('accounts'));
+    die "missing isReceiptConfirmed" unless  defined($self->{isReceiptConfirmed});
+    die "missing isBankConfirmed"    unless  defined($self->{isBankConfirmed});
+}
+
+sub _inArray {
+    my ($elem, @arr) = @_;
+    for my $e (@arr) {
+        if($e eq $elem) {
+            return 1;
+        }
+    }
+    return 0;
 }
 
 ###############################################################
