@@ -97,8 +97,8 @@ sub runTests {
 	        &Transaction::update($loadedTrans);
 	        &Transaction::delete(14); # TODO ??? how do I get the id ???
         } catch {
-            ERROR("failed to save and load balance: $_");
-            ok(0, "failed to save and load balance");
+            ERROR("failed to save and load transaction: $_");
+            ok(0, "failed to save and load transaction");
         };
     };
 }

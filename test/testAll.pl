@@ -13,7 +13,7 @@ BEGIN {
     });
 }
 
-#use TestImports; # runs at compile time ???
+use TestImports; # runs at compile time ???
 use TestMessages;
 use TestDatabase;
 use TestReport;
@@ -22,13 +22,6 @@ use TestTransaction;
 use TestMiscData;
 use TestService;
 use TestModelListeners;
-
-
-try {
-    &TestDatabase::runTests();
-} catch {
-    ERROR("uncaught error from TestDatabase suite: $_");
-};
 
 try {
     &TestMessages::runTests();
@@ -70,6 +63,12 @@ try {
     &TestModelListeners::runTests();
 } catch {
     ERROR("uncaught error from TestModelListeners suite: $_");
+};
+
+try {
+    &TestDatabase::runTests();
+} catch {
+    ERROR("uncaught error from TestDatabase suite: $_");
 };
 
 &done_testing();
