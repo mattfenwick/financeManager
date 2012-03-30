@@ -39,16 +39,13 @@ try {
 };
 
 
-INFO("initializing model");
+INFO("initializing service layer and model");
 
-my $model;
+my $service;
 try {
-    &Transaction::setDbh($dbh);
-    &Balance::setDbh($dbh);
-    &MiscData::setDbh($dbh);
-    &Report::setDbh($dbh);
+    $service = Service->new($dbh);
 } catch {
-    FATAL("failed to initialize model: $_");
+    FATAL("failed to initialize service layer and model: $_");
     Tkx::tk___messageBox(-message => "fatal error: $_");
     die $_;
 };
@@ -58,7 +55,7 @@ INFO("initializing GUI");
 
 my $gui;
 try {
-    $gui = FinanceGUI->new();
+    $gui = FinanceGUI->new($service);
 } catch {
     FATAL("failed to initialize gui: $_");
     Tkx::tk___messageBox(-message => "fatal error: $_");    
