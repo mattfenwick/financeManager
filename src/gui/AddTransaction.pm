@@ -34,15 +34,15 @@ sub createButton {
 #### subscribe to model events
 
 sub onSave {
-    my ($self, $status) = @_;
+    my ($self, $status, $message) = @_;
     if($status eq "success") {          
         Tkx::tk___messageBox(-message => "Transaction successfully added!");
         $self->{comment}->setValues(&Service::getComments());
         $self->resetColors();
     } elsif($status eq "failure") {
-        Tkx::tk___messageBox(-message => "Transaction could not be added -- please try again." . 
-            "If the problem persists, please notify the maintainers.");
+        Tkx::tk___messageBox(-message => "Transaction could not be added: $message"); 
     } else {
+        ERROR("invalid status: <$status>");
         die "invalid status: <$status>";
     }
 };
@@ -53,7 +53,7 @@ sub addModelListeners {
     my $callback = sub {
     	$self->onSave(@_);
     };
-    &Messages::addListener("saveTrans", $callback);
+    &Messages::addListener("saveTransaction", $callback);
 }
 
 1;

@@ -86,7 +86,7 @@ sub setValues {
 #### subscribing to model events
 
 sub onDelete {
-    my ($self, $status) = @_;
+    my ($self, $status, $message) = @_;
     if($status eq "success") {
         Tkx::tk___messageBox(-message => "Transaction successfully deleted!");      
         $self->{selector}->setValues(&Service::getIDs);
@@ -94,24 +94,24 @@ sub onDelete {
         $self->setValues($self->{selector}->getSelected()); # and set widgets
         $self->resetColors();                               # reset widget colors
     } elsif($status eq "failure") {
-        Tkx::tk___messageBox(-message => "Transaction could not be deleted -- please try again." . 
-            "If the problem persists, please notify the maintainers.");
+        Tkx::tk___messageBox(-message => "Transaction could not be deleted: $message");
     } else {
+        ERROR("invalid status: <$status>");
         die "invalid status: <$status>";
     }
 }
 
 
 sub onEdit {
-    my ($self, $status) = @_;
+    my ($self, $status, $message) = @_;
     if($status eq "success") {
         Tkx::tk___messageBox(-message => "Transaction successfully updated!");
         $self->{comment}->setValues(&Service::getComments());
         $self->resetColors();
     } elsif($status eq "failure") {
-        Tkx::tk___messageBox(-message => "Transaction could not be updated -- please try again." . 
-            "If the problem persists, please notify the maintainers.");
+        Tkx::tk___messageBox(-message => "Transaction could not be updated: $message");
     } else {
+        ERROR("invalid status: <$status>");
         die "invalid status: <$status>";
     }
 }
@@ -125,6 +125,7 @@ sub onNewIds {
     } elsif($status eq "failure") {
         # no change in ids -> nothing to do
     } else {
+        ERROR("invalid status: <$status>");
         die "invalid status: <$status>";
     }
 }
@@ -135,17 +136,17 @@ sub addModelListeners {
     my $edit = sub {
         $self->onEdit(@_);
     };
-    &Messages::addListener("editTrans", $edit);
+    &Messages::addListener("editTransaction", $edit);
     
     my $del = sub {
         $self->onDelete(@_);
     };
-    &Messages::addListener("deleteTrans", $del);
+    &Messages::addListener("deleteTransaction", $del);
     
     my $newIds = sub {
     	$self->onNewIds(@_);
     };
-    &Messages::addListener("saveTrans", $newIds);
+    &Messages::addListener("saveTransaction", $newIds);
 }
 
 

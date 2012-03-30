@@ -70,8 +70,9 @@ sub getValues {
     my %hash = (
         amount  =>  $self->{amount}->getText(),
         account =>  $self->{account}->getSelected(),
-        date    =>  join('-', $self->{year}->getSelected(), 
-                        $self->{month}->getSelected(), $self->{day}->getSelected()), 
+        year    =>  $self->{year}->getSelected(), 
+        month   =>  $self->{month}->getSelected(), 
+        day     =>  $self->{day}->getSelected(), 
         comment =>  $self->{comment}->getSelected(),
         bank    =>  $self->{isBankConfirmed}->isChecked(),
         receipt =>  $self->{isReceipt}->isChecked(),
