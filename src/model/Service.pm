@@ -6,35 +6,70 @@ use Transaction;
 use Balance;
 use MiscData;
 use Report;
+use Messages;
 
 
 ####################################################
 # domain objects
 
+##### transactions
+
 sub saveTransaction {
-	my $trans = Transaction->new(@_);
-	&Transaction::save($trans);
+    INFO("saving transaction:  args are " . Dumper(\@_) );
+    my $trans = Transaction->new(@_);
+    my $result = &Transaction::save($trans);
+    if($result == 1) {
+        INFO("save transaction succeeded, result:  <$result>");
+        &Messages::notify("saveTransaction", "success");
+    } else {
+        ERROR("save transaction failed, result: <$result>");
+        &Messages::notify("saveTransaction", "failure", $result);
+    }
 }
 
 
 sub getTransaction {
-	my ($id) = @_;
-	my $trans = &Transaction::get($id);
-	return $trans;
+    my ($id) = @_;
+    INFO("attempting to fetch transaction of id <$id>");
+    my $trans = &Transaction::get($id);
+    if($trans) {
+        INFO("transaction result: " . Dumper($trans) );
+    } else {
+        INFO("no transaction found");
+    }
+    return $trans;
 }
 
 
 sub deleteTransaction {
-	my ($id) = @_;
-	&Transaction::delete($id);
+    my ($id) = @_;
+    INFO("attempting to delete transaction <$id>");
+    my $result = &Transaction::delete($id);
+    if($result == 1) {
+        INFO("deleted transaction");
+        &Messages::notify("deleteTransaction", "success");
+    } else {
+        ERROR("could not delete transaction <$id>: $result");
+        &Messages::notify("deleteTransaction", "failure", $result);
+    }
 }
 
 
 sub updateTransaction {
-	my $trans = Transaction->new(@_);
-	&Transaction::update($trans);
+    my $trans = Transaction->new(@_);
+    INFO("updating transaction:  " . Dumper(\@_));
+    my $result = &Transaction::update($trans);
+    if($result == 1) {
+        INFO("update transaction succeeded, result:  <$result>");
+        &Messages::notify("updateTransaction", "success");
+    } else {
+        ERROR("update transaction failed, result: <$result>");
+        &Messages::notify("updateTransaction", "failure", $result);
+    }
 }
 
+
+####### balances
 
 sub replaceBalance {
     my $bal = Balance->new(@_);
@@ -43,12 +78,14 @@ sub replaceBalance {
 
 
 sub getBalance {
-	&Balance::get(@_);
+    &Balance::get(@_);
 }
 
 
+####### reports
+
 sub getReport {
-	return &Report::getReport(@_);
+    return &Report::getReport(@_);
 }
 
 
@@ -93,7 +130,7 @@ sub getIDs {
 
 
 sub getAvailableReports {
-	return &Report::getAvailableReports();
+    return &Report::getAvailableReports();
 }
 
 ######################################################
