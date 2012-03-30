@@ -14,27 +14,28 @@ use Messages;
 sub runTests {
     
     subtest 'pass in junk listeners and events' => sub {
+        my $messages = Messages->new();
         my $code = sub {1;};
         try {
-            &Messages::addListener(3, $code);
+            $messages->addListener(3, $code);
             ok(0, "bad listener event didn't cause failure");
         } catch {
             ok(1, "bad listener event correctly caused failure");
         };
         try {
-            &Messages::addListener([1,2,3], 14);
+            $messages->addListener([1,2,3], 14);
             ok(0, "bad code ref didn't cause failure");
         } catch {
             ok(1, "bad code ref correctly caused failure");
         };
         try {
-            &Messages::notify(3);
+            $messages->notify(3);
             ok(0, "bad event type notification didn't cause failure");
         } catch {
             ok(1, "bad event type notification correctly caused failure");
         };
         try {
-            &Messages::notify(['hi', 'bye', 'buy', 'by']);
+            $messages->notify(['hi', 'bye', 'buy', 'by']);
             ok(0, "bad event didn't cause failure");
         } catch {
             ok(1, "bad event correctly caused failure");
@@ -42,25 +43,27 @@ sub runTests {
     };
     
     subtest 'add listener and notify' => sub {
+        my $messages = Messages->new();
         my $i = 0;
         my $l = sub {$i++;};
-        &Messages::addListener("saveTransaction", $l);
-        &Messages::notify("saveTransaction");
+        $messages->addListener("saveTransaction", $l);
+        $messages->notify("saveTransaction");
         is($i, 1, "listener called once");
     };
     
     subtest 'remove listener' => sub {
+        my $messages = Messages->new();
         my $i = 0;
         my $l = sub {$i++;};
-        my $id = &Messages::addListener("saveTransaction", $l);
-        &Messages::notify("saveTransaction");
+        my $id = $messages->addListener("saveTransaction", $l);
+        $messages->notify("saveTransaction");
         is($i, 1, "listener called once");
-        &Messages::removeListener($id);
-        &Messages::notify("saveTransaction");
+        $messages->removeListener($id);
+        $messages->notify("saveTransaction");
         is($i, 1, "listener not called again");
         
         try {
-            &Messages::removeListener($id);
+            $messages->removeListener($id);
             ok(0, "listener removed twice");
         } catch {
             ok(1, "listener can only be removed once");
@@ -68,11 +71,12 @@ sub runTests {
     };
     
     subtest "valid events" => sub {
+        my $messages = Messages->new();
         try {
-            &Messages::notify("saveTransaction");
-            &Messages::notify("updateTransaction");
-            &Messages::notify("deleteTransaction");
-            &Messages::notify("saveBalance");
+            $messages->notify("saveTransaction");
+            $messages->notify("updateTransaction");
+            $messages->notify("deleteTransaction");
+            $messages->notify("saveBalance");
             ok(1, "valid events");
         } catch {
             ok(0, "invalid event: $_");
@@ -80,6 +84,7 @@ sub runTests {
     };
     
     subtest 'transaction listeners' => sub {
+        my $messages = Messages->new();
         my %del = (success => 0, failure => 0);
         my $del = sub {
             my ($status, @args) = @_;
@@ -92,13 +97,13 @@ sub runTests {
             }
         };
         
-        &Messages::addListener("deleteTransaction", $del);
+        $messages->addListener("deleteTransaction", $del);
         
-        &Messages::notify("deleteTransaction", "failure");
+        $messages->notify("deleteTransaction", "failure");
         is(0, $del{success});
         is(1, $del{failure});
         
-        &Messages::notify("deleteTransaction", "success");
+        $messages->notify("deleteTransaction", "success");
         is(1, $del{success});
         is(1, $del{failure});
     };

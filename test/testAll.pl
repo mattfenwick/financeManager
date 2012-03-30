@@ -14,14 +14,15 @@ BEGIN {
 }
 
 use TestImports; # runs at compile time ???
-use TestMessages;
-use TestDatabase;
 
+use TestMessages;
 use TestReport;
-use TestReportMapper;
 use TestBalance;
-use TestBalanceMapper;
 use TestTransaction;
+
+use TestDatabase;
+use TestReportMapper;
+use TestBalanceMapper;
 use TestTransactionMapper;
 
 use TestMiscData;
@@ -30,22 +31,18 @@ use TestModelListeners;
 
 
 &TestMessages::runTests();
-
 &TestReport::runTests();
-&TestReportMapper::runTests();
-
 &TestBalance::runTests();
-&TestBalanceMapper::runTests();
-
 &TestTransaction::runTests();
-&TestTransactionMapper::runTests();
 
-&TestMiscData::runTests();
-
-&TestService::runTests();
 
 &TestModelListeners::runTests();
-
 &TestDatabase::runTests();
+&TestReportMapper::runTests();
+&TestBalanceMapper::runTests();
+&TestTransactionMapper::runTests();
+&TestMiscData::runTests();
+&TestService::runTests();
+
 
 &done_testing();

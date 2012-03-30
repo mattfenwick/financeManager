@@ -17,7 +17,7 @@ use Database;
 
 sub runTests {
     
-    subtest 'database methods' => sub {    
+    subtest 'balance mapper database methods' => sub {    
         try {
             my $mapper = BalanceMapper->new(&Database::getDBConnection());
 	        my $bal = Balance->new({
@@ -27,7 +27,7 @@ sub runTests {
 	            amount => -18.11
 	        });
 	        
-	        INFO("... did NOT replace balance");
+	        INFO("... did NOT replace balance yet ...");
 	        $mapper->replace($bal);
 	        my $loadedBal = $mapper->get(8, 2007, "Checking");
 	        
@@ -36,8 +36,8 @@ sub runTests {
             is($bal->{month},   $loadedBal->{month},   "correct month");
             is($bal->{account}, $loadedBal->{account}, "correct account");
         } catch {
-            ERROR("failed to save and load balance: $_");
-            ok(0, "failed to save and load balance");
+            ERROR($_);
+            fail($_);
         };
     };
     

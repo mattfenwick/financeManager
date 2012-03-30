@@ -18,20 +18,26 @@ use Database;
 sub runTests {
     
     subtest 'transaction listeners' => sub {
-        my %del = (success => 0, failure => 0);
-        my $del = sub {
-            my ($status, @args) = @_;
-            if($status eq "failure") {
-                $del{success}++;
-            } elsif ($status eq "success") {
-                $del{failure}++;
-            } else {
-                fail("invalid status: <$status>");
-            }
+        try {
+            &Service::init(&Database::getDBConnection());
+            my %del = (success => 0, failure => 0);
+            my $del = sub {
+                my ($status, @args) = @_;
+                if($status eq "failure") {
+                    $del{success}++;
+                } elsif ($status eq "success") {
+                    $del{failure}++;
+                } else {
+                    fail("invalid status: <$status>");
+                }
+            };
+            # TODO does the dbc need to be set?
+            &Service::deleteTransaction(1000000);
+            pass($del{failure});
+        } catch {
+            ERROR($_);
+            fail($_);
         };
-        # TODO does the dbc need to be set?
-        &Service::deleteTransaction(1000000);
-        is(1, $del{failure});
     };
 }
 

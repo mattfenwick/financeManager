@@ -17,7 +17,9 @@ sub runTests {
     subtest 'create valid transactions' => sub {
         try {
             my $tran = Transaction->new({
-                date    => '2011-8-19',
+                year    => 2011,
+                month   => 8,
+                day     => 19,
 	            account => "Checking",
 	            amount  => 7.32,
 	            isReceiptConfirmed => 0,
@@ -25,7 +27,7 @@ sub runTests {
 	            type    => 'General withdrawal',
 	            comment => 'abcd'
 	        });
-            ok(1, "create valid transaction");
+            pass("create valid transaction");
         } catch {
             fail("failed to create transaction: $_");
         };
@@ -34,31 +36,33 @@ sub runTests {
     subtest 'create invalid transactions' => sub {
         try {
             Transaction->new(1,2,3,4);
-            ok(0, "didn't catch bad parameters");
+            fail("didn't catch bad parameters");
         } catch {
             ok(1, "caught bad constructor parameters: $_")
         };
         
         try {
             Transaction->new({date => '1932-2-4'});
-            ok(0, "didn't catch missing keys");
+            fail("didn't catch missing keys");
         } catch {
-            ok(1, "caught missing keys")
+            ok(1, "caught missing keys: $_")
         };
         
         try {
             Transaction->new({
-                date => '2004-13-1', 
+                year    => 2004,
+                month   => 13,
+                day     => 1, 
                 account => 'Savings', 
-                amount => 77,
+                amount  => 77,
                 isReceiptConfirmed => 0,
                 isBankConfirmed    => 1,
                 type    => 'General withdrawal',
                 comment => 'abcd'
             });
-            ok(0, "didn't catch bad date");
+            fail("didn't catch bad month");
         } catch {
-            ok(1, "caught bad date <$_>")
+            ok(1, "caught bad month: $_")
         };
     };
 }

@@ -16,7 +16,7 @@ use Database;
 
 sub runTests {
 
-    subtest 'transactions' => sub {
+    subtest 'service: transactions' => sub {
         try {
             my $first = {
                 date => 1,
@@ -52,11 +52,12 @@ sub runTests {
             # can I test this?
             &Service::deleteTransaction($ids[$#ids]);
         } catch {
-            fail("failed to C/R/U/D transaction: $_");
+            ERROR($_);
+            fail($_);
         };
     };
     
-    subtest 'balances' => sub {
+    subtest 'service: balances' => sub {
         try {
             my $dat = {
                 year => 2012,
@@ -76,18 +77,20 @@ sub runTests {
             my $bal2 = &Service::getBalance(11, 2012, "Savings");
             is(14, $bal2->{amount}, "amount of replaced balance");
         } catch {
-            fail("failed to C/R/U balance: $_");
+            ERROR($_);
+            fail($_);
         };
     };
     
-    subtest 'reports' => sub {
+    subtest 'service: reports' => sub {
         try {
             my @reps = @{&Service::getAvailableReports()};
             my $rep = &Service::getReport($reps[0]);
             isa_ok($rep, "Report");
             ok(scalar(@{$rep->getRows()}) > 1, "report has rows");
         } catch {
-            fail("failed to get report");
+            ERROR($_);
+            fail($_);
         };
     };
     

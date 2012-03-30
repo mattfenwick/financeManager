@@ -16,7 +16,7 @@ use Database;
 
 sub runTests {
     
-    subtest 'database methods' => sub {    
+    subtest 'transaction database methods' => sub {    
         try {
             my $mapper = TransactionMapper->new(&Database::getDBConnection());
 	        my $trans = Transaction->new({
@@ -35,17 +35,21 @@ sub runTests {
 	        $mapper->update($loadedTrans);
 	        $mapper->delete(14); # TODO ??? how do I get the id ???
         } catch {
-            my $message = "failed to save and load transaction: $_";
-            ERROR($message);
-            fail($message);
+            ERROR($_);
+            fail($_);
         };
     };
     
     subtest 'get non-existent transaction' => sub {
-        my $mapper = TransactionMapper->new(&Database::getDBConnection());
-        my $trans = $mapper->get(1000000);
-        ok($trans, "$trans");
-        isa_ok($trans, "Transaction");
+        try {
+            my $mapper = TransactionMapper->new(&Database::getDBConnection());
+            my $trans = $mapper->get(1000000);
+            ok($trans, "$trans");
+            isa_ok($trans, "Transaction");
+        } catch {
+            ERROR($_);
+            fail($_);
+        };
     };
     
 }
