@@ -15,16 +15,20 @@ use ReportMapper;
 use MiscData;
 use Messages;
 
+use Log::Log4perl qw(:easy);
 
 
-my ($balanceMapper, $transactionMapper, $reportMapper, $miscData);
 
-sub init {
-    my ($dbh) = @_;
-    $balanceMapper     = BalanceMapper->new($dbh);
-    $transactionMapper = TransactionMapper->new($dbh);
-    $reportMapper      = ReportMapper->new($dbh);
-    $miscData          = MiscData->new($dbh);
+sub new {
+    my ($class, $dbh) = @_;
+    my $self = {
+        balanceMapper     => BalanceMapper->new($dbh),
+        transactionMapper => TransactionMapper->new($dbh),
+        reportMapper      => ReportMapper->new($dbh),
+        miscData          => MiscData->new($dbh)
+    };
+    bless($self, $class);
+    return $self;
 }
 
 ####################################################
@@ -33,9 +37,10 @@ sub init {
 ##### transactions
 
 sub saveTransaction {
-    INFO("saving transaction:  args are " . Dumper(\@_) );
-    my $trans = Transaction->new(@_);
-    my $result = $transactionMapper->save($trans);
+    my ($self, $hashref) = @_;
+    INFO("saving transaction:  args are " . Dumper($hashref) );
+    my $trans = Transaction->new($hashref);
+    my $result = $self->{transactionMapper}->save($trans);
     if($result == 1) {
         INFO("save transaction succeeded, result:  <$result>");
         &Messages::notify("saveTransaction", "success");
@@ -47,9 +52,9 @@ sub saveTransaction {
 
 
 sub getTransaction {
-    my ($id) = @_;
+    my ($self, $id) = @_;
     INFO("attempting to fetch transaction of id <$id>");
-    my $trans = $transactionMapper->get($id);
+    my $trans = $self->{transactionMapper}->get($id);
     if($trans) {
         INFO("transaction result: " . Dumper($trans) );
     } else {
@@ -60,9 +65,9 @@ sub getTransaction {
 
 
 sub deleteTransaction {
-    my ($id) = @_;
+    my ($self, $id) = @_;
     INFO("attempting to delete transaction <$id>");
-    my $result = $transactionMapper->delete($id);
+    my $result = $self->{transactionMapper}->delete($id);
     if($result == 1) {
         INFO("deleted transaction");
         &Messages::notify("deleteTransaction", "success");
@@ -74,9 +79,10 @@ sub deleteTransaction {
 
 
 sub updateTransaction {
-    INFO("updating transaction, args are:  " . Dumper(\@_));
-    my $trans = Transaction->new(@_);
-    my $result = $transactionMapper->update($trans);
+    my ($self, $hashref) = @_;
+    INFO("updating transaction, args are:  " . Dumper($hashref));
+    my $trans = Transaction->new($hashref);
+    my $result = $self->{transactionMapper}->update($trans);
     if($result == 1) {
         INFO("update transaction succeeded, result:  <$result>");
         &Messages::notify("updateTransaction", "success");
@@ -90,9 +96,10 @@ sub updateTransaction {
 ####### balances
 
 sub replaceBalance {
-    INFO("setting end of month balance, args are: " . Dumper(\@_) );
-    my $bal = Balance->new(@_);
-    my $result = $balanceMapper->replace($bal);  
+    my ($self, $hashref) = @_;
+    INFO("setting end of month balance, args are: " . Dumper($hashref) );
+    my $bal = Balance->new($hashref);
+    my $result = $self->{balanceMapper}->replace($bal);  
     # 3 modes: 
     #   1. new row, 
     #   2. overwrite existing row with new values.   
@@ -108,8 +115,9 @@ sub replaceBalance {
 
 
 sub getBalance {
-    INFO("setting end of month balance, args are: " . Dumper(\@_) );
-    my $bal = $balanceMapper->get(@_);
+    my ($self, @args) = @_;
+    INFO("setting end of month balance, args are: " . Dumper(\@args) );
+    my $bal = $self->{balanceMapper}->get(@args);
     if($bal) {
         INFO("balance result: " . Dumper($bal));
     } else {
@@ -122,8 +130,9 @@ sub getBalance {
 ####### reports
 
 sub getReport {
-    INFO("getting report, args are: " . Dumper(\@_));
-    my $rep = $reportMapper->getReport(@_);
+    my ($self, $reportName) = @_;
+    INFO("getting report $reportName");
+    my $rep = $self->{reportMapper}->getReport($reportName);
     if($rep) {
         INFO("report result: " . scalar($rep->getRows()) . " rows");
     } else {
@@ -137,61 +146,72 @@ sub getReport {
 # "columns"
 
 sub getMonths {
-    return [$miscData->getColumn('months')];
+    my ($self) = @_;
+    return [$self->{miscData}->getColumn('months')];
 }
 
 
 sub getYears {
-    return [$miscData->getColumn('years')];
+    my ($self) = @_;
+    return [$self->{miscData}->getColumn('years')];
 }
 
 
 sub getDays {
-    return [$miscData->getColumns('days')];
+    my ($self) = @_;
+    return [$self->{miscData}->getColumns('days')];
 }
 
 
 sub getAccounts {
-    return [$miscData->getColumn('accounts')];
+    my ($self) = @_;
+    return [$self->{miscData}->getColumn('accounts')];
 }
 
 
 sub getTransactionTypes {
-    return [$miscData->getColumn('types')];
+    my ($self) = @_;
+    return [$self->{miscData}->getColumn('types')];
 }
 
 
 sub getComments {
-    my @comments = $miscData->getColumn('comments');
+    my ($self) = @_;
+    my @comments = $self->{miscData}->getColumn('comments');
     return [sort {lc $a cmp lc $b} @comments];
 }
 
 
 sub getIDs {
-    my @ids = $miscData->getColumn('ids');
+    my ($self) = @_;
+    my @ids = $self->{miscData}->getColumn('ids');
     return [sort {$a <=> $b} @ids];
 }
 
 
 sub getAvailableReports {
-    return $reportMapper->getAvailableReports();
+    my ($self) = @_;
+    return $self->{reportMapper}->getAvailableReports();
 }
 
 ######################################################
 # scalars
 
 sub getWebAddress {
-    return $miscData->getScalar('webAddress');
+    my ($self) = @_;
+    return $self->{miscData}->getScalar('webAddress');
 }
 
 
 sub getVersion {
-    return $miscData->getScalar('version');
+    my ($self) = @_;
+    return $self->{miscData}->getScalar('version');
 }
 
 
 sub getCurrentYear {
-    return $miscData->getScalar('currentYear');
+    my ($self) = @_;
+    return $self->{miscData}->getScalar('currentYear');
 }
 
 

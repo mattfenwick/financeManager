@@ -42,11 +42,11 @@ my %validations = (
     },
     
     type => sub {
-        return length($_[0] > 0);
+        return (length($_[0]) > 0);
     },
     
     account => sub {
-        return length($_[0] > 0);        
+        return (length($_[0]) > 0);        
     },
 );
 
