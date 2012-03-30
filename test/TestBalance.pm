@@ -9,18 +9,13 @@ use Try::Tiny;
 
 use lib '../src/model';
 use Balance;
-use MiscData;
-
-use lib '../src/database';
-use Database;
 
 
 sub runTests {
 
-    subtest 'create valid balances' => sub {
+    subtest 'create valid balance' => sub {
         my $success = 0;
         try {
-            &MiscData::setDbh(&Database::getDBConnection());
             my $bal = Balance->new({
 	            year => 1004,
 	            account => "Checking",
@@ -83,28 +78,6 @@ sub runTests {
             ok(0, "didn't catch bad account");
         } catch {
             ok(1, "caught bad account")
-        };
-    };
-    
-    subtest 'database methods' => sub {    
-        try {
-            &Balance::setDbh(&Database::getDBConnection());
-	        my $bal = Balance->new({
-	            year   => 2007,
-	            month  => 8,
-	            account => "Checking",
-	            amount => -18.11
-	        });
-	        INFO("... did NOT replace balance");
-	        &Balance::replace($bal);
-	        my $loadedBal = &Balance::get(8, 2007, "Checking");
-	        is($bal->{amount},  $loadedBal->{amount},  "correct amount");
-            is($bal->{year},    $loadedBal->{year},    "correct year");
-            is($bal->{month},   $loadedBal->{month},   "correct month");
-            is($bal->{account}, $loadedBal->{account}, "correct account");
-        } catch {
-            ERROR("failed to save and load balance: $_");
-            ok(0, "failed to save and load balance");
         };
     };
 }

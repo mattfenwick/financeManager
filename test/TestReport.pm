@@ -10,18 +10,8 @@ use Try::Tiny;
 use lib '../src/model';
 use Report;
 
-use lib '../src/database';
-use Database;
-
 
 sub runTests {
-    &Report::setDbh(&Database::getDBConnection());
-  
-    subtest 'get available reports' => sub {
-        my $reps = &Report::getAvailableReports();
-        my $len = scalar(@$reps);
-        is($len, 12, "number of available reports: <$len>");
-    };
     
     subtest 'bad reports trip up validation' => sub {
         my $tooManyCols = 1;
@@ -51,20 +41,6 @@ sub runTests {
         is("ARRAY", ref($rep->getHeadings()), "type of getHeadings");
         is("ARRAY", ref($rep->getRows()),     "type of getRows");
         is("ARRAY", ref($rep->getRows()->[0]),     "type of first row");
-    };
-    
-    subtest 'retrieve reports from database' => sub {        
-        my @reports = @{&Report::getAvailableReports()};
-        for my $report (@reports) {
-            my $len = 0;
-            try {
-                my ($report) = &Report::getReport($report);
-                $len = scalar(@{$report->getHeadings()});
-            } catch {
-                ERROR("error accessing report: $_");
-            };
-            ok($len > 0, "report <$report>");
-        }
     };
 
 }

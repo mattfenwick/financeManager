@@ -10,8 +10,6 @@ use Try::Tiny;
 use lib '../src/model';
 use Transaction;
 
-use lib '../src/database';
-use Database;
 
 
 sub runTests {
@@ -62,37 +60,6 @@ sub runTests {
         } catch {
             ok(1, "caught bad date <$_>")
         };
-    };
-    
-    subtest 'database methods' => sub {    
-        try {
-            &Transaction::setDbh(&Database::getDBConnection());
-	        my $trans = Transaction->new({
-                date => '2004-13-1', 
-                account => 'Savings', 
-                amount => 77,
-                isReceiptConfirmed => 0,
-                isBankConfirmed    => 1,
-                type    => 'General withdrawal',
-                comment => 'abcd'
-	        });
-	        my $result = &Transaction::save($trans);
-	        is(1, $result, "saved transaction");
-	        my $loadedTrans = &Transaction::get(1);
-	        $loadedTrans->{amount} = $loadedTrans->{amount} + 1;
-	        &Transaction::update($loadedTrans);
-	        &Transaction::delete(14); # TODO ??? how do I get the id ???
-        } catch {
-            my $message = "failed to save and load transaction: $_";
-            ERROR($message);
-            fail($message);
-        };
-    };
-    
-    subtest 'get non-existent transaction' => sub {
-        my $trans = &Transaction::get(1000000);
-        ok($trans, "$trans");
-        isa_ok($trans, "Transaction");
     };
 }
 
