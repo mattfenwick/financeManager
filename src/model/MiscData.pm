@@ -22,20 +22,16 @@ my %tableFinder = (
     'months'      =>     ['id',          'months'           ]
 );
 
-###################################################
 
-my $dbh;
-
-sub setDbh {
-    my ($newDbh) = @_;
-    if($dbh) {
-        die "dbh already set: <$dbh>";
-    }
-    $dbh = $newDbh;
+sub new {
+    my ($class, $dbh) = @_;
+    my $self = {
+        dbh => $dbh
+    };
+    bless($self, $class);
+    return $self;
 }
 
-
-###################################################
 
 sub getColumnNames {
     return (keys %tableFinder);
@@ -46,12 +42,13 @@ sub getScalarNames {
     return (keys %scalars);
 }
 
-###################################################
 
 sub getScalar {
 	my ($key) = @_;
 	if(!defined($scalars{$key})) {
-		die "unrecognized key: <$key>";
+	    my $message = "unrecognized key: <$key>";
+	    ERROR($message);
+		die $message;
 	} else {
 		return $scalars{$key};
 	}
@@ -59,14 +56,23 @@ sub getScalar {
 
 
 sub getColumn {
-    my ($name) = @_;
+    my ($self, $name) = @_;
     INFO("fetching column <$name>");
+    
+    # TODO get rid of special case
     if($name eq "days") {
-    	return [@days]; # TODO get rid of special case
+    	return [@days];
     }
-    my $entry = $tableFinder{$name} || die "no table found for column $name";
+    
+    my $entry = $tableFinder{$name};
+    if(!$entry) {
+        my $message = "no table found for column $name";
+        ERROR($message);     
+        die $message;
+    } 
+    
     my ($column, $table) = @$entry;
-    my $sth = $dbh->prepare("select $column from $table");
+    my $sth = $self->{dbh}->prepare("select $column from $table");
     $sth->execute();
     my $result = $sth->fetchall_arrayref();
     my @values = ();

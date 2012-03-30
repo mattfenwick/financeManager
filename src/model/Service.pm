@@ -2,12 +2,30 @@ use strict;
 use warnings;
 
 package Service;
+
 use Transaction;
+use TransactionMapper;
+
 use Balance;
-use MiscData;
+use BalanceMapper;
+
 use Report;
+use ReportMapper;
+
+use MiscData;
 use Messages;
 
+
+
+my ($balanceMapper, $transactionMapper, $reportMapper, $miscData);
+
+sub init {
+    my ($dbh) = @_;
+    $balanceMapper     = BalanceMapper->new($dbh);
+    $transactionMapper = TransactionMapper->new($dbh);
+    $reportMapper      = ReportMapper->new($dbh);
+    $miscData          = MiscData->new($dbh);
+}
 
 ####################################################
 # domain objects
@@ -17,7 +35,7 @@ use Messages;
 sub saveTransaction {
     INFO("saving transaction:  args are " . Dumper(\@_) );
     my $trans = Transaction->new(@_);
-    my $result = &Transaction::save($trans);
+    my $result = $transactionMapper->save($trans);
     if($result == 1) {
         INFO("save transaction succeeded, result:  <$result>");
         &Messages::notify("saveTransaction", "success");
@@ -31,11 +49,11 @@ sub saveTransaction {
 sub getTransaction {
     my ($id) = @_;
     INFO("attempting to fetch transaction of id <$id>");
-    my $trans = &Transaction::get($id);
+    my $trans = $transactionMapper->get($id);
     if($trans) {
         INFO("transaction result: " . Dumper($trans) );
     } else {
-        INFO("no transaction found");
+        ERROR("no transaction found");
     }
     return $trans;
 }
@@ -44,7 +62,7 @@ sub getTransaction {
 sub deleteTransaction {
     my ($id) = @_;
     INFO("attempting to delete transaction <$id>");
-    my $result = &Transaction::delete($id);
+    my $result = $transactionMapper->delete($id);
     if($result == 1) {
         INFO("deleted transaction");
         &Messages::notify("deleteTransaction", "success");
@@ -56,9 +74,9 @@ sub deleteTransaction {
 
 
 sub updateTransaction {
+    INFO("updating transaction, args are:  " . Dumper(\@_));
     my $trans = Transaction->new(@_);
-    INFO("updating transaction:  " . Dumper(\@_));
-    my $result = &Transaction::update($trans);
+    my $result = $transactionMapper->update($trans);
     if($result == 1) {
         INFO("update transaction succeeded, result:  <$result>");
         &Messages::notify("updateTransaction", "success");
@@ -72,20 +90,46 @@ sub updateTransaction {
 ####### balances
 
 sub replaceBalance {
+    INFO("setting end of month balance, args are: " . Dumper(\@_) );
     my $bal = Balance->new(@_);
-    &Balance::replace($bal);
+    my $result = $balanceMapper->replace($bal);  
+    # 3 modes: 
+    #   1. new row, 
+    #   2. overwrite existing row with new values.   
+    #   anything else:  failure, 
+    if($result == 1 || $result == 2) {
+        INFO("save balance succeeded, result:  <$result>");
+        &Messages::notify("saveBalance", "success");
+    } else {
+        INFO("save balance failed, result: <$result>");
+        &Messages::notify("saveBalance", "failure");
+    }
 }
 
 
 sub getBalance {
-    &Balance::get(@_);
+    INFO("setting end of month balance, args are: " . Dumper(\@_) );
+    my $bal = $balanceMapper->get(@_);
+    if($bal) {
+        INFO("balance result: " . Dumper($bal));
+    } else {
+        INFO("no balance found");
+    }
+    return $bal;
 }
 
 
 ####### reports
 
 sub getReport {
-    return &Report::getReport(@_);
+    INFO("getting report, args are: " . Dumper(\@_));
+    my $rep = $reportMapper->getReport(@_);
+    if($rep) {
+        INFO("report result: " . scalar($rep->getRows()) . " rows");
+    } else {
+        ERROR("no report found");
+    }
+    return $rep;
 }
 
 
@@ -93,61 +137,61 @@ sub getReport {
 # "columns"
 
 sub getMonths {
-    return [&MiscData::getColumn('months')];
+    return [$miscData->getColumn('months')];
 }
 
 
 sub getYears {
-    return [&MiscData::getColumn('years')];
+    return [$miscData->getColumn('years')];
 }
 
 
 sub getDays {
-    return [&MiscData::getColumns('days')];
+    return [$miscData->getColumns('days')];
 }
 
 
 sub getAccounts {
-    return [&MiscData::getColumn('accounts')];
+    return [$miscData->getColumn('accounts')];
 }
 
 
 sub getTransactionTypes {
-    return [&MiscData::getColumn('types')];
+    return [$miscData->getColumn('types')];
 }
 
 
 sub getComments {
-    my @comments = &MiscData::getColumn('comments');
+    my @comments = $miscData->getColumn('comments');
     return [sort {lc $a cmp lc $b} @comments];
 }
 
 
 sub getIDs {
-    my @ids = &MiscData::getColumn('ids');
+    my @ids = $miscData->getColumn('ids');
     return [sort {$a <=> $b} @ids];
 }
 
 
 sub getAvailableReports {
-    return &Report::getAvailableReports();
+    return $reportMapper->getAvailableReports();
 }
 
 ######################################################
 # scalars
 
 sub getWebAddress {
-    return &MiscData::getScalar('webAddress');
+    return $miscData->getScalar('webAddress');
 }
 
 
 sub getVersion {
-    return &MiscData::getScalar('version');
+    return $miscData->getScalar('version');
 }
 
 
 sub getCurrentYear {
-    return &MiscData::getScalar('currentYear');
+    return $miscData->getScalar('currentYear');
 }
 
 

@@ -2,113 +2,52 @@ use strict;
 use warnings;
 
 package Balance;
-use Data::Dumper;
-use Log::Log4perl qw(:easy);
-use Messages;
-use MiscData;
 
-
-#####################################################
-
-my $dbh;
-
-sub setDbh {
-    my ($newDbh) = @_;
-    if($dbh) {
-        die "dbh already set: <$dbh>";
-    }
-    $dbh = $newDbh;
-}
-
-######################################################
 
 
 sub new {
-    my ($class, $self) = @_;
+    my ($class, $fields) = @_;
+    my $self = {};
+    for my $f (keys %$fields) {
+        $self->{$f} = $fields->{$f};
+    }
     bless($self, $class);
     $self->_validate();
     return $self;
 }
 
 
-sub _validate {
-    my ($self) = @_;
-    my $year = $self->{year};
-    die "bad year <$year>" unless $year =~ /^\d{4}$/;
+my %validations = (
+    year    => sub {
+        return $_[0] =~ /^\d{4}$/;
+    },
     
-    my $account = $self->{account};
-    die "bad account: <$account>" unless 
-        &_inArray($account, &MiscData::getColumn('accounts'));
+    account => sub {
+        return length($_[0]) > 0;
+    },
     
-    my $month = $self->{month};
-    die "bad month <$month>" unless $month =~ /^\d{1,2}$/;
-    die "bad month <$month>" unless ($month < 13 && $month > 0);
+    month   => sub {
+        return ($_[0] < 13 && $_[0] > 0);
+    },
+    
         # a $ amount is an optional '-' sign followed by at least 1 digit,
         #        followed by an optional decimal and up to 0-2 digits 
-    my $amount = $self->{amount};
-    die "bad amount <$amount>" unless $amount =~ /^-?\d+(?:\.\d{0,2})?$/;
-}
+    amount  => sub {
+        return $_[0] =~ /^-?\d+(?:\.\d{0,2})?$/;
+    }
+);
 
-sub _inArray {
-    my ($elem, @arr) = @_;
-    for my $e (@arr) {
-        if($e eq $elem) {
-            return 1;
+
+sub _validate {
+    my ($self) = @_;
+    for my $key (keys %validations) {
+        my $checker = $validations{$key};
+        my $val = $self->{$key};
+        if(!$checker->($val)) {
+            die "bad $key: <$val>";
         }
     }
-    return 0;
 }
 
-
-#######################################################
-# static methods
-
-sub replace { # follows the MySQL meaning of replace: 
-            # add if no match for primary key, otherwise update
-    my ($bal) = @_;
-    my %fields = %$bal;
-    INFO("setting end of month balance: " . Dumper(\%fields) );
-    my $result = $dbh->do('replace into endofmonthbalances
-                (monthid, yearid, amount, account)
-                values(?, ?, ?, ?)', undef,
-                $fields{month}, $fields{year}, $fields{amount}, $fields{account});
-    # TODO what does $dbh->do return?  
-    #   3 modes: 
-    #     failure, 
-    #     new row, 
-    #     overwrite existing row with new values.   
-    #   return codes ???
-    if($result == 1) {
-        INFO("save balance succeeded, result:  <$result>");
-        &Messages::notify("saveBalance", "success");
-    } else {
-        INFO("save balance failed, result: <$result>");
-        &Messages::notify("saveBalance", "failure");
-    }
-}
-
-
-sub get { # returns Balance, or false if no match found
-    my ($month, $year, $account) = @_;
-    INFO("fetching end of month balance: " . Dumper(\@_) );
-    my $statement = '
-        select amount from endofmonthbalances
-            where monthid = ? and yearid = ? and account = ?';
-    my $sth = $dbh->prepare($statement);
-    $sth->execute($month, $year, $account);
-    my $result = $sth->fetchrow_hashref();
-    if ($result) {
-        INFO("end of month balance found: $result->{amount}");
-        return Balance->new({
-            month => $month,
-            year => $year,
-            account => $account,
-            amount => $result->{amount}
-        });    
-    } else {
-        INFO("no end of month balance found");
-        return undef;
-    }
-}
 
 1;
