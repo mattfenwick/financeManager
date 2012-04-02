@@ -9,8 +9,7 @@ use Log::Log4perl qw(:easy);
 
 sub new {
     my ($class, $parent, $service) = @_;
-    my $self = $class->SUPER::new($parent);
-    $self->{service} = $service;
+    my $self = $class->SUPER::new($parent, $service);
     return $self;
 }
 

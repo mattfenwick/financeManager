@@ -6,13 +6,11 @@ use parent qw/WidgetBase/;
 use ComboBox;
 use CheckBox;
 
-use lib '../model';
-use Service;
-
 
 sub new {
-    my ($class, $parent) = @_;
+    my ($class, $parent, $service) = @_;
     my $self = $class->SUPER::new($parent);
+    $self->{service} = $service;
     my $frame = $self->{frame};
     
     my %info = (text => 'amount',         
@@ -25,28 +23,28 @@ sub new {
     $self->{amount}->g_grid();
 
     $self->{comment} = ComboBox->new($frame, 'comment', 0,
-        &Service::getComments(), 0);
+        $service->getComments(), 0);
     $self->{comment}->g_grid();
     
     $self->{year} = ComboBox->new($frame, 'year', 0,
-        &Service::getYears(), 0);
-    $self->{year}->setSelected(&Service::getCurrentYear());
+        $service->getYears(), 0);
+    $self->{year}->setSelected($service->getCurrentYear());
     $self->{year}->g_grid();
     
     $self->{month} = ComboBox->new($frame, 'month', 1,
-        &Service::getMonths(), 0);
+        $service->getMonths(), 0);
     $self->{month}->g_grid();
     
     $self->{day} = ComboBox->new($frame, 'day', 1,
-        &Service::getDays(), 1);
+        $service->getDays(), 1);
     $self->{day}->g_grid();
     
     $self->{account} = ComboBox->new($frame, 'account', 1,
-        &Service::getAccounts(), 0);
+        $service->getAccounts(), 0);
     $self->{account}->g_grid();
     
     $self->{type} = ComboBox->new($frame, 'transaction type', 1,
-        &Service::getTransactionTypes(), 0);
+        $service->getTransactionTypes(), 0);
     $self->{type}->g_grid();
     
     $self->{isReceipt} = 0;

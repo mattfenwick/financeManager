@@ -10,8 +10,7 @@ use Log::Log4perl qw(:easy);
 
 sub new {
     my ($class, $parent, $service) = @_;
-    my $self = $class->SUPER::new($parent);
-    $self->{service} = $service;
+    my $self = $class->SUPER::new($parent, $service);
     
     $self->{selector} = ComboBox->new($self->{frame}, 'select id', 1,
         $service->getIDs());
@@ -134,17 +133,17 @@ sub addModelListeners {
     my $edit = sub {
         $self->onEdit(@_);
     };
-    &Messages::addListener("editTransaction", $edit);
+    $self->{service}->addListener("updateTransaction", $edit);
     
     my $del = sub {
         $self->onDelete(@_);
     };
-    &Messages::addListener("deleteTransaction", $del);
+    $self->{service}->addListener("deleteTransaction", $del);
     
     my $newIds = sub {
     	$self->onNewIds(@_);
     };
-    &Messages::addListener("saveTransaction", $newIds);
+    $self->{service}->addListener("saveTransaction", $newIds);
 }
 
 
