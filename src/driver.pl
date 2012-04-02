@@ -32,6 +32,7 @@ try {
 } catch {
     FATAL("failed to connect to database: $_");
     Tkx::tk___messageBox(-message => "fatal error: $_");
+    chomp($_);
     die $_;
 };
 
@@ -44,6 +45,7 @@ try {
 } catch {
     FATAL("failed to initialize service layer and model: $_");
     Tkx::tk___messageBox(-message => "fatal error: $_");
+    chomp($_);
     die $_;
 };
 
@@ -55,7 +57,8 @@ try {
     $gui = FinanceGUI->new($service);
 } catch {
     FATAL("failed to initialize gui: $_");
-    Tkx::tk___messageBox(-message => "fatal error: $_");    
+    Tkx::tk___messageBox(-message => "fatal error: $_"); 
+    chomp($_);   
     die $_;
 };
 
