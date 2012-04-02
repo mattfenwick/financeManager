@@ -29,6 +29,8 @@ use TestMiscData;
 use TestService;
 use TestModelListeners;
 
+use TestGui;
+
 
 &TestMessages::runTests();
 &TestReport::runTests();
@@ -46,5 +48,6 @@ use TestModelListeners;
 
 &TestDatabase::runTests();
 
+&TestGui::runTests();
 
 &done_testing();
