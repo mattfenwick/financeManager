@@ -6,6 +6,7 @@ use parent qw/WidgetBase/;
 use ComboBox;
 use ResultViewer;
 use Log::Log4perl qw(:easy);
+use Try::Tiny;
 
 
 
@@ -170,7 +171,7 @@ sub onModelChange {
     } elsif($status eq "failure") {
         # nothing to do
     } else {
-        die "invalid status: <$status>";
+        die "invalid status: <$status> with args <@_>";
     }
 }
 
@@ -178,11 +179,16 @@ sub onModelChange {
 sub addModelListeners {
     my ($self) = @_;
     my $trans = sub {
-        INFO("change in model reported ... updating report");
-        $self->onModelChange(@_);
+        my (@args) = @_;
+        try {
+            INFO("change in model reported ... updating report");
+            $self->onModelChange(@args);
+        } catch {
+            ERROR("Report listener: error <$_> with args <@_>");
+        };
     };
     my @ids = ();
-    my @events = ("saveTransaction", "editTransaction", "deleteTransaction", "saveBalance");
+    my @events = ("saveTransaction", "updateTransaction", "deleteTransaction", "saveBalance");
     for my $event (@events) {
         my $id = $self->{service}->addListener($event, $trans);
         push(@ids, $id);
