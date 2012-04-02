@@ -34,12 +34,12 @@ sub new {
 
 
 sub getColumnNames {
-    return (keys %tableFinder);
+    return [(keys %tableFinder)];
 }
 
 
 sub getScalarNames {
-    return (keys %scalars);
+    return [(keys %scalars)];
 }
 
 

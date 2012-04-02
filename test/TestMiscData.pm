@@ -15,11 +15,17 @@ use Database;
 
 
 sub runTests {
+    
+    subtest 'number of columns and scalars' => sub {
+        my $md = MiscData->new();
+        is(6, @{$md->getColumnNames()}, "number of columns");
+        is(3, @{$md->getScalarNames()}, "number of scalars");
+    };
 
     subtest 'get columns' => sub {
         try {
             my $md = MiscData->new(&Database::getDBConnection());
-            for my $columnName ($md->getColumnNames()) {
+            for my $columnName (@{$md->getColumnNames()}) {
                 try {
                     my $data = $md->getColumn($columnName);
                     # 2 is a magic, arbitrary number ...
@@ -37,7 +43,7 @@ sub runTests {
     subtest 'get scalars' => sub {
         try {
             my $md = MiscData->new(&Database::getDBConnection());
-            for my $scalarName ($md->getScalarNames()) {
+            for my $scalarName (@{$md->getScalarNames()}) {
                 try {
                     my $data = $md->getScalar($scalarName);
                     ok($data, "found values for scalar <$scalarName>");
