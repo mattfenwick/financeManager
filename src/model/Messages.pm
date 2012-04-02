@@ -26,7 +26,7 @@ sub new {
 sub addListener {
     my ($self, $event, $code) = @_;
     if(ref($code) ne "CODE") {
-        my $message = "need code reference (got <" . ref($code) . ">)";
+        my $message = "need code reference (got <" . ref($code) . ">, args were <@_>)";
         ERROR($message);
         die $message;
     }
