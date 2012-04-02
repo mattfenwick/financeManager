@@ -48,13 +48,28 @@ my %validations = (
     account => sub {
         return (length($_[0]) > 0);        
     },
+    
+    isreceiptconfirmed => sub {
+        return ($_[0] == 1 || $_[0] == 0);
+    },
+    
+    isbankconfirmed => sub {
+        return ($_[0] == 1 || $_[0] == 0);
+    },
+    
+    id => sub {
+        return ($_[0] =~ /^\d+$/ || !defined($_[0]));
+    }
 );
 
 
 sub _validate {
     my ($self) = @_;
-    for my $key (keys %validations) {
+    for my $key (keys %$self) {
         my $checker = $validations{$key};
+        if(!$checker) {
+            die "bad field name: <$key>";
+        }
         my $val = $self->{$key};
         if(!$checker->($val)) {
             die "bad $key: <$val>";

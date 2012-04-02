@@ -44,7 +44,7 @@ sub getScalarNames {
 
 
 sub getScalar {
-	my ($key) = @_;
+	my ($self, $key) = @_;
 	if(!defined($scalars{$key})) {
 	    my $message = "unrecognized key: <$key>";
 	    ERROR($message);
@@ -80,7 +80,7 @@ sub getColumn {
         push(@values, $row->[0]);
     }
     INFO("column <$name> fetched");
-    return @values;
+    return [@values];
 }
 
 1;

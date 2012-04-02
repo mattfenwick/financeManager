@@ -39,7 +39,6 @@ sub replace {
 #    returns Balance, or false if no match found
 sub get {
     my ($self, $month, $year, $account) = @_;
-    INFO("fetching end of month balance: " . Dumper(\@_) );
     my $statement = '
         select amount, monthid as month, yearid as year, account
         from endofmonthbalances

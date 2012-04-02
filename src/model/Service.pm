@@ -16,16 +16,18 @@ use MiscData;
 use Messages;
 
 use Log::Log4perl qw(:easy);
+use Data::Dumper;
 
 
 
 sub new {
     my ($class, $dbh) = @_;
     my $self = {
-        balanceMapper     => BalanceMapper->new($dbh),
-        transactionMapper => TransactionMapper->new($dbh),
-        reportMapper      => ReportMapper->new($dbh),
-        miscData          => MiscData->new($dbh)
+        balanceMapper     =>  BalanceMapper->new($dbh),
+        transactionMapper =>  TransactionMapper->new($dbh),
+        reportMapper      =>  ReportMapper->new($dbh),
+        miscData          =>  MiscData->new($dbh),
+        messages          =>  Messages->new(),
     };
     bless($self, $class);
     return $self;
@@ -43,10 +45,10 @@ sub saveTransaction {
     my $result = $self->{transactionMapper}->save($trans);
     if($result == 1) {
         INFO("save transaction succeeded, result:  <$result>");
-        &Messages::notify("saveTransaction", "success");
+        $self->{messages}->notify("saveTransaction", "success");
     } else {
         ERROR("save transaction failed, result: <$result>");
-        &Messages::notify("saveTransaction", "failure", $result);
+        $self->{messages}->notify("saveTransaction", "failure", $result);
     }
 }
 
@@ -70,10 +72,10 @@ sub deleteTransaction {
     my $result = $self->{transactionMapper}->delete($id);
     if($result == 1) {
         INFO("deleted transaction");
-        &Messages::notify("deleteTransaction", "success");
+        $self->{messages}->notify("deleteTransaction", "success");
     } else {
         ERROR("could not delete transaction <$id>: $result");
-        &Messages::notify("deleteTransaction", "failure", $result);
+        $self->{messages}->notify("deleteTransaction", "failure", $result);
     }
 }
 
@@ -85,10 +87,10 @@ sub updateTransaction {
     my $result = $self->{transactionMapper}->update($trans);
     if($result == 1) {
         INFO("update transaction succeeded, result:  <$result>");
-        &Messages::notify("updateTransaction", "success");
+        $self->{messages}->notify("updateTransaction", "success");
     } else {
         ERROR("update transaction failed, result: <$result>");
-        &Messages::notify("updateTransaction", "failure", $result);
+        $self->{messages}->notify("updateTransaction", "failure", $result);
     }
 }
 
@@ -106,17 +108,17 @@ sub replaceBalance {
     #   anything else:  failure, 
     if($result == 1 || $result == 2) {
         INFO("save balance succeeded, result:  <$result>");
-        &Messages::notify("saveBalance", "success");
+        $self->{messages}->notify("saveBalance", "success");
     } else {
         INFO("save balance failed, result: <$result>");
-        &Messages::notify("saveBalance", "failure");
+        $self->{messages}->notify("saveBalance", "failure");
     }
 }
 
 
 sub getBalance {
     my ($self, @args) = @_;
-    INFO("setting end of month balance, args are: " . Dumper(\@args) );
+    INFO("getting end of month balance, args are: " . Dumper(\@args) );
     my $bal = $self->{balanceMapper}->get(@args);
     if($bal) {
         INFO("balance result: " . Dumper($bal));
@@ -147,45 +149,43 @@ sub getReport {
 
 sub getMonths {
     my ($self) = @_;
-    return [$self->{miscData}->getColumn('months')];
+    return $self->{miscData}->getColumn('months');
 }
 
 
 sub getYears {
     my ($self) = @_;
-    return [$self->{miscData}->getColumn('years')];
+    return $self->{miscData}->getColumn('years');
 }
 
 
 sub getDays {
     my ($self) = @_;
-    return [$self->{miscData}->getColumns('days')];
+    return $self->{miscData}->getColumns('days');
 }
 
 
 sub getAccounts {
     my ($self) = @_;
-    return [$self->{miscData}->getColumn('accounts')];
+    return $self->{miscData}->getColumn('accounts');
 }
 
 
 sub getTransactionTypes {
     my ($self) = @_;
-    return [$self->{miscData}->getColumn('types')];
+    return $self->{miscData}->getColumn('types');
 }
 
 
 sub getComments {
     my ($self) = @_;
-    my @comments = $self->{miscData}->getColumn('comments');
-    return [sort {lc $a cmp lc $b} @comments];
+    return $self->{miscData}->getColumn('comments');
 }
 
 
 sub getIDs {
     my ($self) = @_;
-    my @ids = $self->{miscData}->getColumn('ids');
-    return [sort {$a <=> $b} @ids];
+    return $self->{miscData}->getColumn('ids');
 }
 
 
@@ -212,6 +212,26 @@ sub getVersion {
 sub getCurrentYear {
     my ($self) = @_;
     return $self->{miscData}->getScalar('currentYear');
+}
+
+#######################################################
+# listeners and events
+
+sub addListener {
+    my ($self, @args) = @_;
+    return $self->{messages}->addListener(@args);
+}
+
+
+sub removeListener {
+    my ($self, @args) = @_;
+    return $self->{messages}->removeListener(@args);
+}
+
+
+sub notify {
+    my ($self, @args) = @_;
+    return $self->{messages}->notify(@args);
 }
 
 

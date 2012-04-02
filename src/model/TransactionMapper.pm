@@ -32,7 +32,7 @@ sub save {
                     account, isreceiptconfirmed, isbankconfirmed)
                 values(?, ?, ?, ?, ?, ?, ?)', undef,
             $date, $fields{comment}, $fields{amount}, $fields{type}, 
-                $fields{account}, $fields{receipt}, $fields{bank}
+                $fields{account}, $fields{isreceiptconfirmed}, $fields{isbankconfirmed}
         );
         return $result;
     } catch {
@@ -76,6 +76,7 @@ sub update {
     my ($self, $trans) = @_;
     try {
         my %fields = %$trans;
+        my $date = join('-', $fields{year}, $fields{month}, $fields{day});
         my $result = $self->{dbh}->do('
             update transactions set
                 `date` = ?, 
@@ -86,8 +87,9 @@ sub update {
                 isbankconfirmed = ?,
                 type = ?
             where id = ?', undef,
-                $fields{date}, $fields{comment}, $fields{amount}, $fields{account}, 
-                    $fields{receipt}, $fields{bank}, $fields{type}, $fields{id} );
+                $date, $fields{comment}, $fields{amount}, $fields{account}, 
+                    $fields{isreceiptconfirmed}, $fields{isbankconfirmed}, 
+                    $fields{type}, $fields{id} );
         return $result;
     } catch {
         return $_;

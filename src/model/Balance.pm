@@ -40,8 +40,11 @@ my %validations = (
 
 sub _validate {
     my ($self) = @_;
-    for my $key (keys %validations) {
+    for my $key (keys %$self) {
         my $checker = $validations{$key};
+        if(!$checker) {
+            die "bad field name: <$key>";
+        }
         my $val = $self->{$key};
         if(!$checker->($val)) {
             die "bad $key: <$val>";
