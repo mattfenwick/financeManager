@@ -18,13 +18,15 @@ sub runTests {
 
     subtest 'get columns' => sub {
         try {
-            &MiscData::setDbh(&Database::getDBConnection());
-            for my $columnName (&MiscData::getColumnNames()) {
+            my $md = MiscData->new(&Database::getDBConnection());
+            for my $columnName ($md->getColumnNames()) {
                 try {
-                    my $data = &MiscData::getColumn($columnName);
+                    my $data = $md->getColumn($columnName);
+                    # 2 is a magic, arbitrary number ...
                     ok(scalar(@$data) > 2, "found values for column <$columnName>");
                 } catch {
-                    fail("failed to obtain values for column <$columnName>");
+                    ERROR($_);
+                    fail($_);
                 };
             }
         } catch {
@@ -34,13 +36,14 @@ sub runTests {
     
     subtest 'get scalars' => sub {
         try {
-            &MiscData::setDbh(&Database::getDBConnection());
-            for my $scalarName (&MiscData::getScalarNames()) {
+            my $md = MiscData->new(&Database::getDBConnection());
+            for my $scalarName ($md->getScalarNames()) {
                 try {
-                    my $data = &MiscData::getScalar($scalarName);
+                    my $data = $md->getScalar($scalarName);
                     ok($data, "found values for scalar <$scalarName>");
                 } catch {
-                    fail("failed to obtain value for scalar <$scalarName>");
+                    ERROR($_);
+                    fail($_);
                 };
             }
         } catch {

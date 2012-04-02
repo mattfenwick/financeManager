@@ -6,6 +6,7 @@ package TestModelListeners;
 use Test::More;
 use Log::Log4perl qw(:easy);
 use Try::Tiny;
+use Data::Dumper;
 
 use lib '../src/model';
 use Messages;
@@ -17,23 +18,24 @@ use Database;
 
 sub runTests {
     
-    subtest 'transaction listeners' => sub {
+    subtest 'delete transaction listeners' => sub {
         try {
-            &Service::init(&Database::getDBConnection());
+            my $service = Service->new(&Database::getDBConnection());
             my %del = (success => 0, failure => 0);
             my $del = sub {
                 my ($status, @args) = @_;
-                if($status eq "failure") {
+                if($status eq "success") {
                     $del{success}++;
-                } elsif ($status eq "success") {
+                } elsif ($status eq "failure") {
                     $del{failure}++;
                 } else {
                     fail("invalid status: <$status>");
                 }
             };
-            # TODO does the dbc need to be set?
-            &Service::deleteTransaction(1000000);
-            pass($del{failure});
+            $service->addListener("deleteTransaction", $del);
+            $service->addListener("deleteTransaction", $del);
+            $service->deleteTransaction(1435345);
+            is(2, $del{failure}, "failed to delete non-existent transaction");
         } catch {
             ERROR($_);
             fail($_);

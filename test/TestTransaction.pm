@@ -22,8 +22,8 @@ sub runTests {
                 day     => 19,
 	            account => "Checking",
 	            amount  => 7.32,
-	            isReceiptConfirmed => 0,
-	            isBankConfirmed    => 1,
+	            isreceiptconfirmed => 0,
+	            isbankconfirmed    => 1,
 	            type    => 'General withdrawal',
 	            comment => 'abcd'
 	        });
@@ -55,8 +55,8 @@ sub runTests {
                 day     => 1, 
                 account => 'Savings', 
                 amount  => 77,
-                isReceiptConfirmed => 0,
-                isBankConfirmed    => 1,
+                isreceiptconfirmed => 0,
+                isbankconfirmed    => 1,
                 type    => 'General withdrawal',
                 comment => 'abcd'
             });

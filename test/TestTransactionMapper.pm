@@ -6,6 +6,7 @@ package TestTransactionMapper;
 use Test::More;
 use Log::Log4perl qw(:easy);
 use Try::Tiny;
+use Data::Dumper;
 
 use lib '../src/model';
 use Transaction;
@@ -16,27 +17,69 @@ use Database;
 
 sub runTests {
     
-    subtest 'transaction database methods' => sub {    
+    subtest 'save transaction' => sub {    
         try {
             my $mapper = TransactionMapper->new(&Database::getDBConnection());
 	        my $trans = Transaction->new({
-                date => '2004-13-1', 
+                year    => 2004,
+                month   => 11,
+                day     => 1, 
                 account => 'Savings', 
                 amount => 77,
-                isReceiptConfirmed => 0,
-                isBankConfirmed    => 1,
+                isreceiptconfirmed => 0,
+                isbankconfirmed    => 1,
                 type    => 'General withdrawal',
                 comment => 'abcd'
 	        });
 	        my $result = $mapper->save($trans);
 	        is(1, $result, "saved transaction");
-	        my $loadedTrans = $mapper->get(1);
-	        $loadedTrans->{amount} = $loadedTrans->{amount} + 1;
-	        $mapper->update($loadedTrans);
-	        $mapper->delete(14); # TODO ??? how do I get the id ???
         } catch {
             ERROR($_);
             fail($_);
+        };
+    };
+    
+    subtest 'delete transaction' => sub {
+        try {
+            my $dbh = &Database::getDBConnection();
+            $dbh->do('insert into transactions 
+                (id, `date`, comment, amount, type, 
+                    account, isreceiptconfirmed, isbankconfirmed) 
+                values 
+                (2000000, "2011-1-1", "hi", 1, "General withdrawal",
+                    "Checking", 1, 0);');
+            my $mapper = TransactionMapper->new($dbh);
+            my $res = $mapper->delete(2000000);
+            is($res, 1, "row properly deleted");
+        } catch {
+            ERROR($_);
+            fail($_);            
+        };
+    };
+    
+    subtest 'get transaction' => sub {
+        try {
+            my $mapper = TransactionMapper->new(&Database::getDBConnection());
+            my $trans = $mapper->get(4);
+            isa_ok($trans, "Transaction");
+        } catch {
+            ERROR($_);
+            fail($_);
+        };        
+    };
+    
+    subtest 'update transaction' => sub {
+        try {
+            my $dbh = &Database::getDBConnection();
+            my $mapper = TransactionMapper->new($dbh);
+            my $loadedTrans = $mapper->get(1);
+            isa_ok($loadedTrans, "Transaction");
+            INFO("got transaction: " . Dumper($loadedTrans));
+            my $res = $mapper->update($loadedTrans);
+            is($res, 1, "updated one row");
+        } catch {
+            ERROR($_);
+            fail($_);            
         };
     };
     
@@ -44,8 +87,7 @@ sub runTests {
         try {
             my $mapper = TransactionMapper->new(&Database::getDBConnection());
             my $trans = $mapper->get(1000000);
-            ok($trans, "$trans");
-            isa_ok($trans, "Transaction");
+            isnt($trans, "should not have transaction");
         } catch {
             ERROR($_);
             fail($_);

@@ -35,14 +35,16 @@ use TestModelListeners;
 &TestBalance::runTests();
 &TestTransaction::runTests();
 
-
-&TestModelListeners::runTests();
-&TestDatabase::runTests();
 &TestReportMapper::runTests();
 &TestBalanceMapper::runTests();
 &TestTransactionMapper::runTests();
+
+&TestModelListeners::runTests();
 &TestMiscData::runTests();
+
 &TestService::runTests();
+
+&TestDatabase::runTests();
 
 
 &done_testing();
