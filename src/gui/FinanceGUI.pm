@@ -10,15 +10,13 @@ use AddTransaction;
 use EditTransaction;
 use Balances;
 
-use lib '../model';
-use Service;
-
 
 
 sub new {
-    my ($class) = @_;
+    my ($class, $service) = @_;
     my $self = {
-        gui => Tkx::widget->new(".")
+        gui       => Tkx::widget->new("."),
+        service   => $service,
     };
     bless($self, $class);
     my $gui = $self->{gui};
@@ -84,7 +82,7 @@ sub makeMenu {
 
 sub displayVersion {
     my ($self) = @_;
-    my $version = &Service::getVersion();
+    my $version = $self->{service}->getVersion();
     my $message = "This is version $version of FinanceManager, developed by Matt Fenwick";
     Tkx::tk___messageBox(-message => $message);
 }
@@ -92,7 +90,7 @@ sub displayVersion {
 
 sub displayWebsite {
     my ($self) = @_;
-    my $add = &Service::getWebAddress();
+    my $add = $self->{service}->getWebAddress();
     Tkx::tk___messageBox(-message => "Please visit us at:  " . $add);
 }
 
@@ -107,8 +105,8 @@ sub makeNotebook {
     $self->makeBalanceFrame($balance);
 #    my $confirm = $n->new_ttk__frame;
 #    $self->makeConfirmFrame($confirm);
-    $n->add($add, -text => "Add transactions");
-    $n->add($edit, -text => "Edit transactions");
+    $n->add($add,     -text => "Add transactions");
+    $n->add($edit,    -text => "Edit transactions");
     $n->add($balance, -text => "Monthly balances");
 #    $n->add($confirm, -text => "Confirm transactions");
     return $n;
@@ -117,21 +115,21 @@ sub makeNotebook {
 
 sub makeAddFrame {
     my ($self, $parent) = @_;
-    my $addFrame = AddTransaction->new($parent);
+    my $addFrame = AddTransaction->new($parent, $self->{service});
     $addFrame->g_grid();
 }
 
 
 sub makeEditFrame {
     my ($self, $parent) = @_;
-    my $editFrame = EditTransaction->new($parent);
+    my $editFrame = EditTransaction->new($parent, $self->{service});
     $editFrame->g_grid();
 }
 
 
 sub makeBalanceFrame {
     my ($self, $parent) = @_;
-    my $balFrame = Balances->new($parent);
+    my $balFrame = Balances->new($parent, $self->{service});
     $balFrame->g_grid();
 }
 
@@ -144,7 +142,7 @@ sub viewReports {
     $top->g_wm_title("View Reports");
     $top->g_grid_columnconfigure(0, -weight => 1);
     $top->g_grid_rowconfigure(0, -weight => 1);
-    my $reportWindow = Reports->new($top);
+    my $reportWindow = Reports->new($top, $self->{service});
     $reportWindow->g_grid(-sticky => 'nsew');
 }
 

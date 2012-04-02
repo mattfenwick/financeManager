@@ -6,15 +6,12 @@ use parent qw/WidgetBase/;
 use ComboBox;
 use Log::Log4perl qw(:easy);
 
-use lib '../model';
-use Service;
-use Messages;
-
 
 
 sub new {
-    my ($class, $parent) = @_;
+    my ($class, $parent, $service) = @_;
     my $self = $class->SUPER::new($parent);
+    $self->{service} = $service;
     my $frame = $self->{frame};
     
     my %info = (text => 'amount',         
@@ -27,16 +24,16 @@ sub new {
     $self->{amount}->g_grid();
     
     $self->{month} = ComboBox->new($frame, 'month', 1,
-        &Service::getMonths(), 0);
+        $service->getMonths(), 0);
     $self->{month}->g_grid();
     
     $self->{year} = ComboBox->new($frame, 'year', 0,
-        &Service::getYears(), 3);
+        $service->getYears(), 3);
     $self->{year}->g_grid();
-    $self->{year}->setSelected(&Service::getCurrentYear());
+    $self->{year}->setSelected($self->{service}->getCurrentYear());
     
     $self->{account} = ComboBox->new($frame, 'account', 1,
-        &Service::getAccounts(), 0);
+        $service->getAccounts(), 0);
     $self->{account}->g_grid();
     
     $self->createButton();
@@ -52,7 +49,7 @@ sub createButton {
         
     my $saver = sub {
         my $hashref = $self->getValues();
-        &Service::replaceBalance($hashref);
+        $self->{service}->replaceBalance($hashref);
     };
     
     $self->{frame}->new_ttk__button(-text => 'add balance', 
@@ -103,7 +100,7 @@ sub addModelListeners {
     my $c = sub {
         $self->onSave(@_);
     };
-    &Messages::addListener("saveBalance", $c);
+    $self->{service}->addListener("saveBalance", $c);
 }
 
 

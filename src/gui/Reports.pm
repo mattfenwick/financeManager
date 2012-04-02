@@ -7,9 +7,6 @@ use ComboBox;
 use ResultViewer;
 use Log::Log4perl qw(:easy);
 
-use lib '../model';
-use Service;
-use Messages;
 
 
 ############### description
@@ -26,14 +23,15 @@ use Messages;
 
 
 sub new {
-    my ($class, $parent) = @_;
+    my ($class, $parent, $service) = @_;
     my $self = $class->SUPER::new($parent);
+    $self->{service} = $service;
     my $frame = $self->{frame};
 
     $self->{parent} = $parent; # save reference to parent to be able to add menu
     
     $self->{cbox} = ComboBox->new($frame, 'Select report', 1,
-            &Service::getAvailableReports(), 0);
+            $service->getAvailableReports(), 0);
             
     $self->{viewer} = ResultViewer->new($frame);
 
@@ -92,7 +90,7 @@ sub cleanUp {
     my @ids = @{$self->{listenerIds}};
     INFO("cleaning up reports window -- removing " . scalar(@ids) . " listeners");
     for my $id (@ids) {
-        &Messages::removeListener(@$id); # deref as array b/c model needs 2 args
+        $self->{service}->removeListener($id);
     }
     $gui->Tkx::destroy();
 }
@@ -116,7 +114,7 @@ sub fetchAndDisplayReport {
     my $reportName = $self->{cbox}->getSelected();
     INFO("selected report: $reportName");    
     
-    my ($report) = &Service::getReport($reportName);
+    my ($report) = $self->{service}->getReport($reportName);
     $self->{viewer}->displayResults($report->getHeadings(), $report->getRows());
     $self->{report} = $report;
     $self->resetColors();
@@ -183,15 +181,13 @@ sub addModelListeners {
         INFO("change in model reported ... updating report");
         $self->onModelChange(@_);
     };
-    my @pairs = ();
-    my @events = ("saveTrans", "editTrans", "deleteTrans", "saveBalance");
+    my @ids = ();
+    my @events = ("saveTransaction", "editTransaction", "deleteTransaction", "saveBalance");
     for my $event (@events) {
-        # return value is a pair of (event type, listener id)
-        my @pair = &Messages::addListener($event, $trans);
-        die "haven't implemented capturing listener ids yet (for later removal)";
-        push(@pairs, \@pair);
+        my $id = $self->{service}->addListener($event, $trans);
+        push(@ids, $id);
     }
-    $self->{listenerIds} = \@pairs;
+    $self->{listenerIds} = \@ids;
 }
 
 

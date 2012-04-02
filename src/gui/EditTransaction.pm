@@ -6,17 +6,15 @@ use parent qw/BaseTransaction/;
 use ComboBox;
 use Log::Log4perl qw(:easy);
 
-use lib '../model';
-use Service;
-use Messages;
 
 
 sub new {
-    my ($class, $parent) = @_;
+    my ($class, $parent, $service) = @_;
     my $self = $class->SUPER::new($parent);
+    $self->{service} = $service;
     
     $self->{selector} = ComboBox->new($self->{frame}, 'select id', 1,
-        &Service::getIDs);
+        $service->getIDs());
     $self->{selector}->g_grid(-row => 1, -column => 1);
     $self->{selector}->setAction(
         sub { 
@@ -36,7 +34,7 @@ sub createButton {
     my $saver = sub {
         my $hashref = $self->getValues();
         $hashref->{id} = $self->{selector}->getSelected();
-        &Service::updateTransaction($hashref);
+        $self->{service}->updateTransaction($hashref);
     };
     
     $self->{frame}->new_ttk__button(-text => 'update transaction', 
@@ -56,7 +54,7 @@ sub deleteButton {
             -icon => "question", -title => "Delete transaction");
         if ($continue eq "yes") {
             WARN("deleting transaction <$id>");
-            &Service::deleteTransaction($id);
+            $self->{service}->deleteTransaction($id);
         } else {
             # nothing to do
         }
@@ -68,7 +66,7 @@ sub deleteButton {
 
 sub setValues {
     my ($self, $id) = @_;
-    my $result = &Service::getTransaction($id);
+    my $result = $self->{service}->getTransaction($id);
 
     $self->{comment}->setSelected($result->{comment});
     $self->{account}->setSelected($result->{account});
@@ -89,7 +87,7 @@ sub onDelete {
     my ($self, $status, $message) = @_;
     if($status eq "success") {
         Tkx::tk___messageBox(-message => "Transaction successfully deleted!");      
-        $self->{selector}->setValues(&Service::getIDs);
+        $self->{selector}->setValues($self->{service}->getIDs());
         $self->{selector}->setSelectedIndex(0);             # make combobox selection valid
         $self->setValues($self->{selector}->getSelected()); # and set widgets
         $self->resetColors();                               # reset widget colors
@@ -106,7 +104,7 @@ sub onEdit {
     my ($self, $status, $message) = @_;
     if($status eq "success") {
         Tkx::tk___messageBox(-message => "Transaction successfully updated!");
-        $self->{comment}->setValues(&Service::getComments());
+        $self->{comment}->setValues($self->{service}->getComments());
         $self->resetColors();
     } elsif($status eq "failure") {
         Tkx::tk___messageBox(-message => "Transaction could not be updated: $message");
@@ -120,7 +118,7 @@ sub onEdit {
 sub onNewIds {
 	my ($self, $status) = @_;
     if($status eq "success") {
-        $self->{selector}->setValues(&Service::getIDs());
+        $self->{selector}->setValues($self->{service}->getIDs());
         INFO("ids updated");
     } elsif($status eq "failure") {
         # no change in ids -> nothing to do

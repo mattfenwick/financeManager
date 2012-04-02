@@ -3,16 +3,14 @@ use warnings;
 
 package AddTransaction;
 use parent qw/BaseTransaction/;
+use Log::Log4perl qw(:easy);
 
-use lib '../model';
-use Service;
-use Messages;
 
 
 sub new {
-    my ($class, $parent) = @_;
+    my ($class, $parent, $service) = @_;
     my $self = $class->SUPER::new($parent);
-    
+    $self->{service} = $service;
     return $self;
 }
 
@@ -22,7 +20,7 @@ sub createButton {
         
     my $saver = sub {
         my $hashref = $self->getValues();
-        &Service::saveTransaction($hashref);
+        $self->{service}->saveTransaction($hashref);
     };
     
     $self->{frame}->new_ttk__button(-text => 'save transaction', 
@@ -37,7 +35,7 @@ sub onSave {
     my ($self, $status, $message) = @_;
     if($status eq "success") {          
         Tkx::tk___messageBox(-message => "Transaction successfully added!");
-        $self->{comment}->setValues(&Service::getComments());
+        $self->{comment}->setValues($self->{service}->getComments());
         $self->resetColors();
     } elsif($status eq "failure") {
         Tkx::tk___messageBox(-message => "Transaction could not be added: $message"); 
@@ -53,7 +51,7 @@ sub addModelListeners {
     my $callback = sub {
     	$self->onSave(@_);
     };
-    &Messages::addListener("saveTransaction", $callback);
+    $self->{service}->addListener("saveTransaction", $callback);
 }
 
 1;
