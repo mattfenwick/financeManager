@@ -2,8 +2,8 @@ use strict;
 use warnings;
 
 package FinanceGUI;
-use LabelEntry;    
 use Data::Dumper;
+use LabelEntry;    
 use ComboBox;
 use Reports;
 use AddTransaction;
@@ -57,7 +57,7 @@ sub makeMenu {
     $file->add_command(
         -label     => "Exit",
         -underline => 1,
-        -command   => sub {$gui->Tkx::destroy();},
+        -command   => sub { $self->cleanUp(); },
     );
     
     $menu->add_cascade(
@@ -77,6 +77,12 @@ sub makeMenu {
     );
   
     $gui->configure(-menu => $menu);
+}
+
+
+sub cleanUp {
+    my ($self) = @_;
+    $self->{gui}->Tkx::destroy();
 }
 
 

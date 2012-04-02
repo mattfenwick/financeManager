@@ -28,7 +28,7 @@ sub new {
     $self->{month}->g_grid();
     
     $self->{year} = ComboBox->new($frame, 'year', 0,
-        $service->getYears(), 3);
+        $service->getYears(), 0);
     $self->{year}->g_grid();
     $self->{year}->setSelected($self->{service}->getCurrentYear());
     
