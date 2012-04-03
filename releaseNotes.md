@@ -1,11 +1,19 @@
 
+Changes in v1.2.0:
+
+1.  reports auto-update when transactions are saved, edited, and deleted, and when
+      balances are saved
+2.  list of transaction ids auto-updates when a transaction is saved
+
+------------------------------------------------------------------------------------------
+
 Changes in v1.1.0:
 
 1.  comboboxes, checkboxes, and text entries now turn red when contents are modified
       the color is reset when the data is saved/processed
 2.  end-of-month-balances is no longer "live": it does not fetch data from the database
       (but it still saves it there)
-      be careful, though -- it's easy to inadvertantly overwrite values (no warning)
+      be careful, though -- it's easy to inadvertently overwrite values (no warning)
 
 ------------------------------------------------------------------------------------------
 

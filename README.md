@@ -2,7 +2,7 @@
 
 FinanceManager is a database-backed application that stores and reports on financial records.
 
-This project is light and easy to use interface that makes your data come to life!
+This project is a light and easy to use interface that brings your data to life!
 
 ## Goals
 
