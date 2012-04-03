@@ -66,15 +66,15 @@ sub new {
 sub getValues {
     my ($self) = @_;
     my %hash = (
-        amount  =>  $self->{amount}->getText(),
-        account =>  $self->{account}->getSelected(),
-        year    =>  $self->{year}->getSelected(), 
-        month   =>  $self->{month}->getSelected(), 
-        day     =>  $self->{day}->getSelected(), 
-        comment =>  $self->{comment}->getSelected(),
-        bank    =>  $self->{isBankConfirmed}->isChecked(),
-        receipt =>  $self->{isReceipt}->isChecked(),
-        type    =>  $self->{type}->getSelected()
+        amount              =>  $self->{amount}->getText(),
+        account             =>  $self->{account}->getSelected(),
+        year                =>  $self->{year}->getSelected(), 
+        month               =>  $self->{month}->getSelected(), 
+        day                 =>  $self->{day}->getSelected(), 
+        comment             =>  $self->{comment}->getSelected(),
+        isbankconfirmed     =>  $self->{isBankConfirmed}->isChecked(),
+        isreceiptconfirmed  =>  $self->{isReceipt}->isChecked(),
+        type                =>  $self->{type}->getSelected()
     );
     return \%hash;
 }

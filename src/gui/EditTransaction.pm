@@ -12,8 +12,7 @@ sub new {
     my ($class, $parent, $service) = @_;
     my $self = $class->SUPER::new($parent, $service);
     
-    $self->{selector} = ComboBox->new($self->{frame}, 'select id', 1,
-        $service->getIDs());
+    $self->{selector} = ComboBox->new($self->{frame}, 'select id', 1);
     $self->{selector}->g_grid(-row => 1, -column => 1);
     $self->{selector}->setAction(
         sub { 
@@ -23,7 +22,17 @@ sub new {
         }
     );
     
+    $self->setIDs();
+    
     return $self;
+}
+
+
+sub setIDs {
+    my ($self) = @_;
+    my $ids = $self->{service}->getIDs();
+    $self->{selector}->setValues([sort {$a <=> $b} @$ids]);
+    INFO("ids updated");
 }
 
 
@@ -86,7 +95,7 @@ sub onDelete {
     my ($self, $status, $message) = @_;
     if($status eq "success") {
         Tkx::tk___messageBox(-message => "Transaction successfully deleted!");      
-        $self->{selector}->setValues($self->{service}->getIDs());
+        $self->setIDs();
         $self->{selector}->setSelectedIndex(0);             # make combobox selection valid
         $self->setValues($self->{selector}->getSelected()); # and set widgets
         $self->resetColors();                               # reset widget colors
@@ -117,8 +126,7 @@ sub onEdit {
 sub onNewIds {
 	my ($self, $status) = @_;
     if($status eq "success") {
-        $self->{selector}->setValues($self->{service}->getIDs());
-        INFO("ids updated");
+        $self->setIDs();
     } elsif($status eq "failure") {
         # no change in ids -> nothing to do
     } else {
