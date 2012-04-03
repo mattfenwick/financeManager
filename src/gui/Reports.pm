@@ -87,12 +87,12 @@ sub makeMenu {
 
 sub cleanUp {
     my ($self) = @_;
-    my $gui = $self->{parent};
     my @ids = @{$self->{listenerIds}};
     INFO("cleaning up reports window -- removing " . scalar(@ids) . " listeners");
     for my $id (@ids) {
         $self->{service}->removeListener($id);
     }
+    my $gui = $self->{parent};
     $gui->Tkx::destroy();
 }
 
@@ -180,12 +180,8 @@ sub addModelListeners {
     my ($self) = @_;
     my $trans = sub {
         my (@args) = @_;
-        try {
-            INFO("change in model reported ... updating report");
-            $self->onModelChange(@args);
-        } catch {
-            ERROR("Report listener: error <$_> with args <@_>");
-        };
+        INFO("change in model reported ... updating report");
+        $self->onModelChange(@args);
     };
     my @ids = ();
     my @events = ("saveTransaction", "updateTransaction", "deleteTransaction", "saveBalance");

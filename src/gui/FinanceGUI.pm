@@ -150,6 +150,7 @@ sub viewReports {
     $top->g_grid_rowconfigure(0, -weight => 1);
     my $reportWindow = Reports->new($top, $self->{service});
     $reportWindow->g_grid(-sticky => 'nsew');
+    $top->g_wm_protocol('WM_DELETE_WINDOW', sub {$reportWindow->cleanUp();});
 }
 
 
