@@ -30,6 +30,7 @@ sub new {
 sub saveTransaction {
     my ($self, $hashref) = @_;
     INFO("saving transaction:  args are " . Dumper($hashref) );
+    Transaction->new($hashref);
     $self->{messages}->notify("saveTransaction", "success");
 }
 
@@ -61,6 +62,7 @@ sub deleteTransaction {
 sub updateTransaction {
     my ($self, $hashref) = @_;
     INFO("updating transaction, args are:  " . Dumper($hashref));
+    my $trans = Transaction->new($hashref);
     $self->{messages}->notify("updateTransaction", "success");
 }
 
@@ -70,6 +72,7 @@ sub updateTransaction {
 sub replaceBalance {
     my ($self, $hashref) = @_;
     INFO("setting end of month balance, args are: " . Dumper($hashref) );
+    Balance->new($hashref);
     $self->{messages}->notify("saveBalance", "success");
 }
 
@@ -100,7 +103,7 @@ sub getReport {
 
 sub getMonths {
     my ($self) = @_;
-    return ["January", "February"];
+    return [1,2,3,4];
 }
 
 
@@ -112,7 +115,7 @@ sub getYears {
 
 sub getDays {
     my ($self) = @_;
-    return ["Monday", "Tuesday"];
+    return [1,2,3,4];
 }
 
 

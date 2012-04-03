@@ -72,7 +72,8 @@ sub runTests {
         try {
             my $dbh = &Database::getDBConnection();
             my $mapper = TransactionMapper->new($dbh);
-            my $loadedTrans = $mapper->get(1);
+            # if this fails, it may just be cause "2" isn't in the db
+            my $loadedTrans = $mapper->get(2);
             isa_ok($loadedTrans, "Transaction");
             INFO("got transaction: " . Dumper($loadedTrans));
             my $res = $mapper->update($loadedTrans);
