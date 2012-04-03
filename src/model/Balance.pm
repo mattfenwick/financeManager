@@ -23,7 +23,7 @@ my %validations = (
     },
     
     account => sub {
-        return length($_[0]) > 0;
+        return (length($_[0]) > 0);
     },
     
     month   => sub {
@@ -40,6 +40,11 @@ my %validations = (
 
 sub _validate {
     my ($self) = @_;
+    my $n = scalar(keys %validations);
+    my $m = scalar(keys %$self);
+    if($n != $m) {
+        die "missing fields (expected $n, got $m)";
+    }
     for my $key (keys %$self) {
         my $checker = $validations{$key};
         if(!$checker) {

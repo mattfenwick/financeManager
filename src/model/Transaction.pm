@@ -65,6 +65,13 @@ my %validations = (
 
 sub _validate {
     my ($self) = @_;
+    my $n = scalar(keys %validations);
+    my $m = scalar(keys %$self);
+    # there can be one less field in self because:
+    #    the id may not be set
+    if($n != $m && ($n - 1) != $m) {
+        die "missing fields (expected $n, got $m)";
+    }
     for my $key (keys %$self) {
         my $checker = $validations{$key};
         if(!$checker) {

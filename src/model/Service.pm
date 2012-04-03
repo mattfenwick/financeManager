@@ -161,7 +161,7 @@ sub getYears {
 
 sub getDays {
     my ($self) = @_;
-    return $self->{miscData}->getColumns('days');
+    return $self->{miscData}->getColumn('days');
 }
 
 
