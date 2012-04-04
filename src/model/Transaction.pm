@@ -18,16 +18,16 @@ sub new {
 
 
 my %validations = (
-    year => sub {
-        return $_[0] =~ /^\d{4}$/;
+    date => sub {
+        return $_[0] =~ /^\d{4}-\d{1,2}-\d{1,2}$/;
     },
     
-    month => sub {
-        return ($_[0] =~ /^\d{1,2}$/ && $_[0] <= 12 && $_[0] > 0);
+    purchasedate => sub {
+        return $_[0] =~ /^\d{4}-\d{1,2}-\d{1,2}$/;
     },
     
-    day => sub {
-        return ($_[0] =~ /^\d{1,2}$/ && $_[0] <= 31 && $_[0] >= 0);
+    savedate => sub {
+        return $_[0] =~ /^\d{4}-\d{1,2}-\d{1,2}$/;
     },
     
     comment => sub {

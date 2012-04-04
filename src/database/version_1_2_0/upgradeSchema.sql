@@ -2,6 +2,16 @@
 use finance;
 
 
+alter table transactions 
+  add column savetime timestamp 
+  default CURRENT_TIMESTAMP;
+  
+  
+alter table transactions
+  add column purchasedate date
+  not null;
+
+
 CREATE TABLE `transactionaudit` (
   `id` int(11) primary key AUTO_INCREMENT,
   `time` timestamp

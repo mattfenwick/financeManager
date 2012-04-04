@@ -70,6 +70,34 @@ sub get {
 
 
 # contract:
+#   returns arrayref of Transaction instances
+sub getAll {
+    my ($self) = @_;
+    my $statement = '
+        select 
+            id,
+            comment,
+            amount,
+            type,
+            account,
+            isreceiptconfirmed,
+            isbankconfirmed, 
+            `date`,
+            date(savetime) as savedate,
+            purchasedate
+        from transactions';
+    my $sth = $self->{dbh}->prepare($statement);
+    $sth->execute();
+    my $result = $sth->fetchall_arrayref({});
+    my @trans = ();
+    for my $res (@$result) {
+        push(@trans, Transaction->new($res));
+    }
+    return [@trans];
+}
+
+
+# contract:
 #   1:  success
 #   anything else:  failure
 sub update {
