@@ -35,20 +35,30 @@ sub new {
 }
 
 
+sub getTransactions {
+    my ($self) = @_;
+    if(!$self->{transactions}) {
+        my @trans = ();
+        my $ids = $self->{service}->getIDs();
+        for my $id (@$ids) {
+            my $t = $self->{service}->getTransaction($id);
+            push(@trans, $t);
+        }
+        $self->{transactions} = \@trans;
+    }
+}
+
+
 sub showTransactions {
     my ($self) = @_;
     my $year = $self->{year}->getSelected();
     my $month = $self->{month}->getSelected();
     my $account = $self->{account}->getSelected();
     
-    my $ids = $self->{service}->getIDs();
-    my @trans = ();
-    for my $id (@$ids) {
-        my $t = $self->{service}->getTransaction($id);
-        push(@trans, $t);
-    }
+    my @trans = @{$self->{transactions}};
 #    my $rep = $self->{service}->getReport('transactions');
 #    my $trans = $rep->getDictRows();
+
     INFO("found " . scalar(@trans) . " rows");
     my @filt1;
     if($year eq "all") {
