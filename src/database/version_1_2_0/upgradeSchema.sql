@@ -10,6 +10,10 @@ alter table transactions
 alter table transactions
   add column purchasedate date
   not null;
+  
+  
+update transactions
+  set purchasedate = date;
 
 
 CREATE TABLE `transactionaudit` (
