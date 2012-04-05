@@ -2,14 +2,30 @@ use strict;
 use warnings;
 
 package Transaction;
+use Date;
+use Log::Log4perl qw(:easy);
 
 
 
 sub new {
     my ($class, $fields) = @_;
+    my $r = ref($fields);
+    if($r ne "HASH") {
+        my $message = "expected hash ref, got <$r>";
+        ERROR($message);
+        die $message;
+    }
     my $self = {};
     for my $f (keys %$fields) {
         $self->{$f} = $fields->{$f};
+    }
+    my @dates = qw/savedate purchasedate date/;
+    # initialize all date strings to Dates (if they're defined)
+    for my $d (@dates) {
+        INFO("creating date $d");
+        if($self->{$d}) {
+            $self->{$d} = Date->fromYMD($self->{$d});
+        }
     }
 	bless($self, $class);
 	$self->_validate();
@@ -18,16 +34,19 @@ sub new {
 
 
 my %validations = (
+    # rely on Date for checking date values
     date => sub {
-        return $_[0] =~ /^\d{4}-\d{1,2}-\d{1,2}$/;
+        return ref($_[0]) eq "Date";
     },
     
     purchasedate => sub {
-        return $_[0] =~ /^\d{4}-\d{1,2}-\d{1,2}$/;
+        return ref($_[0]) eq "Date";
     },
     
+    # this is a read-only field provided by the database
+    #   it won't be set when Transaction built off of data from GUI
     savedate => sub {
-        return $_[0] =~ /^\d{4}-\d{1,2}-\d{1,2}$/;
+        return (!defined($_[0]) || ref($_[0]) eq "Date");
     },
     
     comment => sub {
@@ -58,7 +77,7 @@ my %validations = (
     },
     
     id => sub {
-        return ($_[0] =~ /^\d+$/ || !defined($_[0]));
+        return (!defined($_[0]) || $_[0] =~ /^\d+$/);
     }
 );
 
@@ -67,16 +86,15 @@ sub _validate {
     my ($self) = @_;
     my $n = scalar(keys %validations);
     my $m = scalar(keys %$self);
-    # there can be one less field in self because:
-    #    the id may not be set
-    if($n != $m && ($n - 1) != $m) {
-        die "missing fields (expected $n, got $m)";
-    }
+    # extra keys not in %validations?  bad!
     for my $key (keys %$self) {
-        my $checker = $validations{$key};
-        if(!$checker) {
-            die "bad field name: <$key>";
+        if(!defined($validations{$key})) {
+            die "unrecognized key: <$key>";
         }
+    }
+    # validate all keys in %validations
+    for my $key (keys %validations) {
+        my $checker = $validations{$key};
         my $val = $self->{$key};
         if(!$checker->($val)) {
             die "bad $key: <$val>";

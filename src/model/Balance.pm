@@ -7,6 +7,12 @@ package Balance;
 
 sub new {
     my ($class, $fields) = @_;
+    my $r = ref($fields);
+    if($r ne "HASH") {
+        my $message = "expected hash ref, got <$r>";
+        ERROR($message);
+        die $message;
+    }
     my $self = {};
     for my $f (keys %$fields) {
         $self->{$f} = $fields->{$f};

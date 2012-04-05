@@ -25,13 +25,13 @@ sub save {
 	my ($self, $trans) = @_;
     try {
         my %fields = %$trans;
-        my $date = join('-', $fields{year}, $fields{month}, $fields{day});
         my $result = $self->{dbh}->do(
             'insert into transactions 
-                (`date`, comment, amount, type, 
+                (`date`, purchasedate, comment, amount, type, 
                     account, isreceiptconfirmed, isbankconfirmed)
-                values(?, ?, ?, ?, ?, ?, ?)', undef,
-            $date, $fields{comment}, $fields{amount}, $fields{type}, 
+                values(?, ?, ?, ?, ?, ?, ?, ?)', undef,
+            $fields{date}->toYMD(), $fields{purchasedate}->toYMD(), 
+                $fields{comment}, $fields{amount}, $fields{type}, 
                 $fields{account}, $fields{isreceiptconfirmed}, $fields{isbankconfirmed}
         );
         return $result;
@@ -53,10 +53,10 @@ sub get {
             type,
             account,
             isreceiptconfirmed,
-            isbankconfirmed, 
-            year(`date`) as year, 
-            month(`date`) as month, 
-            day(`date`) as day 
+            isbankconfirmed,  
+            `date`,
+            date(savetime) as savedate,
+            purchasedate
         from transactions where id = ?';
     my $sth = $self->{dbh}->prepare($statement);
     $sth->execute($id);
@@ -104,10 +104,10 @@ sub update {
     my ($self, $trans) = @_;
     try {
         my %fields = %$trans;
-        my $date = join('-', $fields{year}, $fields{month}, $fields{day});
         my $result = $self->{dbh}->do('
             update transactions set
                 `date` = ?, 
+                purchasedate = ?,
                 comment = ?, 
                 amount = ?, 
                 account = ?, 
@@ -115,7 +115,8 @@ sub update {
                 isbankconfirmed = ?,
                 type = ?
             where id = ?', undef,
-                $date, $fields{comment}, $fields{amount}, $fields{account}, 
+                $fields{date}->toYMD(), $fields{purchasedate}->toYMD(), 
+                    $fields{comment}, $fields{amount}, $fields{account}, 
                     $fields{isreceiptconfirmed}, $fields{isbankconfirmed}, 
                     $fields{type}, $fields{id} );
         return $result;
