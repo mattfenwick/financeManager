@@ -78,9 +78,8 @@ sub setValues {
 
     $self->{comment}->setSelected($result->{comment});
     $self->{account}->setSelected($result->{account});
-    $self->{year}->setSelected($result->{year});
-    $self->{month}->setSelected($result->{month});
-    $self->{day}->setSelected($result->{day});
+    $self->{date}->setText($result->{date}->toYMD());
+    $self->{purchasedate}->setText($result->{purchasedate}->toYMD());
     $self->{amount}->setText($result->{amount});
     $self->{isReceipt}->setChecked($result->{isreceiptconfirmed});
     $self->{isBankConfirmed}->setChecked($result->{isbankconfirmed});

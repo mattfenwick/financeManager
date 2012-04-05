@@ -26,18 +26,11 @@ sub new {
         $service->getComments(), 0);
     $self->{comment}->g_grid();
     
-    $self->{year} = ComboBox->new($frame, 'year', 0,
-        $service->getYears(), 0);
-    $self->{year}->setSelected($service->getCurrentYear());
-    $self->{year}->g_grid();
+    $self->{date} = LabelEntry->new($frame, 'bank date', sub {1;}, '2012-01-01');
+    $self->{date}->g_grid();
     
-    $self->{month} = ComboBox->new($frame, 'month', 1,
-        $service->getMonths(), 0);
-    $self->{month}->g_grid();
-    
-    $self->{day} = ComboBox->new($frame, 'day', 1,
-        $service->getDays(), 1);
-    $self->{day}->g_grid();
+    $self->{purchasedate} = LabelEntry->new($frame, 'purchase date', sub {1;}, '2012-01-01');
+    $self->{purchasedate}->g_grid();
     
     $self->{account} = ComboBox->new($frame, 'account', 1,
         $service->getAccounts(), 0);
@@ -68,9 +61,8 @@ sub getValues {
     my %hash = (
         amount              =>  $self->{amount}->getText(),
         account             =>  $self->{account}->getSelected(),
-        year                =>  $self->{year}->getSelected(), 
-        month               =>  $self->{month}->getSelected(), 
-        day                 =>  $self->{day}->getSelected(), 
+        date                =>  $self->{date}->getText(),
+        purchasedate        =>  $self->{purchasedate}->getText(),
         comment             =>  $self->{comment}->getSelected(),
         isbankconfirmed     =>  $self->{isBankConfirmed}->isChecked(),
         isreceiptconfirmed  =>  $self->{isReceipt}->isChecked(),
@@ -83,11 +75,10 @@ sub getValues {
 sub resetColors {
     my ($self) = @_;
     my @widgets = (
-        $self->{amount}, $self->{comment},
-        $self->{year}, $self->{month},
-        $self->{day}, $self->{account},
-        $self->{type}, $self->{isReceipt},
-        $self->{isBankConfirmed}
+        $self->{amount},    $self->{comment},
+        $self->{date},      $self->{purchasedate},
+        $self->{account},   $self->{type}, 
+        $self->{isReceipt}, $self->{isBankConfirmed}
     );
     for my $w (@widgets) {
         $w->setDefaultColor();

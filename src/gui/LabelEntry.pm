@@ -16,12 +16,16 @@ use parent qw/WidgetBase/;
 #
 
 sub new {
-    my ($class, $parent, $text, $validator) = @_;
+    my ($class, $parent, $label, $validator, $text) = @_;
     my $self = $class->SUPER::new($parent);
     my $frame = $self->{frame};
     
-    $self->{label} = $frame->new_label(-text => $text);
-    $self->{text} = "";
+    $self->{label} = $frame->new_label(-text => $label);
+    if($text) {
+        $self->{text} = $text;
+    } else {
+        $self->{text} = "";
+    }
     $self->{entry} = $frame->new_entry(-textvariable => \$self->{text});
     
     $self->{entry}->configure(-validate => "key",
