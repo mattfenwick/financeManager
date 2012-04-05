@@ -21,9 +21,8 @@ sub runTests {
         try {
             my $service = Service->new(&Database::getDBConnection());
             my $first = {
-                year    => 1492,
-                month   => 3,
-                day     => 18,
+                date            => '2012-4-22',
+                purchasedate    => '2012-04-9',
                 account => "Credit card",
                 type    => "General deposit",
                 isreceiptconfirmed => 1,
@@ -54,9 +53,13 @@ sub runTests {
             for my $key (keys %$trans) { # copy the key/value pairs over
                 $new{$key} = $trans->{$key};
             }
+            WARN("new keys: " . Dumper(\%new));
+            $new{date} = $new{date}->toYMD();
+            $new{purchasedate} = $new{purchasedate}->toYMD();
+            $new{savedate} = $new{savedate}->toYMD();
             
             # update the one we're assuming to be the most recent
-            $service->updateTransaction(Transaction->new(\%new));
+            $service->updateTransaction(\%new);
             
             # get the one that we think we just updated
             my $saved = $service->getTransaction($ids[$#ids]);

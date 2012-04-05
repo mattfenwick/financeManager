@@ -18,6 +18,7 @@ use TestImports; # runs at compile time ???
 use TestMessages;
 use TestReport;
 use TestBalance;
+use TestDate;
 use TestTransaction;
 
 use TestDatabase;
@@ -33,6 +34,7 @@ use TestModelListeners;
 &TestMessages::runTests();
 &TestReport::runTests();
 &TestBalance::runTests();
+&TestDate::runTests();
 &TestTransaction::runTests();
 
 &TestReportMapper::runTests();

@@ -21,15 +21,14 @@ sub runTests {
         try {
             my $mapper = TransactionMapper->new(&Database::getDBConnection());
 	        my $trans = Transaction->new({
-                year    => 2004,
-                month   => 11,
-                day     => 1, 
-                account => 'Savings', 
-                amount => 77,
+                date            => '2011-8-19',
+                purchasedate    => '2011-08-09',
+                account         => "Checking",
+                amount          => 7.32,
                 isreceiptconfirmed => 0,
                 isbankconfirmed    => 1,
-                type    => 'General withdrawal',
-                comment => 'abcd'
+                type            => 'General withdrawal',
+                comment         => 'abcd'
 	        });
 	        my $result = $mapper->save($trans);
 	        is(1, $result, "saved transaction");
@@ -43,10 +42,10 @@ sub runTests {
         try {
             my $dbh = &Database::getDBConnection();
             $dbh->do('insert into transactions 
-                (id, `date`, comment, amount, type, 
+                (id, `date`, purchasedate, comment, amount, type, 
                     account, isreceiptconfirmed, isbankconfirmed) 
                 values 
-                (2000000, "2011-1-1", "hi", 1, "General withdrawal",
+                (2000000, "2011-1-1", "2001-1-2", "hi", 1, "General withdrawal",
                     "Checking", 1, 0);');
             my $mapper = TransactionMapper->new($dbh);
             my $res = $mapper->delete(2000000);

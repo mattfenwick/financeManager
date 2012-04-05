@@ -39,9 +39,8 @@ sub getTransaction {
     my ($self, $id) = @_;
     INFO("attempting to fetch transaction of id <$id>");
     return Transaction->new({
-        year => 2012,
-        month => 2,
-        day   => 24,
+        date    => '2012-3-1',
+        purchasedate => '2012-3-2',
         account => "Credit card",
         amount  => 100.20,
         comment => "my first comment",
