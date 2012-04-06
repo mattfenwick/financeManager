@@ -9,6 +9,7 @@ use Reports;
 use AddTransaction;
 use EditTransaction;
 use Balances;
+use TFilter;
 
 
 
@@ -50,9 +51,16 @@ sub makeMenu {
     $file->add_command(
         -label       => "View reports",
         -accelerator => "Ctrl+R", # is this just a message, or does it do something?
-        -command     => [\&viewReports, $self],
+        -command     => [\&viewReports, $self]
     );
     $gui->g_bind("<Control-r>", [\&viewReports, $self]);
+    
+    $file->add_command(
+        -label       => "Transaction grid",
+        -accelerator => "Ctrl+T",
+        -command     => sub {$self->tFilter();}
+    );
+    $gui->g_bind("<Control-t>", sub {$self->tFilter();});
     
     $file->add_command(
         -label     => "Exit",
@@ -151,6 +159,19 @@ sub viewReports {
     my $reportWindow = Reports->new($top, $self->{service});
     $reportWindow->g_grid(-sticky => 'nsew');
     $top->g_wm_protocol('WM_DELETE_WINDOW', sub {$reportWindow->cleanUp();});
+}
+
+
+sub tFilter {
+    my ($self) = @_;
+    my $gui = $self->{gui};
+    my $top = $gui->new_toplevel();
+    $top->g_wm_minsize(500, 2);
+    $top->g_wm_title("Transaction Grid");
+    $top->g_grid_columnconfigure(0, -weight => 1);
+    $top->g_grid_rowconfigure(0, -weight => 1);
+    my $tGrid = TFilter->new($top, $self->{service});
+    $tGrid->g_grid(-sticky => 'nsew');
 }
 
 
