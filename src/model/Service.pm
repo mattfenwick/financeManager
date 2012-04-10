@@ -66,6 +66,13 @@ sub getTransaction {
 }
 
 
+sub getAllTransactions {
+    my ($self) = @_;
+    INFO("attempting to fetch all transactions");
+    return $self->{transactionMapper}->getAll();
+}
+
+
 sub deleteTransaction {
     my ($self, $id) = @_;
     INFO("attempting to delete transaction <$id>");

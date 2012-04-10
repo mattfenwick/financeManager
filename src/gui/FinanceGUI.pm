@@ -9,7 +9,7 @@ use Reports;
 use AddTransaction;
 use EditTransaction;
 use Balances;
-use TFilter;
+use TGrid;
 
 
 
@@ -58,9 +58,9 @@ sub makeMenu {
     $file->add_command(
         -label       => "Transaction grid",
         -accelerator => "Ctrl+T",
-        -command     => sub {$self->tFilter();}
+        -command     => sub {$self->tGrid();}
     );
-    $gui->g_bind("<Control-t>", sub {$self->tFilter();});
+    $gui->g_bind("<Control-t>", sub {$self->tGrid();});
     
     $file->add_command(
         -label     => "Exit",
@@ -162,7 +162,7 @@ sub viewReports {
 }
 
 
-sub tFilter {
+sub tGrid {
     my ($self) = @_;
     my $gui = $self->{gui};
     my $top = $gui->new_toplevel();
@@ -170,7 +170,7 @@ sub tFilter {
     $top->g_wm_title("Transaction Grid");
     $top->g_grid_columnconfigure(0, -weight => 1);
     $top->g_grid_rowconfigure(0, -weight => 1);
-    my $tGrid = TFilter->new($top, $self->{service});
+    my $tGrid = TGrid->new($top, $self->{service});
     $tGrid->g_grid(-sticky => 'nsew');
 }
 
