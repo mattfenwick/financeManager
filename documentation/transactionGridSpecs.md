@@ -19,7 +19,22 @@
  
  - validators
    - called from setAttribute
+   - throw an exception if bad input
+   - return "cleaned" data (possibly no modification)
  
+## TransactionMapper
+
+ - save(Transaction t)
+   1. check that t is_a Transaction
+   2. begin "database transaction"
+   3. insert row
+   4. get last_insert_id
+   5. get Transaction of last_insert_id
+   6. check that all fields match
+     - if not:  rollback?  error?
+   7. write 'id' into Transaction
+   8. commit
+   9. return id
 
 
 ## Row
@@ -56,6 +71,8 @@
  - widget coloring
    - outlined in red if edited (for both saved & unsaved rows)
    - if value changed, then changed back to original, should NOT be red
+   
+ - listeners to model events
  
 
 ## TransactionGrid model
@@ -112,6 +129,11 @@
      7. Row stays in same spot:  no re-sort
    - failure:
      1. complain to user
+   - **how is model listener registered?** 
+     - how does specific Row know that *its* Transaction was saved?
+     - could be implied by fact that Transaction now has an id?
+     - model event needs to broadcast id of saved Transaction
+   - **what if Transaction is changed, but save still fails?**
      
  3. cancel 
    - preconditions:
@@ -128,6 +150,10 @@
      4. Transaction in cache will be updated because we're working with a reference to it
    - failure:
      1. complain to user
+   - **how is model listener registered?** 
+     - how does specific Row know that *its* Transaction was updated?
+     - model event needs to broadcast id of updated Transaction
+   - **what if Transaction is changed, but save still fails?**
  
  5. delete Transaction
    - preconditions:
@@ -137,6 +163,9 @@
      1. get rid of Row
    - failure:
      1. complain to user
+   - **how is model listener registered?** 
+     - how does specific Row know that *its* Transaction was deleted?
+     - model event needs to broadcast id of deleted Transaction
 
 
 ## TransactionGrid events
@@ -151,6 +180,27 @@
    - failure:
      - complain to user
      - say what to do to get it to work
+
+
+## Model events
+
+ 1. save Transaction
+   - arguments:  
+     1. status (success/failure)
+     2. id of Transaction if success
+     2. error message if failure 
+
+ 2. update Transaction
+   - arguments:  
+     1. status (success/failure)
+     2. id of Transaction if success
+     2. error message if failure 
+
+ 3. delete Transaction
+   - arguments:  
+     1. status (success/failure)
+     2. id of Transaction if success
+     2. error message if failure 
      
 
 ## Non goals

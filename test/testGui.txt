@@ -1,0 +1,323 @@
+INFO  EditTransaction.pm-35-EditTransaction::setIDs: (2012/04/03 16:52:05) ids updated
+INFO  MockService.pm-32-MockService::saveTransaction: (2012/04/03 16:52:11) saving transaction:  args are $VAR1 = {
+          'amount' => '22',
+          'comment' => 'abc',
+          'month' => '1',
+          'account' => 'Account1',
+          'isbankconfirmed' => '0',
+          'day' => '2',
+          'type' => 'withdrawal',
+          'isreceiptconfirmed' => '0',
+          'year' => '1381'
+        };
+INFO  Messages.pm-76-Messages::notify: (2012/04/03 16:52:11) notifying 3 listeners of event <saveTransaction> with args <success>
+INFO  Reports.pm-183-Reports::__ANON__: (2012/04/03 16:52:11) change in model reported ... updating report
+INFO  Reports.pm-116-Reports::fetchAndDisplayReport: (2012/04/03 16:52:11) selected report: first report
+INFO  MockService.pm-96-MockService::getReport: (2012/04/03 16:52:11) getting report first report
+INFO  Report.pm-37-Report::_validate: (2012/04/03 16:52:11) validated report with <7> rows
+INFO  Messages.pm-80-Messages::notify: (2012/04/03 16:52:11) listener succeeded
+INFO  EditTransaction.pm-35-EditTransaction::setIDs: (2012/04/03 16:52:11) ids updated
+INFO  Messages.pm-80-Messages::notify: (2012/04/03 16:52:11) listener succeeded
+INFO  Messages.pm-80-Messages::notify: (2012/04/03 16:52:13) listener succeeded
+INFO  MockService.pm-32-MockService::saveTransaction: (2012/04/03 16:52:13) saving transaction:  args are $VAR1 = {
+          'amount' => '22',
+          'comment' => 'abc',
+          'month' => '1',
+          'account' => 'Account1',
+          'isbankconfirmed' => '0',
+          'day' => '2',
+          'type' => 'withdrawal',
+          'isreceiptconfirmed' => '0',
+          'year' => '1381'
+        };
+INFO  Messages.pm-76-Messages::notify: (2012/04/03 16:52:13) notifying 3 listeners of event <saveTransaction> with args <success>
+INFO  Reports.pm-183-Reports::__ANON__: (2012/04/03 16:52:13) change in model reported ... updating report
+INFO  Reports.pm-116-Reports::fetchAndDisplayReport: (2012/04/03 16:52:13) selected report: first report
+INFO  MockService.pm-96-MockService::getReport: (2012/04/03 16:52:13) getting report first report
+INFO  Report.pm-37-Report::_validate: (2012/04/03 16:52:13) validated report with <7> rows
+INFO  Messages.pm-80-Messages::notify: (2012/04/03 16:52:13) listener succeeded
+INFO  EditTransaction.pm-35-EditTransaction::setIDs: (2012/04/03 16:52:13) ids updated
+INFO  Messages.pm-80-Messages::notify: (2012/04/03 16:52:13) listener succeeded
+INFO  Messages.pm-80-Messages::notify: (2012/04/03 16:52:14) listener succeeded
+INFO  MockService.pm-32-MockService::saveTransaction: (2012/04/03 16:52:16) saving transaction:  args are $VAR1 = {
+          'amount' => '22',
+          'comment' => 'abc',
+          'month' => '1',
+          'account' => 'Account1',
+          'isbankconfirmed' => '0',
+          'day' => '2',
+          'type' => 'withdrawal',
+          'isreceiptconfirmed' => '0',
+          'year' => '1381'
+        };
+INFO  Messages.pm-76-Messages::notify: (2012/04/03 16:52:16) notifying 3 listeners of event <saveTransaction> with args <success>
+INFO  Reports.pm-183-Reports::__ANON__: (2012/04/03 16:52:16) change in model reported ... updating report
+INFO  Reports.pm-116-Reports::fetchAndDisplayReport: (2012/04/03 16:52:16) selected report: first report
+INFO  MockService.pm-96-MockService::getReport: (2012/04/03 16:52:16) getting report first report
+INFO  Report.pm-37-Report::_validate: (2012/04/03 16:52:16) validated report with <7> rows
+INFO  Messages.pm-80-Messages::notify: (2012/04/03 16:52:16) listener succeeded
+INFO  EditTransaction.pm-35-EditTransaction::setIDs: (2012/04/03 16:52:16) ids updated
+INFO  Messages.pm-80-Messages::notify: (2012/04/03 16:52:16) listener succeeded
+INFO  Messages.pm-80-Messages::notify: (2012/04/03 16:52:17) listener succeeded
+INFO  MockService.pm-32-MockService::saveTransaction: (2012/04/03 16:52:18) saving transaction:  args are $VAR1 = {
+          'amount' => '22',
+          'comment' => 'abc',
+          'month' => '1',
+          'account' => 'Account1',
+          'isbankconfirmed' => '0',
+          'day' => '2',
+          'type' => 'withdrawal',
+          'isreceiptconfirmed' => '0',
+          'year' => '1381'
+        };
+INFO  Messages.pm-76-Messages::notify: (2012/04/03 16:52:18) notifying 3 listeners of event <saveTransaction> with args <success>
+INFO  Reports.pm-183-Reports::__ANON__: (2012/04/03 16:52:18) change in model reported ... updating report
+INFO  Reports.pm-116-Reports::fetchAndDisplayReport: (2012/04/03 16:52:18) selected report: first report
+INFO  MockService.pm-96-MockService::getReport: (2012/04/03 16:52:18) getting report first report
+INFO  Report.pm-37-Report::_validate: (2012/04/03 16:52:18) validated report with <7> rows
+INFO  Messages.pm-80-Messages::notify: (2012/04/03 16:52:18) listener succeeded
+INFO  EditTransaction.pm-35-EditTransaction::setIDs: (2012/04/03 16:52:18) ids updated
+INFO  Messages.pm-80-Messages::notify: (2012/04/03 16:52:18) listener succeeded
+INFO  Messages.pm-80-Messages::notify: (2012/04/03 16:52:18) listener succeeded
+INFO  MockService.pm-32-MockService::saveTransaction: (2012/04/03 16:52:18) saving transaction:  args are $VAR1 = {
+          'amount' => '22',
+          'comment' => 'abc',
+          'month' => '1',
+          'account' => 'Account1',
+          'isbankconfirmed' => '0',
+          'day' => '2',
+          'type' => 'withdrawal',
+          'isreceiptconfirmed' => '0',
+          'year' => '1381'
+        };
+INFO  Messages.pm-76-Messages::notify: (2012/04/03 16:52:18) notifying 3 listeners of event <saveTransaction> with args <success>
+INFO  Reports.pm-183-Reports::__ANON__: (2012/04/03 16:52:18) change in model reported ... updating report
+INFO  Reports.pm-116-Reports::fetchAndDisplayReport: (2012/04/03 16:52:18) selected report: first report
+INFO  MockService.pm-96-MockService::getReport: (2012/04/03 16:52:18) getting report first report
+INFO  Report.pm-37-Report::_validate: (2012/04/03 16:52:18) validated report with <7> rows
+INFO  Messages.pm-80-Messages::notify: (2012/04/03 16:52:18) listener succeeded
+INFO  EditTransaction.pm-35-EditTransaction::setIDs: (2012/04/03 16:52:18) ids updated
+INFO  Messages.pm-80-Messages::notify: (2012/04/03 16:52:18) listener succeeded
+INFO  Messages.pm-80-Messages::notify: (2012/04/03 16:52:19) listener succeeded
+INFO  MockService.pm-32-MockService::saveTransaction: (2012/04/03 16:52:19) saving transaction:  args are $VAR1 = {
+          'amount' => '22',
+          'comment' => 'abc',
+          'month' => '1',
+          'account' => 'Account1',
+          'isbankconfirmed' => '0',
+          'day' => '2',
+          'type' => 'withdrawal',
+          'isreceiptconfirmed' => '0',
+          'year' => '1381'
+        };
+INFO  Messages.pm-76-Messages::notify: (2012/04/03 16:52:19) notifying 3 listeners of event <saveTransaction> with args <success>
+INFO  Reports.pm-183-Reports::__ANON__: (2012/04/03 16:52:19) change in model reported ... updating report
+INFO  Reports.pm-116-Reports::fetchAndDisplayReport: (2012/04/03 16:52:19) selected report: first report
+INFO  MockService.pm-96-MockService::getReport: (2012/04/03 16:52:19) getting report first report
+INFO  Report.pm-37-Report::_validate: (2012/04/03 16:52:19) validated report with <7> rows
+INFO  Messages.pm-80-Messages::notify: (2012/04/03 16:52:19) listener succeeded
+INFO  EditTransaction.pm-35-EditTransaction::setIDs: (2012/04/03 16:52:19) ids updated
+INFO  Messages.pm-80-Messages::notify: (2012/04/03 16:52:19) listener succeeded
+INFO  Messages.pm-80-Messages::notify: (2012/04/03 16:52:19) listener succeeded
+INFO  Reports.pm-92-Reports::cleanUp: (2012/04/03 16:52:21) cleaning up reports window -- removing 4 listeners
+INFO  MockService.pm-32-MockService::saveTransaction: (2012/04/03 16:52:22) saving transaction:  args are $VAR1 = {
+          'amount' => '22',
+          'comment' => 'abc',
+          'month' => '1',
+          'account' => 'Account1',
+          'isbankconfirmed' => '0',
+          'day' => '2',
+          'type' => 'withdrawal',
+          'isreceiptconfirmed' => '0',
+          'year' => '1381'
+        };
+INFO  Messages.pm-76-Messages::notify: (2012/04/03 16:52:22) notifying 2 listeners of event <saveTransaction> with args <success>
+INFO  EditTransaction.pm-35-EditTransaction::setIDs: (2012/04/03 16:52:22) ids updated
+INFO  Messages.pm-80-Messages::notify: (2012/04/03 16:52:22) listener succeeded
+INFO  Messages.pm-80-Messages::notify: (2012/04/03 16:52:23) listener succeeded
+INFO  MockService.pm-32-MockService::saveTransaction: (2012/04/03 16:52:24) saving transaction:  args are $VAR1 = {
+          'amount' => '22',
+          'comment' => 'abc',
+          'month' => '1',
+          'account' => 'Account1',
+          'isbankconfirmed' => '0',
+          'day' => '2',
+          'type' => 'withdrawal',
+          'isreceiptconfirmed' => '0',
+          'year' => '1381'
+        };
+INFO  Messages.pm-76-Messages::notify: (2012/04/03 16:52:24) notifying 2 listeners of event <saveTransaction> with args <success>
+INFO  EditTransaction.pm-35-EditTransaction::setIDs: (2012/04/03 16:52:24) ids updated
+INFO  Messages.pm-80-Messages::notify: (2012/04/03 16:52:24) listener succeeded
+INFO  Messages.pm-80-Messages::notify: (2012/04/03 16:52:25) listener succeeded
+INFO  Reports.pm-116-Reports::fetchAndDisplayReport: (2012/04/03 16:52:37) selected report: second report
+INFO  MockService.pm-96-MockService::getReport: (2012/04/03 16:52:37) getting report second report
+INFO  Report.pm-37-Report::_validate: (2012/04/03 16:52:37) validated report with <7> rows
+INFO  MockService.pm-32-MockService::saveTransaction: (2012/04/03 16:52:41) saving transaction:  args are $VAR1 = {
+          'amount' => '22',
+          'comment' => 'abc',
+          'month' => '1',
+          'account' => 'Account1',
+          'isbankconfirmed' => '0',
+          'day' => '2',
+          'type' => 'withdrawal',
+          'isreceiptconfirmed' => '0',
+          'year' => '1381'
+        };
+INFO  Messages.pm-76-Messages::notify: (2012/04/03 16:52:41) notifying 5 listeners of event <saveTransaction> with args <success>
+INFO  EditTransaction.pm-35-EditTransaction::setIDs: (2012/04/03 16:52:41) ids updated
+INFO  Messages.pm-80-Messages::notify: (2012/04/03 16:52:41) listener succeeded
+INFO  Messages.pm-80-Messages::notify: (2012/04/03 16:52:42) listener succeeded
+INFO  Reports.pm-183-Reports::__ANON__: (2012/04/03 16:52:42) change in model reported ... updating report
+INFO  Reports.pm-116-Reports::fetchAndDisplayReport: (2012/04/03 16:52:42) selected report: second report
+INFO  MockService.pm-96-MockService::getReport: (2012/04/03 16:52:42) getting report second report
+INFO  Report.pm-37-Report::_validate: (2012/04/03 16:52:42) validated report with <7> rows
+INFO  Messages.pm-80-Messages::notify: (2012/04/03 16:52:42) listener succeeded
+INFO  Reports.pm-183-Reports::__ANON__: (2012/04/03 16:52:42) change in model reported ... updating report
+INFO  Reports.pm-116-Reports::fetchAndDisplayReport: (2012/04/03 16:52:42) selected report: first report
+INFO  MockService.pm-96-MockService::getReport: (2012/04/03 16:52:42) getting report first report
+INFO  Report.pm-37-Report::_validate: (2012/04/03 16:52:42) validated report with <7> rows
+INFO  Messages.pm-80-Messages::notify: (2012/04/03 16:52:42) listener succeeded
+INFO  Reports.pm-183-Reports::__ANON__: (2012/04/03 16:52:42) change in model reported ... updating report
+INFO  Reports.pm-116-Reports::fetchAndDisplayReport: (2012/04/03 16:52:42) selected report: first report
+INFO  MockService.pm-96-MockService::getReport: (2012/04/03 16:52:42) getting report first report
+INFO  Report.pm-37-Report::_validate: (2012/04/03 16:52:42) validated report with <7> rows
+INFO  Messages.pm-80-Messages::notify: (2012/04/03 16:52:42) listener succeeded
+INFO  MockService.pm-32-MockService::saveTransaction: (2012/04/03 16:52:44) saving transaction:  args are $VAR1 = {
+          'amount' => '22',
+          'comment' => 'abc',
+          'month' => '1',
+          'account' => 'Account1',
+          'isbankconfirmed' => '0',
+          'day' => '2',
+          'type' => 'withdrawal',
+          'isreceiptconfirmed' => '0',
+          'year' => '1381'
+        };
+INFO  Messages.pm-76-Messages::notify: (2012/04/03 16:52:44) notifying 5 listeners of event <saveTransaction> with args <success>
+INFO  EditTransaction.pm-35-EditTransaction::setIDs: (2012/04/03 16:52:44) ids updated
+INFO  Messages.pm-80-Messages::notify: (2012/04/03 16:52:44) listener succeeded
+INFO  Messages.pm-80-Messages::notify: (2012/04/03 16:52:45) listener succeeded
+INFO  Reports.pm-183-Reports::__ANON__: (2012/04/03 16:52:45) change in model reported ... updating report
+INFO  Reports.pm-116-Reports::fetchAndDisplayReport: (2012/04/03 16:52:45) selected report: second report
+INFO  MockService.pm-96-MockService::getReport: (2012/04/03 16:52:45) getting report second report
+INFO  Report.pm-37-Report::_validate: (2012/04/03 16:52:45) validated report with <7> rows
+INFO  Messages.pm-80-Messages::notify: (2012/04/03 16:52:45) listener succeeded
+INFO  Reports.pm-183-Reports::__ANON__: (2012/04/03 16:52:45) change in model reported ... updating report
+INFO  Reports.pm-116-Reports::fetchAndDisplayReport: (2012/04/03 16:52:45) selected report: first report
+INFO  MockService.pm-96-MockService::getReport: (2012/04/03 16:52:45) getting report first report
+INFO  Report.pm-37-Report::_validate: (2012/04/03 16:52:45) validated report with <7> rows
+INFO  Messages.pm-80-Messages::notify: (2012/04/03 16:52:45) listener succeeded
+INFO  Reports.pm-183-Reports::__ANON__: (2012/04/03 16:52:45) change in model reported ... updating report
+INFO  Reports.pm-116-Reports::fetchAndDisplayReport: (2012/04/03 16:52:45) selected report: first report
+INFO  MockService.pm-96-MockService::getReport: (2012/04/03 16:52:45) getting report first report
+INFO  Report.pm-37-Report::_validate: (2012/04/03 16:52:45) validated report with <7> rows
+INFO  Messages.pm-80-Messages::notify: (2012/04/03 16:52:45) listener succeeded
+INFO  MockService.pm-32-MockService::saveTransaction: (2012/04/03 16:52:45) saving transaction:  args are $VAR1 = {
+          'amount' => '22',
+          'comment' => 'abc',
+          'month' => '1',
+          'account' => 'Account1',
+          'isbankconfirmed' => '0',
+          'day' => '2',
+          'type' => 'withdrawal',
+          'isreceiptconfirmed' => '0',
+          'year' => '1381'
+        };
+INFO  Messages.pm-76-Messages::notify: (2012/04/03 16:52:45) notifying 5 listeners of event <saveTransaction> with args <success>
+INFO  EditTransaction.pm-35-EditTransaction::setIDs: (2012/04/03 16:52:45) ids updated
+INFO  Messages.pm-80-Messages::notify: (2012/04/03 16:52:45) listener succeeded
+INFO  Messages.pm-80-Messages::notify: (2012/04/03 16:52:46) listener succeeded
+INFO  Reports.pm-183-Reports::__ANON__: (2012/04/03 16:52:46) change in model reported ... updating report
+INFO  Reports.pm-116-Reports::fetchAndDisplayReport: (2012/04/03 16:52:46) selected report: second report
+INFO  MockService.pm-96-MockService::getReport: (2012/04/03 16:52:46) getting report second report
+INFO  Report.pm-37-Report::_validate: (2012/04/03 16:52:46) validated report with <7> rows
+INFO  Messages.pm-80-Messages::notify: (2012/04/03 16:52:46) listener succeeded
+INFO  Reports.pm-183-Reports::__ANON__: (2012/04/03 16:52:46) change in model reported ... updating report
+INFO  Reports.pm-116-Reports::fetchAndDisplayReport: (2012/04/03 16:52:46) selected report: first report
+INFO  MockService.pm-96-MockService::getReport: (2012/04/03 16:52:46) getting report first report
+INFO  Report.pm-37-Report::_validate: (2012/04/03 16:52:46) validated report with <7> rows
+INFO  Messages.pm-80-Messages::notify: (2012/04/03 16:52:46) listener succeeded
+INFO  Reports.pm-183-Reports::__ANON__: (2012/04/03 16:52:46) change in model reported ... updating report
+INFO  Reports.pm-116-Reports::fetchAndDisplayReport: (2012/04/03 16:52:46) selected report: first report
+INFO  MockService.pm-96-MockService::getReport: (2012/04/03 16:52:46) getting report first report
+INFO  Report.pm-37-Report::_validate: (2012/04/03 16:52:46) validated report with <7> rows
+INFO  Messages.pm-80-Messages::notify: (2012/04/03 16:52:46) listener succeeded
+INFO  MockService.pm-32-MockService::saveTransaction: (2012/04/03 16:52:46) saving transaction:  args are $VAR1 = {
+          'amount' => '22',
+          'comment' => 'abc',
+          'month' => '1',
+          'account' => 'Account1',
+          'isbankconfirmed' => '0',
+          'day' => '2',
+          'type' => 'withdrawal',
+          'isreceiptconfirmed' => '0',
+          'year' => '1381'
+        };
+INFO  Messages.pm-76-Messages::notify: (2012/04/03 16:52:46) notifying 5 listeners of event <saveTransaction> with args <success>
+INFO  EditTransaction.pm-35-EditTransaction::setIDs: (2012/04/03 16:52:46) ids updated
+INFO  Messages.pm-80-Messages::notify: (2012/04/03 16:52:46) listener succeeded
+INFO  Messages.pm-80-Messages::notify: (2012/04/03 16:52:46) listener succeeded
+INFO  Reports.pm-183-Reports::__ANON__: (2012/04/03 16:52:46) change in model reported ... updating report
+INFO  Reports.pm-116-Reports::fetchAndDisplayReport: (2012/04/03 16:52:46) selected report: second report
+INFO  MockService.pm-96-MockService::getReport: (2012/04/03 16:52:46) getting report second report
+INFO  Report.pm-37-Report::_validate: (2012/04/03 16:52:46) validated report with <7> rows
+INFO  Messages.pm-80-Messages::notify: (2012/04/03 16:52:46) listener succeeded
+INFO  Reports.pm-183-Reports::__ANON__: (2012/04/03 16:52:46) change in model reported ... updating report
+INFO  Reports.pm-116-Reports::fetchAndDisplayReport: (2012/04/03 16:52:46) selected report: first report
+INFO  MockService.pm-96-MockService::getReport: (2012/04/03 16:52:46) getting report first report
+INFO  Report.pm-37-Report::_validate: (2012/04/03 16:52:46) validated report with <7> rows
+INFO  Messages.pm-80-Messages::notify: (2012/04/03 16:52:46) listener succeeded
+INFO  Reports.pm-183-Reports::__ANON__: (2012/04/03 16:52:46) change in model reported ... updating report
+INFO  Reports.pm-116-Reports::fetchAndDisplayReport: (2012/04/03 16:52:46) selected report: first report
+INFO  MockService.pm-96-MockService::getReport: (2012/04/03 16:52:46) getting report first report
+INFO  Report.pm-37-Report::_validate: (2012/04/03 16:52:46) validated report with <7> rows
+INFO  Messages.pm-80-Messages::notify: (2012/04/03 16:52:46) listener succeeded
+INFO  MockService.pm-32-MockService::saveTransaction: (2012/04/03 16:52:47) saving transaction:  args are $VAR1 = {
+          'amount' => '22',
+          'comment' => 'abc',
+          'month' => '1',
+          'account' => 'Account1',
+          'isbankconfirmed' => '0',
+          'day' => '2',
+          'type' => 'withdrawal',
+          'isreceiptconfirmed' => '0',
+          'year' => '1381'
+        };
+INFO  Messages.pm-76-Messages::notify: (2012/04/03 16:52:47) notifying 5 listeners of event <saveTransaction> with args <success>
+INFO  EditTransaction.pm-35-EditTransaction::setIDs: (2012/04/03 16:52:47) ids updated
+INFO  Messages.pm-80-Messages::notify: (2012/04/03 16:52:47) listener succeeded
+INFO  Messages.pm-80-Messages::notify: (2012/04/03 16:52:47) listener succeeded
+INFO  Reports.pm-183-Reports::__ANON__: (2012/04/03 16:52:47) change in model reported ... updating report
+INFO  Reports.pm-116-Reports::fetchAndDisplayReport: (2012/04/03 16:52:47) selected report: second report
+INFO  MockService.pm-96-MockService::getReport: (2012/04/03 16:52:47) getting report second report
+INFO  Report.pm-37-Report::_validate: (2012/04/03 16:52:47) validated report with <7> rows
+INFO  Messages.pm-80-Messages::notify: (2012/04/03 16:52:47) listener succeeded
+INFO  Reports.pm-183-Reports::__ANON__: (2012/04/03 16:52:47) change in model reported ... updating report
+INFO  Reports.pm-116-Reports::fetchAndDisplayReport: (2012/04/03 16:52:47) selected report: first report
+INFO  MockService.pm-96-MockService::getReport: (2012/04/03 16:52:47) getting report first report
+INFO  Report.pm-37-Report::_validate: (2012/04/03 16:52:47) validated report with <7> rows
+INFO  Messages.pm-80-Messages::notify: (2012/04/03 16:52:47) listener succeeded
+INFO  Reports.pm-183-Reports::__ANON__: (2012/04/03 16:52:47) change in model reported ... updating report
+INFO  Reports.pm-116-Reports::fetchAndDisplayReport: (2012/04/03 16:52:47) selected report: first report
+INFO  MockService.pm-96-MockService::getReport: (2012/04/03 16:52:47) getting report first report
+INFO  Report.pm-37-Report::_validate: (2012/04/03 16:52:47) validated report with <7> rows
+INFO  Messages.pm-80-Messages::notify: (2012/04/03 16:52:47) listener succeeded
+INFO  Reports.pm-92-Reports::cleanUp: (2012/04/03 16:52:50) cleaning up reports window -- removing 4 listeners
+INFO  Reports.pm-92-Reports::cleanUp: (2012/04/03 16:52:51) cleaning up reports window -- removing 4 listeners
+INFO  Reports.pm-92-Reports::cleanUp: (2012/04/03 16:52:51) cleaning up reports window -- removing 4 listeners
+INFO  MockService.pm-32-MockService::saveTransaction: (2012/04/03 16:52:52) saving transaction:  args are $VAR1 = {
+          'amount' => '22',
+          'comment' => 'abc',
+          'month' => '1',
+          'account' => 'Account1',
+          'isbankconfirmed' => '0',
+          'day' => '2',
+          'type' => 'withdrawal',
+          'isreceiptconfirmed' => '0',
+          'year' => '1381'
+        };
+INFO  Messages.pm-76-Messages::notify: (2012/04/03 16:52:52) notifying 2 listeners of event <saveTransaction> with args <success>
+INFO  EditTransaction.pm-35-EditTransaction::setIDs: (2012/04/03 16:52:52) ids updated
+INFO  Messages.pm-80-Messages::notify: (2012/04/03 16:52:52) listener succeeded
+INFO  Messages.pm-80-Messages::notify: (2012/04/03 16:52:53) listener succeeded

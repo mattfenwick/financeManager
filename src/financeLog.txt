@@ -1,0 +1,35 @@
+INFO  driver.pl-17-main::: (2011/12/08 15:01:18) starting FinanceManager
+INFO  Controller.pm-36-Controller::new: (2011/12/08 15:01:18) attempting to connect to database
+FATAL  driver.pl-23-main::: (2011/12/08 15:01:18) failed to initialize controller: install_driver(mysql) failed: Can't locate DBD/mysql.pm in @INC (@INC contains: /Network/Servers/macsent.cluster.uchc.edu/Volumes/raid/Users/mattf/Library/ActivePerl-5.12/lib /usr/local/ActivePerl-5.12/site/lib /usr/local/ActivePerl-5.12/lib .) at (eval 15) line 3.
+Perhaps the DBD::mysql perl module hasn't been fully installed,
+or perhaps the capitalisation of 'mysql' isn't right.
+Available drivers: CSV, DBM, ExampleP, File, Gofer, ODBC, Proxy, SQLite, Sponge.
+ at Controller.pm line 37
+INFO  driver.pl-17-main::: (2011/12/08 15:52:48) starting FinanceManager
+INFO  Controller.pm-36-Controller::new: (2011/12/08 15:52:48) attempting to connect to database
+FATAL  driver.pl-23-main::: (2011/12/08 15:52:48) failed to initialize controller: install_driver(mysql) failed: Can't locate DBD/mysql.pm in @INC (@INC contains: /Network/Servers/macsent.cluster.uchc.edu/Volumes/raid/Users/mattf/Library/ActivePerl-5.12/lib /usr/local/ActivePerl-5.12/site/lib /usr/local/ActivePerl-5.12/lib .) at (eval 15) line 3.
+Perhaps the DBD::mysql perl module hasn't been fully installed,
+or perhaps the capitalisation of 'mysql' isn't right.
+Available drivers: CSV, DBM, ExampleP, File, Gofer, ODBC, Proxy, SQLite, Sponge.
+ at Controller.pm line 37
+INFO  driver.pl-27-main::: (2012/04/02 12:08:58) initializing database connection
+INFO  Database.pm-25-Database::_connect: (2012/04/02 12:08:58) attempting to connect to database
+FATAL  driver.pl-33-main::__ANON__: (2012/04/02 12:08:58) failed to connect to database: install_driver(mysql) failed: Can't locate DBD/mysql.pm in @INC (@INC contains: ../model gui database model /Network/Servers/macsent1.uchc.edu/Volumes/raid/mattf/Library/ActivePerl-5.12/lib /usr/local/ActivePerl-5.12/site/lib /usr/local/ActivePerl-5.12/lib .) at (eval 16) line 3.
+Perhaps the DBD::mysql perl module hasn't been fully installed,
+or perhaps the capitalisation of 'mysql' isn't right.
+Available drivers: CSV, DBM, ExampleP, File, Gofer, ODBC, Proxy, SQLite, Sponge.
+ at database/Database.pm line 26
+INFO  driver.pl-27-main::: (2012/04/02 12:09:49) initializing database connection
+INFO  Database.pm-25-Database::_connect: (2012/04/02 12:09:49) attempting to connect to database
+FATAL  driver.pl-33-main::__ANON__: (2012/04/02 12:09:49) failed to connect to database: install_driver(mysql) failed: Can't locate DBD/mysql.pm in @INC (@INC contains: ../model gui database model /Network/Servers/macsent1.uchc.edu/Volumes/raid/mattf/Library/ActivePerl-5.12/lib /usr/local/ActivePerl-5.12/site/lib /usr/local/ActivePerl-5.12/lib .) at (eval 16) line 3.
+Perhaps the DBD::mysql perl module hasn't been fully installed,
+or perhaps the capitalisation of 'mysql' isn't right.
+Available drivers: CSV, DBM, ExampleP, File, Gofer, ODBC, Proxy, SQLite, Sponge.
+ at database/Database.pm line 26
+INFO  driver.pl-27-main::: (2012/04/02 12:10:13) initializing database connection
+INFO  Database.pm-25-Database::_connect: (2012/04/02 12:10:13) attempting to connect to database
+FATAL  driver.pl-33-main::__ANON__: (2012/04/02 12:10:13) failed to connect to database: install_driver(mysql) failed: Can't locate DBD/mysql.pm in @INC (@INC contains: ../model gui database model /Network/Servers/macsent1.uchc.edu/Volumes/raid/mattf/Library/ActivePerl-5.12/lib /usr/local/ActivePerl-5.12/site/lib /usr/local/ActivePerl-5.12/lib .) at (eval 16) line 3.
+Perhaps the DBD::mysql perl module hasn't been fully installed,
+or perhaps the capitalisation of 'mysql' isn't right.
+Available drivers: CSV, DBM, ExampleP, File, Gofer, ODBC, Proxy, SQLite, Sponge.
+ at database/Database.pm line 26
